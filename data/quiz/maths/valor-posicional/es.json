@@ -1,0 +1,112 @@
+{
+  "title": "Valor posicional hasta las centenas de millar",
+  "description": "Qué vale cada cifra según el lugar que ocupa. Se escribe la respuesta, no se elige: cada pregunta dice en qué posición está el error para poder repasar sólo esa.",
+  "category": "Matemáticas",
+  "minAge": 6,
+  "timeless": false,
+  "questions": [
+    {
+      "id": "01",
+      "text": "En el número 4 573, ¿cuántas decenas hay en la cifra subrayada, el 7?",
+      "type": "open",
+      "topics": ["valor-posicional", "decenas"],
+      "hints": ["El 7 está en el segundo lugar contando desde la derecha"],
+      "explanation": "<p>El 7 ocupa el lugar de las decenas, así que son <strong>7 decenas</strong>, es decir 70 unidades.</p>",
+      "grader": { "kind": "numeric", "expected": 7, "tolerance": 0 }
+    },
+    {
+      "id": "02",
+      "text": "¿Qué valor representa el 5 en el número 4 573?",
+      "type": "open",
+      "topics": ["valor-posicional", "centenas"],
+      "hints": ["No vale 5, vale 5 de algo más grande"],
+      "explanation": "<p>El 5 está en las centenas, así que representa <strong>500</strong>. La cifra es 5 y su valor es 500: son dos preguntas distintas.</p>",
+      "grader": { "kind": "numeric", "expected": 500, "tolerance": 0 }
+    },
+    {
+      "id": "03",
+      "text": "Escribe con cifras: 3 centenas, 0 decenas y 8 unidades.",
+      "type": "open",
+      "topics": ["valor-posicional", "componer"],
+      "hints": ["El cero también ocupa su lugar"],
+      "explanation": "<p><strong>308</strong>. Sin el cero quedaría 38, que es otro número: el cero guarda el sitio de las decenas.</p>",
+      "grader": { "kind": "numeric", "expected": 308, "tolerance": 0 }
+    },
+    {
+      "id": "04",
+      "text": "Descompón 6 204 en suma de sus valores posicionales, separando con el signo +.",
+      "type": "open",
+      "input": "maths",
+      "topics": ["valor-posicional", "descomponer"],
+      "hints": ["Empieza por los millares y baja"],
+      "explanation": "<p>6 204 = <strong>6000 + 200 + 4</strong>. Las decenas no aparecen porque hay 0 decenas.</p>",
+      "grader": [
+        { "kind": "expression", "expected": "6000+200+4", "requireForm": true },
+        {
+          "kind": "numeric",
+          "expected": 6204,
+          "tolerance": 0,
+          "score": 0.5,
+          "feedback": "El número es correcto, pero se pedía la descomposición, no el resultado."
+        }
+      ]
+    },
+    {
+      "id": "05",
+      "text": "¿Qué cifra ocupa el lugar de los millares en 172 605?",
+      "type": "open",
+      "topics": ["valor-posicional", "millares"],
+      "hints": ["Cuenta cuatro lugares desde la derecha"],
+      "explanation": "<p>Contando desde la derecha: 5 unidades, 0 decenas, 6 centenas y <strong>2 millares</strong>.</p>",
+      "grader": { "kind": "numeric", "expected": 2, "tolerance": 0 }
+    },
+    {
+      "id": "06",
+      "text": "¿Cómo se llama el lugar que ocupa el 1 en 172 605?",
+      "type": "open",
+      "topics": ["valor-posicional", "vocabulario"],
+      "hints": ["Es el lugar más alto de este número"],
+      "explanation": "<p>Centenas de millar: el 1 representa 100 000.</p>",
+      "grader": {
+        "kind": "exact",
+        "expected": ["centenas de millar", "centena de millar", "centenas de mil", "cien miles"]
+      }
+    },
+    {
+      "id": "07",
+      "text": "Ordena de menor a mayor separando con comas: 4 507, 4 057, 4 570.",
+      "type": "open",
+      "topics": ["valor-posicional", "comparar"],
+      "hints": ["Compara cifra a cifra empezando por la izquierda"],
+      "explanation": "<p>Los tres tienen 4 millares, así que decide la siguiente cifra: 0 &lt; 5 y luego 07 &lt; 70. Queda <strong>4057, 4507, 4570</strong>.</p>",
+      "grader": { "kind": "sequence", "expected": ["4057", "4507", "4570"] }
+    },
+    {
+      "id": "08",
+      "text": "Si al número 3 480 le quitas todas sus centenas, ¿qué número queda?",
+      "type": "open",
+      "topics": ["valor-posicional", "razonar"],
+      "hints": ["3 480 tiene 4 centenas, y cada centena vale 100"],
+      "explanation": "<p>Tiene 4 centenas, que valen 400: 3480 − 400 = <strong>3080</strong>.</p>",
+      "grader": { "kind": "numeric", "expected": 3080, "tolerance": 0 }
+    },
+    {
+      "id": "09",
+      "text": "¿Cuántas unidades son 3 millares?",
+      "type": "open",
+      "topics": ["valor-posicional", "equivalencias"],
+      "hints": ["Un millar son mil unidades"],
+      "explanation": "<p>3 × 1000 = <strong>3000</strong> unidades.</p>",
+      "grader": { "kind": "numeric", "expected": 3000, "tolerance": 0 }
+    },
+    {
+      "id": "10",
+      "text": "Escribe el número mayor que puedas con las cifras 5, 0 y 9, usando cada una una sola vez.",
+      "type": "open",
+      "topics": ["valor-posicional", "razonar"],
+      "hints": ["La cifra más grande tiene que ocupar el lugar más alto"],
+      "explanation": "<p><strong>950</strong>. El 9 va en las centenas porque es donde más vale, y el 0 al final porque no puede empezar un número.</p>",
+      "grader": { "kind": "numeric", "expected": 950, "tolerance": 0 }
+    }
+  ]
+}

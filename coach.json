@@ -1,0 +1,174 @@
+{
+  "schemaVersion": 1,
+  "id": "ksike.school",
+  "name": "Primary and secondary school content pack",
+  "description": "Open Coach content for primary and secondary education: maths with open answers, courses and learning games.",
+  "version": "0.1.0",
+  "license": "MIT",
+  "licenseFile": "LICENSE",
+  "homepage": "https://github.com/ksike/rep-course-school",
+  "keywords": [
+    "school",
+    "primary",
+    "secondary",
+    "maths",
+    "education"
+  ],
+  "publisher": {
+    "ns": "ksike",
+    "displayName": "Ksike",
+    "url": "https://github.com/ksike"
+  },
+  "repository": {
+    "type": "github",
+    "url": "https://github.com/ksike/rep-course-school",
+    "defaultRef": "main"
+  },
+  "audience": {
+    "minAge": 6
+  },
+  "i18n": {
+    "defaultLocale": "es",
+    "locales": [
+      "es",
+      "en"
+    ]
+  },
+  "packages": [
+    {
+      "type": "quiz",
+      "name": "maths-tablas-multiplicar",
+      "title": {
+        "es": "Tablas de multiplicar",
+        "en": "Multiplication tables"
+      },
+      "description": {
+        "es": "Repaso de la tabla de multiplicar, una pregunta por producto, con explicación y pista por respuesta.",
+        "en": "Multiplication table practice, one question per product, with an explanation and per-answer feedback."
+      },
+      "version": "0.1.0",
+      "path": "data/quiz/maths/tablas-multiplicar",
+      "category": "maths",
+      "tags": [
+        "maths",
+        "primary",
+        "multiplication"
+      ],
+      "recommended": true,
+      "audience": {
+        "minAge": 6
+      },
+      "size": {
+        "questions": 12,
+        "bytes": 24203,
+        "files": 3
+      },
+      "locales": [
+        "es",
+        "en"
+      ]
+    },
+    {
+      "type": "quiz",
+      "name": "maths-valor-posicional",
+      "title": {
+        "es": "Valor posicional hasta las centenas de millar",
+        "en": "Place value up to hundreds of thousands"
+      },
+      "description": {
+        "es": "Qué vale cada cifra según el lugar que ocupa. La respuesta se escribe, y el evaluador dice en qué posición estaba el error.",
+        "en": "What each digit is worth according to its place. The answer is written, and the grader says which place the mistake was in."
+      },
+      "version": "0.1.0",
+      "path": "data/quiz/maths/valor-posicional",
+      "category": "maths",
+      "tags": [
+        "maths",
+        "primary",
+        "place-value",
+        "open-answer"
+      ],
+      "recommended": true,
+      "audience": {
+        "minAge": 6
+      },
+      "size": {
+        "questions": 10,
+        "bytes": 10344,
+        "files": 3
+      },
+      "locales": [
+        "es",
+        "en"
+      ]
+    },
+    {
+      "type": "quiz",
+      "name": "maths-leer-escribir-numeros",
+      "title": {
+        "es": "Leer y escribir números hasta seis cifras",
+        "en": "Reading and writing numbers up to six digits"
+      },
+      "description": {
+        "es": "De cifra a palabra y de palabra a cifra, admitiendo cómo se escribe de verdad: con conjunción o sin ella, con tildes o sin ellas.",
+        "en": "From digits to words and back, accepting what people actually write: with or without \"and\", with or without the hyphen."
+      },
+      "version": "0.1.0",
+      "path": "data/quiz/maths/leer-escribir-numeros",
+      "category": "maths",
+      "tags": [
+        "maths",
+        "primary",
+        "reading-numbers",
+        "open-answer"
+      ],
+      "recommended": true,
+      "audience": {
+        "minAge": 6
+      },
+      "size": {
+        "questions": 10,
+        "bytes": 9363,
+        "files": 3
+      },
+      "locales": [
+        "es",
+        "en"
+      ]
+    },
+    {
+      "type": "quiz",
+      "name": "maths-algebra-inicial",
+      "title": {
+        "es": "Álgebra inicial: factorizar, simplificar y resolver",
+        "en": "Early algebra: factorising, simplifying and solving"
+      },
+      "description": {
+        "es": "Sacar factor común, simplificar fracciones algebraicas y resolver ecuaciones sencillas. Se acepta cualquier forma equivalente salvo cuando el enunciado pide una concreta.",
+        "en": "Common factors, simplifying algebraic fractions and simple equations. Any equivalent form is accepted unless the question asks for a particular one."
+      },
+      "version": "0.1.0",
+      "path": "data/quiz/maths/algebra-inicial",
+      "category": "maths",
+      "tags": [
+        "maths",
+        "secondary",
+        "algebra",
+        "open-answer"
+      ],
+      "recommended": true,
+      "audience": {
+        "minAge": 12
+      },
+      "size": {
+        "questions": 10,
+        "bytes": 11935,
+        "files": 3
+      },
+      "locales": [
+        "es",
+        "en"
+      ]
+    }
+  ]
+}

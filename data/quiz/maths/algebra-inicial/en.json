@@ -1,0 +1,144 @@
+{
+  "title": "Early algebra: factorising, simplifying and solving",
+  "description": "First steps with letters: taking out a common factor, simplifying algebraic fractions and solving simple quadratics. The expression is written, and any equivalent form is accepted unless the question asks for a particular one.",
+  "category": "Maths",
+  "minAge": 12,
+  "timeless": false,
+  "questions": [
+    {
+      "id": "01",
+      "text": "Factorise 2x + 2.",
+      "type": "open",
+      "input": "maths",
+      "topics": ["algebra", "common-factor"],
+      "hints": ["Both terms share a factor", "Take the 2 out: 2 · ( … )"],
+      "explanation": "<p>Both terms have 2 as a factor, so <code>2x + 2 = 2(x + 1)</code>. The factorised form is required here: an equivalent but expanded answer is not what the question asks for.</p>",
+      "grader": [
+        {
+          "kind": "expression",
+          "expected": "2(x+1)",
+          "variables": { "x": [-20, 20] },
+          "requireForm": true
+        },
+        {
+          "kind": "expression",
+          "expected": "2(x+1)",
+          "variables": { "x": [-20, 20] },
+          "score": 0.5,
+          "feedback": "That is equal to the answer, but the question asks for it factorised."
+        }
+      ]
+    },
+    {
+      "id": "02",
+      "text": "Factorise 6x² + 9x.",
+      "type": "open",
+      "input": "maths",
+      "topics": ["algebra", "common-factor"],
+      "hints": ["Find the largest number dividing both 6 and 9, and the lowest power of x"],
+      "explanation": "<p>The common factor is <code>3x</code>: <code>6x² + 9x = 3x(2x + 3)</code>.</p>",
+      "grader": {
+        "kind": "expression",
+        "expected": "3x(2x+3)",
+        "variables": { "x": [-20, 20] },
+        "requireForm": true
+      }
+    },
+    {
+      "id": "03",
+      "text": "Simplify (x² − 1) / (x − 1).",
+      "type": "open",
+      "input": "maths",
+      "topics": ["algebra", "simplifying"],
+      "hints": ["The numerator is a difference of two squares"],
+      "explanation": "<p><code>x² − 1 = (x + 1)(x − 1)</code>, so the factor <code>x − 1</code> cancels and <code>x + 1</code> is left. Any equivalent form is accepted, because the value is what is asked for, not a shape.</p>",
+      "grader": {
+        "kind": "expression",
+        "expected": "x+1",
+        "variables": { "x": [2, 20] }
+      }
+    },
+    {
+      "id": "04",
+      "text": "Expand (x + 3)².",
+      "type": "open",
+      "input": "maths",
+      "topics": ["algebra", "special-products"],
+      "hints": ["It is not x² + 9: the double product is missing"],
+      "explanation": "<p><code>(x + 3)² = x² + 6x + 9</code>. The classic slip is forgetting the <code>6x</code> term.</p>",
+      "grader": {
+        "kind": "expression",
+        "expected": "x^2+6x+9",
+        "variables": { "x": [-20, 20] }
+      }
+    },
+    {
+      "id": "05",
+      "text": "Solve x² − x − 6 = 0. Write both solutions separated by a comma.",
+      "type": "open",
+      "topics": ["algebra", "equations"],
+      "hints": ["Two numbers that multiply to −6 and add to −1"],
+      "explanation": "<p><code>x = 3</code> and <code>x = −2</code>, because <code>x² − x − 6 = (x − 3)(x + 2)</code>. The order does not matter.</p>",
+      "grader": { "kind": "set", "expected": ["3", "-2"] }
+    },
+    {
+      "id": "06",
+      "text": "Solve 3x + 7 = 22.",
+      "type": "open",
+      "topics": ["algebra", "equations"],
+      "hints": ["Move the 7 across first, then divide"],
+      "explanation": "<p><code>3x = 15</code>, so <code>x = 5</code>.</p>",
+      "grader": { "kind": "numeric", "expected": 5, "tolerance": 0 }
+    },
+    {
+      "id": "07",
+      "text": "If x = 4, what is 2x² − 3x + 1?",
+      "type": "open",
+      "topics": ["algebra", "substituting"],
+      "hints": ["Work out the power first, then the products, then the sum"],
+      "explanation": "<p><code>2 · 16 − 3 · 4 + 1 = 32 − 12 + 1 = 21</code>. Order of operations decides: power, product, sum.</p>",
+      "grader": { "kind": "numeric", "expected": 21, "tolerance": 0 }
+    },
+    {
+      "id": "08",
+      "text": "Write an expression for the perimeter of a rectangle with base b and height h.",
+      "type": "open",
+      "input": "maths",
+      "topics": ["algebra", "formulae"],
+      "hints": ["Each side appears twice"],
+      "explanation": "<p><code>2b + 2h</code>, which is the same as <code>2(b + h)</code>. Both are accepted here, because both are the formula.</p>",
+      "grader": {
+        "kind": "expression",
+        "expected": "2b+2h",
+        "variables": { "b": [1, 20], "h": [1, 20] }
+      }
+    },
+    {
+      "id": "09",
+      "text": "A train covers 150 km in 2 hours. What is its average speed?",
+      "type": "open",
+      "topics": ["algebra", "problems", "units"],
+      "hints": ["Speed is distance divided by time"],
+      "explanation": "<p>150 ÷ 2 = 75 km/h. The unit is accepted but not required: <code>75</code> and <code>75 km/h</code> are the same answer.</p>",
+      "grader": {
+        "kind": "numeric",
+        "expected": 75,
+        "tolerance": 0,
+        "unit": "km/h"
+      }
+    },
+    {
+      "id": "10",
+      "text": "In your own words, explain why (x + 3)² is not equal to x² + 9.",
+      "type": "open",
+      "topics": ["algebra", "reasoning"],
+      "hints": ["Think about multiplying (x + 3) by (x + 3) term by term"],
+      "explanation": "<p>Multiplying term by term produces the double product <code>2 · x · 3 = 6x</code>, which the square of a sum cannot leave out. One number settles it: for x = 1, <code>(1 + 3)² = 16</code> while <code>1 + 9 = 10</code>.</p>",
+      "grader": {
+        "kind": "keywords",
+        "expected": ["double product", "6x", "term"],
+        "atLeast": 1
+      }
+    }
+  ]
+}

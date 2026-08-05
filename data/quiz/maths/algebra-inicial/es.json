@@ -1,0 +1,145 @@
+{
+  "title": "Álgebra inicial: factorizar, simplificar y resolver",
+  "description": "Primeros pasos con letras: sacar factor común, simplificar fracciones algebraicas y resolver ecuaciones de segundo grado sencillas. Se escribe la expresión, y se acepta cualquier forma equivalente salvo cuando el enunciado pide una concreta.",
+  "category": "Matemáticas",
+  "minAge": 12,
+  "timeless": false,
+  "questions": [
+    {
+      "id": "01",
+      "text": "Factoriza 2x + 2.",
+      "type": "open",
+      "input": "maths",
+      "topics": ["algebra", "factor-comun"],
+      "hints": ["Los dos términos tienen un factor común", "Saca el 2: 2 · ( … )"],
+      "explanation": "<p>Los dos términos tienen 2 como factor, así que <code>2x + 2 = 2(x + 1)</code>. Aquí se exige la forma factorizada: una respuesta equivalente pero desarrollada no es lo que pide el enunciado.</p>",
+      "grader": [
+        {
+          "kind": "expression",
+          "expected": "2(x+1)",
+          "variables": { "x": [-20, 20] },
+          "requireForm": true
+        },
+        {
+          "kind": "expression",
+          "expected": "2(x+1)",
+          "variables": { "x": [-20, 20] },
+          "score": 0.5,
+          "feedback": "Vale lo mismo que la respuesta, pero el enunciado la pide factorizada."
+        }
+      ]
+    },
+    {
+      "id": "02",
+      "text": "Factoriza 6x² + 9x.",
+      "type": "open",
+      "input": "maths",
+      "topics": ["algebra", "factor-comun"],
+      "hints": ["Busca el mayor número que divida a 6 y a 9, y la menor potencia de x"],
+      "explanation": "<p>El factor común es <code>3x</code>: <code>6x² + 9x = 3x(2x + 3)</code>.</p>",
+      "grader": {
+        "kind": "expression",
+        "expected": "3x(2x+3)",
+        "variables": { "x": [-20, 20] },
+        "requireForm": true
+      }
+    },
+    {
+      "id": "03",
+      "text": "Simplifica (x² − 1) / (x − 1).",
+      "type": "open",
+      "input": "maths",
+      "topics": ["algebra", "simplificar"],
+      "hints": ["El numerador es una diferencia de cuadrados"],
+      "explanation": "<p><code>x² − 1 = (x + 1)(x − 1)</code>, así que se cancela el factor <code>x − 1</code> y queda <code>x + 1</code>. Se acepta cualquier forma equivalente, porque aquí se pide el valor y no una forma.</p>",
+      "grader": {
+        "kind": "expression",
+        "expected": "x+1",
+        "variables": { "x": [2, 20] }
+      }
+    },
+    {
+      "id": "04",
+      "text": "Desarrolla (x + 3)².",
+      "type": "open",
+      "input": "maths",
+      "topics": ["algebra", "productos-notables"],
+      "hints": ["No es x² + 9: falta el doble producto"],
+      "explanation": "<p><code>(x + 3)² = x² + 6x + 9</code>. El error clásico es olvidar el término <code>6x</code>.</p>",
+      "grader": {
+        "kind": "expression",
+        "expected": "x^2+6x+9",
+        "variables": { "x": [-20, 20] }
+      }
+    },
+    {
+      "id": "05",
+      "text": "Resuelve x² − x − 6 = 0. Escribe las dos soluciones separadas por una coma.",
+      "type": "open",
+      "topics": ["algebra", "ecuaciones"],
+      "hints": ["Dos números que multiplicados den −6 y sumados −1"],
+      "explanation": "<p><code>x = 3</code> y <code>x = −2</code>, porque <code>x² − x − 6 = (x − 3)(x + 2)</code>. El orden no importa.</p>",
+      "grader": { "kind": "set", "expected": ["3", "-2"] }
+    },
+    {
+      "id": "06",
+      "text": "Resuelve 3x + 7 = 22.",
+      "type": "open",
+      "topics": ["algebra", "ecuaciones"],
+      "hints": ["Primero pasa el 7 al otro lado, después divide"],
+      "explanation": "<p><code>3x = 15</code>, así que <code>x = 5</code>.</p>",
+      "grader": { "kind": "numeric", "expected": 5, "tolerance": 0 }
+    },
+    {
+      "id": "07",
+      "text": "Si x = 4, ¿cuánto vale 2x² − 3x + 1?",
+      "type": "open",
+      "topics": ["algebra", "sustituir"],
+      "hints": ["Calcula primero la potencia, luego el producto y al final la suma"],
+      "explanation": "<p><code>2 · 16 − 3 · 4 + 1 = 32 − 12 + 1 = 21</code>. La jerarquía manda: potencia, producto, suma.</p>",
+      "grader": { "kind": "numeric", "expected": 21, "tolerance": 0 }
+    },
+    {
+      "id": "08",
+      "text": "Escribe con una expresión el perímetro de un rectángulo de base b y altura h.",
+      "type": "open",
+      "input": "maths",
+      "topics": ["algebra", "formulas"],
+      "hints": ["Cada lado aparece dos veces"],
+      "explanation": "<p><code>2b + 2h</code>, o lo que es lo mismo <code>2(b + h)</code>. Aquí se aceptan las dos, porque las dos son la fórmula.</p>",
+      "grader": {
+        "kind": "expression",
+        "expected": "2b+2h",
+        "variables": { "b": [1, 20], "h": [1, 20] }
+      }
+    },
+    {
+      "id": "09",
+      "text": "Un tren recorre 150 km en 2 horas. ¿Cuál es su velocidad media?",
+      "type": "open",
+      "topics": ["algebra", "problemas", "unidades"],
+      "hints": ["La velocidad es la distancia dividida por el tiempo"],
+      "explanation": "<p>150 ÷ 2 = 75 km/h. La unidad se acepta pero no se exige: <code>75</code> y <code>75 km/h</code> son la misma respuesta.</p>",
+      "grader": {
+        "kind": "numeric",
+        "expected": 75,
+        "tolerance": 0,
+        "unit": "km/h",
+        "decimalComma": true
+      }
+    },
+    {
+      "id": "10",
+      "text": "Con tus palabras, explica por qué (x + 3)² no es igual a x² + 9.",
+      "type": "open",
+      "topics": ["algebra", "razonar"],
+      "hints": ["Piensa en qué pasa al multiplicar (x + 3) por (x + 3) término a término"],
+      "explanation": "<p>Al multiplicar término a término aparece el doble producto <code>2 · x · 3 = 6x</code>, que el cuadrado de la suma no puede olvidar. Se puede comprobar con un número: para x = 1, <code>(1 + 3)² = 16</code> y <code>1 + 9 = 10</code>.</p>",
+      "grader": {
+        "kind": "keywords",
+        "expected": ["doble producto", "6x", "término"],
+        "atLeast": 1
+      }
+    }
+  ]
+}

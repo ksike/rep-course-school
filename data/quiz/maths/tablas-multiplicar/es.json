@@ -1,0 +1,477 @@
+{
+  "title": "Tablas de multiplicar",
+  "description": "Repaso de la tabla de multiplicar. Cada pregunta indica en qué tabla fallaste, para poder repasar sólo esa.",
+  "category": "Matemáticas",
+  "minAge": 6,
+  "timeless": false,
+  "questions": [
+    {
+      "id": "01",
+      "text": "3 x 4 =",
+      "type": "single",
+      "explanation": "<p>Multiplicar es sumar el mismo número varias veces: 3 x 4 = 4 + 4 + 4 = 12.</p>",
+      "topics": [
+        "tabla-del-4"
+      ],
+      "answers": [
+        {
+          "id": "a",
+          "type": "text",
+          "content": "7",
+          "value": 0,
+          "feedback": "No: 3 x 4 son 3 veces 4, es decir 12."
+        },
+        {
+          "id": "b",
+          "type": "text",
+          "content": "12",
+          "value": 1,
+          "feedback": "Correcto: 3 x 4 = 12."
+        },
+        {
+          "id": "c",
+          "type": "text",
+          "content": "8",
+          "value": 0,
+          "feedback": "No: 3 x 4 son 3 veces 4, es decir 12."
+        },
+        {
+          "id": "d",
+          "type": "text",
+          "content": "15",
+          "value": 0,
+          "feedback": "No: 3 x 4 son 3 veces 4, es decir 12."
+        }
+      ]
+    },
+    {
+      "id": "02",
+      "text": "4 x 6 =",
+      "type": "single",
+      "explanation": "<p>Multiplicar es sumar el mismo número varias veces: 4 x 6 = 6 + 6 + 6 + 6 = 24.</p>",
+      "topics": [
+        "tabla-del-6"
+      ],
+      "answers": [
+        {
+          "id": "a",
+          "type": "text",
+          "content": "28",
+          "value": 0,
+          "feedback": "No: 4 x 6 son 4 veces 6, es decir 24."
+        },
+        {
+          "id": "b",
+          "type": "text",
+          "content": "18",
+          "value": 0,
+          "feedback": "No: 4 x 6 son 4 veces 6, es decir 24."
+        },
+        {
+          "id": "c",
+          "type": "text",
+          "content": "10",
+          "value": 0,
+          "feedback": "No: 4 x 6 son 4 veces 6, es decir 24."
+        },
+        {
+          "id": "d",
+          "type": "text",
+          "content": "24",
+          "value": 1,
+          "feedback": "Correcto: 4 x 6 = 24."
+        }
+      ]
+    },
+    {
+      "id": "03",
+      "text": "6 x 7 =",
+      "type": "single",
+      "explanation": "<p>Multiplicar es sumar el mismo número varias veces: 6 x 7 = 7 + 7 + 7 + 7 + 7 + 7 = 42.</p>",
+      "topics": [
+        "tabla-del-7"
+      ],
+      "answers": [
+        {
+          "id": "a",
+          "type": "text",
+          "content": "13",
+          "value": 0,
+          "feedback": "No: 6 x 7 son 6 veces 7, es decir 42."
+        },
+        {
+          "id": "b",
+          "type": "text",
+          "content": "42",
+          "value": 1,
+          "feedback": "Correcto: 6 x 7 = 42."
+        },
+        {
+          "id": "c",
+          "type": "text",
+          "content": "35",
+          "value": 0,
+          "feedback": "No: 6 x 7 son 6 veces 7, es decir 42."
+        },
+        {
+          "id": "d",
+          "type": "text",
+          "content": "48",
+          "value": 0,
+          "feedback": "No: 6 x 7 son 6 veces 7, es decir 42."
+        }
+      ]
+    },
+    {
+      "id": "04",
+      "text": "7 x 8 =",
+      "type": "single",
+      "explanation": "<p>Multiplicar es sumar el mismo número varias veces: 7 x 8 = 8 + 8 + 8 + 8 + 8 + 8 + 8 = 56.</p>",
+      "topics": [
+        "tabla-del-8"
+      ],
+      "answers": [
+        {
+          "id": "a",
+          "type": "text",
+          "content": "48",
+          "value": 0,
+          "feedback": "No: 7 x 8 son 7 veces 8, es decir 56."
+        },
+        {
+          "id": "b",
+          "type": "text",
+          "content": "56",
+          "value": 1,
+          "feedback": "Correcto: 7 x 8 = 56."
+        },
+        {
+          "id": "c",
+          "type": "text",
+          "content": "15",
+          "value": 0,
+          "feedback": "No: 7 x 8 son 7 veces 8, es decir 56."
+        },
+        {
+          "id": "d",
+          "type": "text",
+          "content": "63",
+          "value": 0,
+          "feedback": "No: 7 x 8 son 7 veces 8, es decir 56."
+        }
+      ]
+    },
+    {
+      "id": "05",
+      "text": "8 x 9 =",
+      "type": "single",
+      "explanation": "<p>Multiplicar es sumar el mismo número varias veces: 8 x 9 = 9 + 9 + 9 + 9 + 9 + 9 + 9 + 9 = 72.</p>",
+      "topics": [
+        "tabla-del-9"
+      ],
+      "answers": [
+        {
+          "id": "a",
+          "type": "text",
+          "content": "72",
+          "value": 1,
+          "feedback": "Correcto: 8 x 9 = 72."
+        },
+        {
+          "id": "b",
+          "type": "text",
+          "content": "80",
+          "value": 0,
+          "feedback": "No: 8 x 9 son 8 veces 9, es decir 72."
+        },
+        {
+          "id": "c",
+          "type": "text",
+          "content": "17",
+          "value": 0,
+          "feedback": "No: 8 x 9 son 8 veces 9, es decir 72."
+        },
+        {
+          "id": "d",
+          "type": "text",
+          "content": "63",
+          "value": 0,
+          "feedback": "No: 8 x 9 son 8 veces 9, es decir 72."
+        }
+      ]
+    },
+    {
+      "id": "06",
+      "text": "9 x 6 =",
+      "type": "single",
+      "explanation": "<p>Multiplicar es sumar el mismo número varias veces: 9 x 6 = 6 + 6 + 6 + 6 + 6 + 6 + 6 + 6 + 6 = 54.</p>",
+      "topics": [
+        "tabla-del-6"
+      ],
+      "answers": [
+        {
+          "id": "a",
+          "type": "text",
+          "content": "15",
+          "value": 0,
+          "feedback": "No: 9 x 6 son 9 veces 6, es decir 54."
+        },
+        {
+          "id": "b",
+          "type": "text",
+          "content": "48",
+          "value": 0,
+          "feedback": "No: 9 x 6 son 9 veces 6, es decir 54."
+        },
+        {
+          "id": "c",
+          "type": "text",
+          "content": "63",
+          "value": 0,
+          "feedback": "No: 9 x 6 son 9 veces 6, es decir 54."
+        },
+        {
+          "id": "d",
+          "type": "text",
+          "content": "54",
+          "value": 1,
+          "feedback": "Correcto: 9 x 6 = 54."
+        }
+      ]
+    },
+    {
+      "id": "07",
+      "text": "5 x 7 =",
+      "type": "single",
+      "explanation": "<p>Multiplicar es sumar el mismo número varias veces: 5 x 7 = 7 + 7 + 7 + 7 + 7 = 35.</p>",
+      "topics": [
+        "tabla-del-7"
+      ],
+      "answers": [
+        {
+          "id": "a",
+          "type": "text",
+          "content": "12",
+          "value": 0,
+          "feedback": "No: 5 x 7 son 5 veces 7, es decir 35."
+        },
+        {
+          "id": "b",
+          "type": "text",
+          "content": "40",
+          "value": 0,
+          "feedback": "No: 5 x 7 son 5 veces 7, es decir 35."
+        },
+        {
+          "id": "c",
+          "type": "text",
+          "content": "35",
+          "value": 1,
+          "feedback": "Correcto: 5 x 7 = 35."
+        },
+        {
+          "id": "d",
+          "type": "text",
+          "content": "28",
+          "value": 0,
+          "feedback": "No: 5 x 7 son 5 veces 7, es decir 35."
+        }
+      ]
+    },
+    {
+      "id": "08",
+      "text": "6 x 8 =",
+      "type": "single",
+      "explanation": "<p>Multiplicar es sumar el mismo número varias veces: 6 x 8 = 8 + 8 + 8 + 8 + 8 + 8 = 48.</p>",
+      "topics": [
+        "tabla-del-8"
+      ],
+      "answers": [
+        {
+          "id": "a",
+          "type": "text",
+          "content": "48",
+          "value": 1,
+          "feedback": "Correcto: 6 x 8 = 48."
+        },
+        {
+          "id": "b",
+          "type": "text",
+          "content": "40",
+          "value": 0,
+          "feedback": "No: 6 x 8 son 6 veces 8, es decir 48."
+        },
+        {
+          "id": "c",
+          "type": "text",
+          "content": "14",
+          "value": 0,
+          "feedback": "No: 6 x 8 son 6 veces 8, es decir 48."
+        },
+        {
+          "id": "d",
+          "type": "text",
+          "content": "54",
+          "value": 0,
+          "feedback": "No: 6 x 8 son 6 veces 8, es decir 48."
+        }
+      ]
+    },
+    {
+      "id": "09",
+      "text": "7 x 9 =",
+      "type": "single",
+      "explanation": "<p>Multiplicar es sumar el mismo número varias veces: 7 x 9 = 9 + 9 + 9 + 9 + 9 + 9 + 9 = 63.</p>",
+      "topics": [
+        "tabla-del-9"
+      ],
+      "answers": [
+        {
+          "id": "a",
+          "type": "text",
+          "content": "63",
+          "value": 1,
+          "feedback": "Correcto: 7 x 9 = 63."
+        },
+        {
+          "id": "b",
+          "type": "text",
+          "content": "70",
+          "value": 0,
+          "feedback": "No: 7 x 9 son 7 veces 9, es decir 63."
+        },
+        {
+          "id": "c",
+          "type": "text",
+          "content": "54",
+          "value": 0,
+          "feedback": "No: 7 x 9 son 7 veces 9, es decir 63."
+        },
+        {
+          "id": "d",
+          "type": "text",
+          "content": "16",
+          "value": 0,
+          "feedback": "No: 7 x 9 son 7 veces 9, es decir 63."
+        }
+      ]
+    },
+    {
+      "id": "10",
+      "text": "4 x 8 =",
+      "type": "single",
+      "explanation": "<p>Multiplicar es sumar el mismo número varias veces: 4 x 8 = 8 + 8 + 8 + 8 = 32.</p>",
+      "topics": [
+        "tabla-del-8"
+      ],
+      "answers": [
+        {
+          "id": "a",
+          "type": "text",
+          "content": "12",
+          "value": 0,
+          "feedback": "No: 4 x 8 son 4 veces 8, es decir 32."
+        },
+        {
+          "id": "b",
+          "type": "text",
+          "content": "24",
+          "value": 0,
+          "feedback": "No: 4 x 8 son 4 veces 8, es decir 32."
+        },
+        {
+          "id": "c",
+          "type": "text",
+          "content": "36",
+          "value": 0,
+          "feedback": "No: 4 x 8 son 4 veces 8, es decir 32."
+        },
+        {
+          "id": "d",
+          "type": "text",
+          "content": "32",
+          "value": 1,
+          "feedback": "Correcto: 4 x 8 = 32."
+        }
+      ]
+    },
+    {
+      "id": "11",
+      "text": "8 x 3 =",
+      "type": "single",
+      "explanation": "<p>Multiplicar es sumar el mismo número varias veces: 8 x 3 = 3 + 3 + 3 + 3 + 3 + 3 + 3 + 3 = 24.</p>",
+      "topics": [
+        "tabla-del-3"
+      ],
+      "answers": [
+        {
+          "id": "a",
+          "type": "text",
+          "content": "24",
+          "value": 1,
+          "feedback": "Correcto: 8 x 3 = 24."
+        },
+        {
+          "id": "b",
+          "type": "text",
+          "content": "32",
+          "value": 0,
+          "feedback": "No: 8 x 3 son 8 veces 3, es decir 24."
+        },
+        {
+          "id": "c",
+          "type": "text",
+          "content": "21",
+          "value": 0,
+          "feedback": "No: 8 x 3 son 8 veces 3, es decir 24."
+        },
+        {
+          "id": "d",
+          "type": "text",
+          "content": "11",
+          "value": 0,
+          "feedback": "No: 8 x 3 son 8 veces 3, es decir 24."
+        }
+      ]
+    },
+    {
+      "id": "12",
+      "text": "9 x 4 =",
+      "type": "single",
+      "explanation": "<p>Multiplicar es sumar el mismo número varias veces: 9 x 4 = 4 + 4 + 4 + 4 + 4 + 4 + 4 + 4 + 4 = 36.</p>",
+      "topics": [
+        "tabla-del-4"
+      ],
+      "answers": [
+        {
+          "id": "a",
+          "type": "text",
+          "content": "36",
+          "value": 1,
+          "feedback": "Correcto: 9 x 4 = 36."
+        },
+        {
+          "id": "b",
+          "type": "text",
+          "content": "32",
+          "value": 0,
+          "feedback": "No: 9 x 4 son 9 veces 4, es decir 36."
+        },
+        {
+          "id": "c",
+          "type": "text",
+          "content": "45",
+          "value": 0,
+          "feedback": "No: 9 x 4 son 9 veces 4, es decir 36."
+        },
+        {
+          "id": "d",
+          "type": "text",
+          "content": "13",
+          "value": 0,
+          "feedback": "No: 9 x 4 son 9 veces 4, es decir 36."
+        }
+      ]
+    }
+  ]
+}

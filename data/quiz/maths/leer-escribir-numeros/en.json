@@ -1,0 +1,99 @@
+{
+  "title": "Reading and writing numbers up to six digits",
+  "description": "From digits to words and from words to digits. What people actually write is accepted: with or without \"and\", with or without the hyphen, with or without the thousands comma.",
+  "category": "Maths",
+  "minAge": 6,
+  "timeless": false,
+  "questions": [
+    {
+      "id": "01",
+      "text": "Write in digits: thirty-four thousand two hundred.",
+      "type": "open",
+      "topics": ["reading-numbers", "words-to-digits"],
+      "hints": ["Thirty-four thousands, and then two hundred"],
+      "explanation": "<p><strong>34,200</strong>. The thousands come first: 34 thousands are 34,000, plus 200.</p>",
+      "grader": { "kind": "numeric", "expected": 34200, "tolerance": 0 }
+    },
+    {
+      "id": "02",
+      "text": "Write the number 34,200 in words.",
+      "type": "open",
+      "topics": ["reading-numbers", "digits-to-words"],
+      "hints": ["Thousands first, then hundreds"],
+      "explanation": "<p>Thirty-four thousand two hundred. The hyphen and the word \"and\" are both accepted, because both are written in practice.</p>",
+      "grader": { "kind": "regex", "pattern": "thirty[ -]?four thousand,? ?(and )?two hundred" }
+    },
+    {
+      "id": "03",
+      "text": "Write in digits: one hundred and five thousand and six.",
+      "type": "open",
+      "topics": ["reading-numbers", "internal-zeros"],
+      "hints": ["Watch the zeros nobody says out loud"],
+      "explanation": "<p><strong>105,006</strong>. The ten thousands, hundreds and tens are not named, and a zero holds each of their places.</p>",
+      "grader": { "kind": "numeric", "expected": 105006, "tolerance": 0 }
+    },
+    {
+      "id": "04",
+      "text": "Write the number 7,015 in words.",
+      "type": "open",
+      "topics": ["reading-numbers", "digits-to-words"],
+      "hints": ["Seven thousands, and fifteen"],
+      "explanation": "<p>Seven thousand and fifteen. The teens have their own names: not \"ten five\".</p>",
+      "grader": { "kind": "regex", "pattern": "seven thousand,? ?(and )?fifteen" }
+    },
+    {
+      "id": "05",
+      "text": "Write the number 900,040 in words.",
+      "type": "open",
+      "topics": ["reading-numbers", "digits-to-words"],
+      "hints": ["Nine hundred thousands, and then forty"],
+      "explanation": "<p>Nine hundred thousand and forty.</p>",
+      "grader": { "kind": "regex", "pattern": "nine hundred thousand,? ?(and )?forty" }
+    },
+    {
+      "id": "06",
+      "text": "Write in digits: two hundred thousand five hundred and twenty.",
+      "type": "open",
+      "topics": ["reading-numbers", "words-to-digits"],
+      "hints": ["Two hundred thousands and five hundred and twenty"],
+      "explanation": "<p><strong>200,520</strong>.</p>",
+      "grader": { "kind": "numeric", "expected": 200520, "tolerance": 0 }
+    },
+    {
+      "id": "07",
+      "text": "Which is larger, eighty thousand and ninety or eighty thousand and nine? Write it in digits.",
+      "type": "open",
+      "topics": ["reading-numbers", "comparing"],
+      "hints": ["Write both in digits before comparing"],
+      "explanation": "<p>Eighty thousand and ninety is 80,090 and eighty thousand and nine is 80,009, so the larger is <strong>80,090</strong>. They sound alike; written down they do not.</p>",
+      "grader": { "kind": "numeric", "expected": 80090, "tolerance": 0 }
+    },
+    {
+      "id": "08",
+      "text": "Write the number 15,000 in words.",
+      "type": "open",
+      "topics": ["reading-numbers", "digits-to-words"],
+      "hints": ["Fifteen thousands"],
+      "explanation": "<p>Fifteen thousand. Not \"fifteen thousands\".</p>",
+      "grader": { "kind": "regex", "pattern": "fifteen thousand" }
+    },
+    {
+      "id": "09",
+      "text": "Write in digits the largest six-digit number that repeats no digit.",
+      "type": "open",
+      "topics": ["reading-numbers", "reasoning"],
+      "hints": ["Start with the highest digit and work down"],
+      "explanation": "<p><strong>987,654</strong>: the highest digits go in the places that are worth most.</p>",
+      "grader": { "kind": "numeric", "expected": 987654, "tolerance": 0 }
+    },
+    {
+      "id": "10",
+      "text": "A town has 12,480 inhabitants. Write that figure in words.",
+      "type": "open",
+      "topics": ["reading-numbers", "in-context"],
+      "hints": ["Twelve thousands, four hundred and eighty"],
+      "explanation": "<p>Twelve thousand four hundred and eighty inhabitants.</p>",
+      "grader": { "kind": "regex", "pattern": "twelve thousand,? ?four hundred (and )?eighty" }
+    }
+  ]
+}

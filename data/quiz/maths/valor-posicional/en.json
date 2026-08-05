@@ -1,0 +1,112 @@
+{
+  "title": "Place value up to hundreds of thousands",
+  "description": "What each digit is worth according to the place it occupies. The answer is written, not chosen: each question says which place the mistake was in, so only that one needs revising.",
+  "category": "Maths",
+  "minAge": 6,
+  "timeless": false,
+  "questions": [
+    {
+      "id": "01",
+      "text": "In the number 4,573, how many tens are there in the underlined digit, the 7?",
+      "type": "open",
+      "topics": ["place-value", "tens"],
+      "hints": ["The 7 is in the second place counting from the right"],
+      "explanation": "<p>The 7 occupies the tens place, so there are <strong>7 tens</strong>, that is 70 units.</p>",
+      "grader": { "kind": "numeric", "expected": 7, "tolerance": 0 }
+    },
+    {
+      "id": "02",
+      "text": "What value does the 5 represent in the number 4,573?",
+      "type": "open",
+      "topics": ["place-value", "hundreds"],
+      "hints": ["It is not worth 5, it is worth 5 of something bigger"],
+      "explanation": "<p>The 5 is in the hundreds, so it represents <strong>500</strong>. The digit is 5 and its value is 500: two different questions.</p>",
+      "grader": { "kind": "numeric", "expected": 500, "tolerance": 0 }
+    },
+    {
+      "id": "03",
+      "text": "Write in digits: 3 hundreds, 0 tens and 8 units.",
+      "type": "open",
+      "topics": ["place-value", "composing"],
+      "hints": ["Zero occupies its place too"],
+      "explanation": "<p><strong>308</strong>. Without the zero it would read 38, which is another number: the zero holds the tens place.</p>",
+      "grader": { "kind": "numeric", "expected": 308, "tolerance": 0 }
+    },
+    {
+      "id": "04",
+      "text": "Break 6,204 into the sum of its place values, separated by the + sign.",
+      "type": "open",
+      "input": "maths",
+      "topics": ["place-value", "decomposing"],
+      "hints": ["Start with the thousands and work down"],
+      "explanation": "<p>6,204 = <strong>6000 + 200 + 4</strong>. The tens do not appear because there are 0 tens.</p>",
+      "grader": [
+        { "kind": "expression", "expected": "6000+200+4", "requireForm": true },
+        {
+          "kind": "numeric",
+          "expected": 6204,
+          "tolerance": 0,
+          "score": 0.5,
+          "feedback": "The number is right, but the question asked for the decomposition, not the total."
+        }
+      ]
+    },
+    {
+      "id": "05",
+      "text": "Which digit occupies the thousands place in 172,605?",
+      "type": "open",
+      "topics": ["place-value", "thousands"],
+      "hints": ["Count four places from the right"],
+      "explanation": "<p>Counting from the right: 5 units, 0 tens, 6 hundreds and <strong>2 thousands</strong>.</p>",
+      "grader": { "kind": "numeric", "expected": 2, "tolerance": 0 }
+    },
+    {
+      "id": "06",
+      "text": "What is the name of the place the 1 occupies in 172,605?",
+      "type": "open",
+      "topics": ["place-value", "vocabulary"],
+      "hints": ["It is the highest place in this number"],
+      "explanation": "<p>Hundreds of thousands: the 1 represents 100,000.</p>",
+      "grader": {
+        "kind": "exact",
+        "expected": ["hundreds of thousands", "hundred thousands", "hundred thousand"]
+      }
+    },
+    {
+      "id": "07",
+      "text": "Put these in order from smallest to largest, separated by commas: 4507, 4057, 4570.",
+      "type": "open",
+      "topics": ["place-value", "comparing"],
+      "hints": ["Compare digit by digit starting from the left"],
+      "explanation": "<p>All three have 4 thousands, so the next digit decides: 0 &lt; 5, and then 07 &lt; 70. The order is <strong>4057, 4507, 4570</strong>.</p>",
+      "grader": { "kind": "sequence", "expected": ["4057", "4507", "4570"] }
+    },
+    {
+      "id": "08",
+      "text": "If you take all the hundreds away from 3,480, what number is left?",
+      "type": "open",
+      "topics": ["place-value", "reasoning"],
+      "hints": ["3,480 has 4 hundreds, and each hundred is worth 100"],
+      "explanation": "<p>It has 4 hundreds, worth 400: 3480 − 400 = <strong>3080</strong>.</p>",
+      "grader": { "kind": "numeric", "expected": 3080, "tolerance": 0 }
+    },
+    {
+      "id": "09",
+      "text": "How many units are 3 thousands?",
+      "type": "open",
+      "topics": ["place-value", "equivalences"],
+      "hints": ["One thousand is a thousand units"],
+      "explanation": "<p>3 × 1000 = <strong>3000</strong> units.</p>",
+      "grader": { "kind": "numeric", "expected": 3000, "tolerance": 0 }
+    },
+    {
+      "id": "10",
+      "text": "Write the largest number you can with the digits 5, 0 and 9, using each one once.",
+      "type": "open",
+      "topics": ["place-value", "reasoning"],
+      "hints": ["The largest digit has to occupy the highest place"],
+      "explanation": "<p><strong>950</strong>. The 9 goes in the hundreds because that is where it is worth most, and the 0 goes last because a number cannot start with it.</p>",
+      "grader": { "kind": "numeric", "expected": 950, "tolerance": 0 }
+    }
+  ]
+}

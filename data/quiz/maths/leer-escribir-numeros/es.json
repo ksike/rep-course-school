@@ -1,0 +1,99 @@
+{
+  "title": "Leer y escribir números hasta seis cifras",
+  "description": "De cifra a palabra y de palabra a cifra. Se admite cómo se escribe de verdad: con conjunción o sin ella, con tildes o sin ellas, y con o sin el punto de los millares.",
+  "category": "Matemáticas",
+  "minAge": 6,
+  "timeless": false,
+  "questions": [
+    {
+      "id": "01",
+      "text": "Escribe con cifras: treinta y cuatro mil doscientos.",
+      "type": "open",
+      "topics": ["lectura-de-numeros", "de-palabra-a-cifra"],
+      "hints": ["Treinta y cuatro millares, y luego doscientos"],
+      "explanation": "<p><strong>34 200</strong>. Los millares van delante: 34 millares son 34 000, más 200.</p>",
+      "grader": { "kind": "numeric", "expected": 34200, "tolerance": 0 }
+    },
+    {
+      "id": "02",
+      "text": "Escribe con palabras el número 34 200.",
+      "type": "open",
+      "topics": ["lectura-de-numeros", "de-cifra-a-palabra"],
+      "hints": ["Primero los millares, después las centenas"],
+      "explanation": "<p>Treinta y cuatro mil doscientos. Se acepta con la conjunción o sin ella, porque las dos formas se leen igual.</p>",
+      "grader": { "kind": "regex", "pattern": "treinta y? ?cuatro mil,? ?doscientos" }
+    },
+    {
+      "id": "03",
+      "text": "Escribe con cifras: ciento cinco mil seis.",
+      "type": "open",
+      "topics": ["lectura-de-numeros", "ceros-intermedios"],
+      "hints": ["Ojo con los ceros que no se nombran"],
+      "explanation": "<p><strong>105 006</strong>. No se nombran las decenas de millar, las centenas ni las decenas, y en su sitio va un cero cada una.</p>",
+      "grader": { "kind": "numeric", "expected": 105006, "tolerance": 0 }
+    },
+    {
+      "id": "04",
+      "text": "Escribe con palabras el número 7 015.",
+      "type": "open",
+      "topics": ["lectura-de-numeros", "de-cifra-a-palabra"],
+      "hints": ["Siete millares, y quince"],
+      "explanation": "<p>Siete mil quince. Del 11 al 15 tienen nombre propio: no se dice \"diez y cinco\".</p>",
+      "grader": { "kind": "regex", "pattern": "siete mil,? ?quince" }
+    },
+    {
+      "id": "05",
+      "text": "Escribe con palabras el número 900 040.",
+      "type": "open",
+      "topics": ["lectura-de-numeros", "de-cifra-a-palabra"],
+      "hints": ["Novecientos millares, y luego cuarenta"],
+      "explanation": "<p>Novecientos mil cuarenta. Se admite con tildes o sin ellas.</p>",
+      "grader": { "kind": "regex", "pattern": "novecientos mil,? ?cuarenta" }
+    },
+    {
+      "id": "06",
+      "text": "Escribe con cifras: doscientos mil quinientos veinte.",
+      "type": "open",
+      "topics": ["lectura-de-numeros", "de-palabra-a-cifra"],
+      "hints": ["Doscientos millares y quinientos veinte"],
+      "explanation": "<p><strong>200 520</strong>.</p>",
+      "grader": { "kind": "numeric", "expected": 200520, "tolerance": 0 }
+    },
+    {
+      "id": "07",
+      "text": "¿Qué número es mayor, ochenta mil noventa u ochenta mil nueve? Escríbelo con cifras.",
+      "type": "open",
+      "topics": ["lectura-de-numeros", "comparar"],
+      "hints": ["Escribe los dos con cifras antes de comparar"],
+      "explanation": "<p>Ochenta mil noventa es 80 090 y ochenta mil nueve es 80 009, así que el mayor es <strong>80 090</strong>. Al oído se parecen; escritos no.</p>",
+      "grader": { "kind": "numeric", "expected": 80090, "tolerance": 0 }
+    },
+    {
+      "id": "08",
+      "text": "Escribe con palabras el número 15 000.",
+      "type": "open",
+      "topics": ["lectura-de-numeros", "de-cifra-a-palabra"],
+      "hints": ["Quince millares"],
+      "explanation": "<p>Quince mil. No se dice \"quince miles\".</p>",
+      "grader": { "kind": "regex", "pattern": "quince mil" }
+    },
+    {
+      "id": "09",
+      "text": "Escribe con cifras el número mayor de seis cifras que se puede escribir sin repetir ninguna.",
+      "type": "open",
+      "topics": ["lectura-de-numeros", "razonar"],
+      "hints": ["Empieza por la cifra más alta y ve bajando"],
+      "explanation": "<p><strong>987 654</strong>: se colocan las cifras más altas en los lugares que más valen.</p>",
+      "grader": { "kind": "numeric", "expected": 987654, "tolerance": 0 }
+    },
+    {
+      "id": "10",
+      "text": "Un pueblo tiene 12 480 habitantes. Escribe esa cantidad con palabras.",
+      "type": "open",
+      "topics": ["lectura-de-numeros", "contexto"],
+      "hints": ["Doce millares, cuatrocientos ochenta"],
+      "explanation": "<p>Doce mil cuatrocientos ochenta habitantes.</p>",
+      "grader": { "kind": "regex", "pattern": "doce mil,? ?cuatrocientos ochenta" }
+    }
+  ]
+}

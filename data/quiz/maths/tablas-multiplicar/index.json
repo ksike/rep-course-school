@@ -1,0 +1,14 @@
+{
+  "limit": 12,
+  "quota": 10,
+  "time": 6,
+  "mode": [
+    "practice",
+    "training",
+    "exam"
+  ],
+  "language": [
+    "es",
+    "en"
+  ]
+}

@@ -60,13 +60,14 @@
       },
       "size": {
         "questions": 12,
-        "bytes": 24203,
+        "bytes": 24233,
         "files": 3
       },
       "locales": [
-        "es",
-        "en"
-      ]
+        "en",
+        "es"
+      ],
+      "integrity": "sha256-tJDTAd+Twsn1x4im5c7vOnNeyajnF9pSH8+1oLbEUP8="
     },
     {
       "type": "quiz",
@@ -98,9 +99,10 @@
         "files": 3
       },
       "locales": [
-        "es",
-        "en"
-      ]
+        "en",
+        "es"
+      ],
+      "integrity": "sha256-iWxoHCba1GWbdgqSAbsEdwxPWmxxRcyVlmBtFHOeXfQ="
     },
     {
       "type": "quiz",
@@ -132,9 +134,10 @@
         "files": 3
       },
       "locales": [
-        "es",
-        "en"
-      ]
+        "en",
+        "es"
+      ],
+      "integrity": "sha256-nHFwpMwpcFBfKjl0Jg8aF6Tv7i+KOs9ftbEoi5WgGBY="
     },
     {
       "type": "quiz",
@@ -166,9 +169,45 @@
         "files": 3
       },
       "locales": [
+        "en",
+        "es"
+      ],
+      "integrity": "sha256-Fy+raMb2zYSzt96Hb23QElBZ8XEa9l5xbpivLZ+sCtg="
+    },
+    {
+      "type": "game",
+      "name": "maths-times-tables-match",
+      "title": {
+        "es": "Emparejar tablas de multiplicar",
+        "en": "Times tables match"
+      },
+      "description": {
+        "es": "Empareja cada multiplicación con su resultado. Las tablas del 2 al 9, en series cortas para practicar a diario.",
+        "en": "Match each multiplication with its result. Tables from 2 to 9, in short runs for daily practice."
+      },
+      "version": "0.1.0",
+      "path": "data/game/maths/times-tables-match",
+      "category": "maths",
+      "tags": [
+        "maths",
+        "primary",
+        "multiplication",
+        "game"
+      ],
+      "locales": [
         "es",
         "en"
-      ]
+      ],
+      "audience": {
+        "minAge": 6
+      },
+      "integrity": "sha256-Z6XRQ+nM15eejKwTqFo+IbdYjIZReOSrNNjWd3yVLBM=",
+      "size": {
+        "bytes": 987,
+        "files": 1
+      }
     }
-  ]
+  ],
+  "generatedAt": "2026-08-06T13:33:50.456Z",
+  "generatedBy": "coach-pack-cli/0.1.0"
 }

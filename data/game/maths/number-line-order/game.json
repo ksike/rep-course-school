@@ -1,0 +1,25 @@
+{
+  "specVersion": 1,
+  "title": {
+    "es": "Ordenar en la recta numérica",
+    "en": "Order on the number line"
+  },
+  "description": {
+    "es": "Coloca decimales, fracciones y negativos de menor a mayor. Cada uno en su sitio cuenta, así que acertar la mitad ya dice algo.",
+    "en": "Put decimals, fractions and negatives in order from smallest to largest. Each one in its right place counts, so getting half right already says something."
+  },
+  "category": "maths",
+  "tier": "a",
+  "mechanic": "order",
+  "locales": ["es", "en"],
+  "minAge": 9,
+  "maxAge": 14,
+  "tags": ["number-sense", "fractions", "decimals", "primary"],
+  "scoring": { "maxScore": 100, "passScore": 70, "verifiable": true },
+  "duration": { "estimatedMs": 120000 },
+  "data": {
+    "items": ["-2", "-0.5", "0", "1/4", "0.75", "1", "3/2", "2.25", "7/2"],
+    "strict": false
+  },
+  "license": "CC-BY-4.0"
+}

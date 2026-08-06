@@ -206,8 +206,41 @@
         "bytes": 987,
         "files": 1
       }
+    },
+    {
+      "type": "game",
+      "name": "maths-number-line-order",
+      "title": {
+        "es": "Ordenar en la recta numérica",
+        "en": "Order on the number line"
+      },
+      "description": {
+        "es": "Coloca decimales, fracciones y negativos de menor a mayor.",
+        "en": "Put decimals, fractions and negatives in order from smallest to largest."
+      },
+      "version": "0.1.0",
+      "path": "data/game/maths/number-line-order",
+      "category": "maths",
+      "tags": [
+        "maths",
+        "primary",
+        "number-sense",
+        "game"
+      ],
+      "locales": [
+        "es",
+        "en"
+      ],
+      "audience": {
+        "minAge": 9
+      },
+      "integrity": "sha256-JyFwAJ64+pac8+W46Flg0QLVfrsSnXB4VVRHxA6NxNY=",
+      "size": {
+        "bytes": 887,
+        "files": 1
+      }
     }
   ],
-  "generatedAt": "2026-08-06T19:07:04.011Z",
+  "generatedAt": "2026-08-06T23:19:33.032Z",
   "generatedBy": "coach-pack-cli/0.1.0"
 }

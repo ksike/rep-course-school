@@ -37,7 +37,7 @@
   "packages": [
     {
       "type": "quiz",
-      "name": "maths-tablas-multiplicar",
+      "name": "maths-times-tables",
       "title": {
         "es": "Tablas de multiplicar",
         "en": "Multiplication tables"
@@ -47,7 +47,7 @@
         "en": "Multiplication table practice, one question per product, with an explanation and per-answer feedback."
       },
       "version": "0.1.0",
-      "path": "data/quiz/maths/tablas-multiplicar",
+      "path": "data/quiz/maths/times-tables",
       "category": "maths",
       "tags": [
         "maths",
@@ -71,7 +71,7 @@
     },
     {
       "type": "quiz",
-      "name": "maths-valor-posicional",
+      "name": "maths-place-value",
       "title": {
         "es": "Valor posicional hasta las centenas de millar",
         "en": "Place value up to hundreds of thousands"
@@ -81,7 +81,7 @@
         "en": "What each digit is worth according to its place. The answer is written, and the grader says which place the mistake was in."
       },
       "version": "0.1.0",
-      "path": "data/quiz/maths/valor-posicional",
+      "path": "data/quiz/maths/place-value",
       "category": "maths",
       "tags": [
         "maths",
@@ -106,7 +106,7 @@
     },
     {
       "type": "quiz",
-      "name": "maths-leer-escribir-numeros",
+      "name": "maths-reading-numbers",
       "title": {
         "es": "Leer y escribir números hasta seis cifras",
         "en": "Reading and writing numbers up to six digits"
@@ -116,7 +116,7 @@
         "en": "From digits to words and back, accepting what people actually write: with or without \"and\", with or without the hyphen."
       },
       "version": "0.1.0",
-      "path": "data/quiz/maths/leer-escribir-numeros",
+      "path": "data/quiz/maths/reading-numbers",
       "category": "maths",
       "tags": [
         "maths",
@@ -141,7 +141,7 @@
     },
     {
       "type": "quiz",
-      "name": "maths-algebra-inicial",
+      "name": "maths-early-algebra",
       "title": {
         "es": "Álgebra inicial: factorizar, simplificar y resolver",
         "en": "Early algebra: factorising, simplifying and solving"
@@ -151,7 +151,7 @@
         "en": "Common factors, simplifying algebraic fractions and simple equations. Any equivalent form is accepted unless the question asks for a particular one."
       },
       "version": "0.1.0",
-      "path": "data/quiz/maths/algebra-inicial",
+      "path": "data/quiz/maths/early-algebra",
       "category": "maths",
       "tags": [
         "maths",
@@ -208,6 +208,6 @@
       }
     }
   ],
-  "generatedAt": "2026-08-06T13:33:50.456Z",
+  "generatedAt": "2026-08-06T19:07:04.011Z",
   "generatedBy": "coach-pack-cli/0.1.0"
 }

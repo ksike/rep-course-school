@@ -1,0 +1,32 @@
+{
+  "specVersion": 1,
+  "title": {
+    "es": "Huecos de ortografía: b y v, g y j",
+    "en": "Spelling gaps: b and v, g and j"
+  },
+  "description": {
+    "es": "Completa las palabras que más se confunden al escribir. Las tildes no cuentan aquí, la letra sí.",
+    "en": "Complete the words people most often get wrong. Accents do not count here; the letter does."
+  },
+  "category": "language",
+  "tier": "a",
+  "mechanic": "fill",
+  "locales": ["es", "en"],
+  "minAge": 8,
+  "maxAge": 13,
+  "tags": ["spelling", "primary", "spanish"],
+  "scoring": { "maxScore": 100, "passScore": 70, "verifiable": true },
+  "duration": { "estimatedMs": 150000 },
+  "data": {
+    "text": "Ayer {{1}} a casa temprano y {{2}} la ventana porque {{3}} mucho viento. Mi hermana {{4}} un dibujo y luego {{5}} a jugar al parque.",
+    "gaps": [
+      { "accepts": ["volví", "volvi"], "hint": "v o b" },
+      { "accepts": ["abrí", "abri"], "hint": "b o v" },
+      { "accepts": ["hacía", "hacia"], "hint": "con h" },
+      { "accepts": ["dibujaba"], "hint": "j o g" },
+      { "accepts": ["bajamos", "bajó", "bajo"], "hint": "j o g" }
+    ],
+    "ignoreAccents": true
+  },
+  "license": "CC-BY-4.0"
+}

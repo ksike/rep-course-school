@@ -12,12 +12,30 @@
   "tier": "c",
   "entry": "dist/index.html",
   "apiVersion": 1,
-  "locales": ["es", "en"],
+  "locales": [
+    "es",
+    "en"
+  ],
   "minAge": 6,
-  "tags": ["arcade", "reflex", "spatial"],
+  "tags": [
+    "arcade",
+    "reflex",
+    "spatial"
+  ],
   "orientation": "portrait",
-  "scoring": { "maxScore": 20000, "passScore": 5000, "verifiable": false },
-  "duration": { "estimatedMs": 300000 },
-  "save": { "slots": 1 },
-  "license": "CC-BY-4.0"
+  "scoring": {
+    "maxScore": 20000,
+    "passScore": 5000,
+    "verifiable": false
+  },
+  "duration": {
+    "estimatedMs": 300000
+  },
+  "save": {
+    "slots": 1
+  },
+  "license": "CC-BY-4.0",
+  "capabilities": [
+    "data:user"
+  ]
 }

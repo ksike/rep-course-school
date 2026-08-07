@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Estación meteorológica</title>
+    <!--
+      A tool rather than a game: it has no score, so it never lands in a ranking, and it is listed under
+      Applications and not under Games. That is the whole of what `profile: "tool"` changes.
+
+      It is also the worked example of the parts a game does not need: a setting the reader fills in
+      (their town), a setting the channel fills in (the units), and a call to an external service that
+      the app cannot make itself — Open Coach makes it, from a URL written in the manifest.
+    -->
+    <link rel="stylesheet" href="/app/kit/v1/kit.css" />
+    <script src="/app/sdk/v1.js"></script>
+    <style>
+      body {
+        margin: 0;
+        padding: 1rem;
+        min-height: 100vh;
+      }
+
+      main {
+        max-width: 34rem;
+        margin: 0 auto;
+        display: grid;
+        gap: 0.75rem;
+      }
+
+      h1 {
+        margin: 0;
+        font-size: 1.25rem;
+      }
+
+      .place {
+        color: var(--coach-muted);
+        font-size: 0.85rem;
+        margin: 0.15rem 0 0;
+      }
+
+      .now {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+      }
+
+      .temp {
+        font-size: 2.75rem;
+        font-weight: 700;
+        font-variant-numeric: tabular-nums;
+        line-height: 1;
+      }
+
+      .facts {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(7rem, 1fr));
+        gap: 0.5rem;
+        margin: 0;
+      }
+
+      .fact {
+        border: 1px solid var(--coach-border);
+        border-radius: var(--coach-radius);
+        padding: 0.5rem 0.7rem;
+      }
+
+      .fact dt {
+        font-size: 0.68rem;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: var(--coach-muted);
+      }
+
+      .fact dd {
+        margin: 0.15rem 0 0;
+        font-size: 1.1rem;
+        font-weight: 600;
+        font-variant-numeric: tabular-nums;
+      }
+
+      /* The log is SVG so it scales and prints; a canvas would be a picture of a chart. */
+      #chart {
+        width: 100%;
+        height: 9rem;
+        overflow: visible;
+      }
+
+      #chart line {
+        stroke: var(--coach-border);
+      }
+
+      #chart polyline {
+        fill: none;
+        stroke: var(--coach-accent);
+        stroke-width: 2;
+        stroke-linejoin: round;
+      }
+
+      #chart circle {
+        fill: var(--coach-accent);
+      }
+
+      #chart text {
+        font-size: 9px;
+        fill: var(--coach-muted);
+      }
+
+      .row {
+        display: flex;
+        gap: 0.5rem;
+        align-items: center;
+      }
+
+      .message {
+        color: var(--coach-muted);
+        font-size: 0.9rem;
+      }
+
+      .message[data-kind="error"] {
+        color: #dc2626;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <div class="coach-panel">
+        <h1 id="title">Estación meteorológica</h1>
+        <p class="place" id="place">…</p>
+
+        <div class="now" style="margin-top: 0.75rem">
+          <span class="coach-icon" data-icon="sound-on" style="width: 2rem; height: 2rem; opacity: 0.5"></span>
+          <span class="temp" id="temp">—</span>
+        </div>
+
+        <dl class="facts" style="margin-top: 0.75rem">
+          <div class="fact"><dt id="l-humidity">Humedad</dt><dd id="humidity">—</dd></div>
+          <div class="fact"><dt id="l-wind">Viento</dt><dd id="wind">—</dd></div>
+          <div class="fact"><dt id="l-max">Máxima</dt><dd id="max">—</dd></div>
+          <div class="fact"><dt id="l-min">Mínima</dt><dd id="min">—</dd></div>
+        </dl>
+
+        <div class="row" style="margin-top: 0.9rem">
+          <button class="coach-button coach-button--primary" id="refresh" type="button">
+            <span class="coach-icon" data-icon="restart"></span>
+            <span id="refresh-text">Actualizar</span>
+          </button>
+          <button class="coach-button" id="note" type="button">
+            <span class="coach-icon" data-icon="save"></span>
+            <span id="note-text">Apuntar hoy</span>
+          </button>
+        </div>
+
+        <p class="message" id="message"></p>
+      </div>
+
+      <div class="coach-panel">
+        <div class="label" id="l-log" style="font-size: 0.68rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--coach-muted)">
+          Tus apuntes
+        </div>
+        <svg id="chart" viewBox="0 0 320 120" preserveAspectRatio="none" role="img" aria-label="Temperaturas apuntadas"></svg>
+        <p class="message" id="log-empty">Todavía no has apuntado ninguna temperatura.</p>
+      </div>
+    </main>
+
+    <script src="./weather-station.js"></script>
+  </body>
+</html>

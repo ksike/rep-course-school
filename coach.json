@@ -308,8 +308,41 @@
         "bytes": 24957,
         "files": 3
       }
+    },
+    {
+      "type": "app",
+      "profile": "tool",
+      "name": "science-weather-station",
+      "title": {
+        "es": "Estación meteorológica",
+        "en": "Weather station"
+      },
+      "description": {
+        "es": "Consulta el tiempo de tu localidad y apunta la temperatura cada día, para leer datos reales en clase de ciencias.",
+        "en": "Look up the weather where you are and note the temperature each day, for reading real data in a science lesson."
+      },
+      "version": "0.1.0",
+      "path": "data/app/science/weather-station",
+      "category": "science",
+      "tags": [
+        "science",
+        "geography",
+        "data"
+      ],
+      "locales": [
+        "es",
+        "en"
+      ],
+      "audience": {
+        "minAge": 8
+      },
+      "integrity": "sha256-M1l/q4zRKoKM4d1e3w24gIGHpuxGrTMy1R/Pcjyy8hg=",
+      "size": {
+        "bytes": 16005,
+        "files": 3
+      }
     }
   ],
-  "generatedAt": "2026-08-07T22:37:21.603Z",
+  "generatedAt": "2026-08-07T23:17:59.162Z",
   "generatedBy": "coach-pack-cli/0.1.0"
 }

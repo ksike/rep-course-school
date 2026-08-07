@@ -1,0 +1,61 @@
+{
+  "specVersion": 1,
+  "title": {
+    "es": "Estación meteorológica",
+    "en": "Weather station"
+  },
+  "description": {
+    "es": "Consulta el tiempo de tu localidad y apunta la temperatura cada día. Sirve para leer datos reales en clase de ciencias: la app no llega a internet por su cuenta, la llamada la hace Open Coach.",
+    "en": "Look up the weather where you are and note the temperature each day. Made for reading real data in a science lesson: the app never reaches the internet itself, Open Coach makes the call."
+  },
+  "category": "science",
+  "profile": "tool",
+  "tier": "c",
+  "entry": "dist/index.html",
+  "apiVersion": 1,
+  "locales": ["es", "en"],
+  "minAge": 8,
+  "tags": ["science", "geography", "data"],
+  "capabilities": ["data:user", "net:external", "config:read", "secrets:use"],
+  "externalOrigins": ["api.open-meteo.com", "geocoding-api.open-meteo.com"],
+  "config": [
+    {
+      "name": "city",
+      "label": "Tu localidad",
+      "help": "El nombre del pueblo o la ciudad cuyo tiempo quieres ver.",
+      "scope": "user",
+      "secret": false,
+      "required": true
+    },
+    {
+      "name": "units",
+      "label": "Unidades",
+      "help": "celsius o fahrenheit. Vale para todo el mundo en este canal.",
+      "scope": "install",
+      "secret": false,
+      "required": false
+    },
+    {
+      "name": "API_KEY",
+      "label": "Clave del servicio",
+      "help": "Sólo si tu proveedor la pide. Se guarda cifrada y la app no la recibe nunca.",
+      "scope": "install",
+      "secret": true,
+      "required": false
+    }
+  ],
+  "requests": [
+    {
+      "name": "geocode",
+      "method": "GET",
+      "url": "https://geocoding-api.open-meteo.com/v1/search?name={city}&count=1&language=es&format=json"
+    },
+    {
+      "name": "forecast",
+      "method": "GET",
+      "url": "https://api.open-meteo.com/v1/forecast?latitude={lat}&longitude={lon}&current=temperature_2m,relative_humidity_2m,wind_speed_10m&daily=temperature_2m_max,temperature_2m_min&timezone=auto&temperature_unit={units}"
+    }
+  ],
+  "duration": { "estimatedMs": 120000 },
+  "license": "CC-BY-4.0"
+}

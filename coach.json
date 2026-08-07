@@ -272,8 +272,40 @@
         "bytes": 1186,
         "files": 1
       }
+    },
+    {
+      "type": "game",
+      "name": "arcade-falling-blocks",
+      "title": {
+        "es": "Bloques que caen",
+        "en": "Falling blocks"
+      },
+      "description": {
+        "es": "Encaja las piezas y completa líneas. Teclado, sonido y récord guardado.",
+        "en": "Fit the pieces and clear lines. Keyboard, sound and a saved best score."
+      },
+      "version": "0.1.0",
+      "path": "data/game/arcade/falling-blocks",
+      "category": "arcade",
+      "tags": [
+        "arcade",
+        "reflex",
+        "game"
+      ],
+      "locales": [
+        "es",
+        "en"
+      ],
+      "audience": {
+        "minAge": 6
+      },
+      "integrity": "sha256-ongQ/5g/AKu2tAorK1USSJOMQDLOw0Le4CSVSk7ZDik=",
+      "size": {
+        "bytes": 17585,
+        "files": 3
+      }
     }
   ],
-  "generatedAt": "2026-08-06T23:33:37.502Z",
+  "generatedAt": "2026-08-07T07:39:25.076Z",
   "generatedBy": "coach-pack-cli/0.1.0"
 }

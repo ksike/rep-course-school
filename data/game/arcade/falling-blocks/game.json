@@ -1,0 +1,23 @@
+{
+  "specVersion": 1,
+  "title": {
+    "es": "Bloques que caen",
+    "en": "Falling blocks"
+  },
+  "description": {
+    "es": "Encaja las piezas y completa líneas. Flechas para mover y girar, espacio para soltar, P para pausar. La partida y el récord se guardan en tu cuenta.",
+    "en": "Fit the pieces and clear lines. Arrows to move and rotate, space to drop, P to pause. Your game and your best score are kept in your account."
+  },
+  "category": "arcade",
+  "tier": "c",
+  "entry": "dist/index.html",
+  "apiVersion": 1,
+  "locales": ["es", "en"],
+  "minAge": 6,
+  "tags": ["arcade", "reflex", "spatial"],
+  "orientation": "portrait",
+  "scoring": { "maxScore": 20000, "passScore": 5000, "verifiable": false },
+  "duration": { "estimatedMs": 300000 },
+  "save": { "slots": 1 },
+  "license": "CC-BY-4.0"
+}

@@ -1,355 +1,473 @@
 /**
- * Falling blocks — a standalone Open Coach game (tier C).
+ * Bloques que caen — the reference Open Coach app.
  *
- * Everything here is the package's own: the rules, the drawing, the keyboard, the sound. The platform
- * contributes four things through the SDK and nothing else — the locale, the theme, the saved game and a
- * place to report the score. That separation is the point of the tier: the game can be written, built and
- * published by somebody with no access to the platform's code.
+ * It is a complete game, and it is also the worked example of what the platform gives an app, so every
+ * capability appears exactly once and is commented where it is used:
  *
- * The pieces are the seven tetrominoes, each stored as a list of rotations so rotation is a lookup rather
- * than a matrix transform with edge cases. Wall kicks are the simple two-step version: try the rotation
- * where it is, then one cell left, then one right. It is not the competitive standard, and for a game
- * somebody plays for four minutes it does not need to be.
+ * - **`init`** brings the locale, the reader's theme tokens and the saved game, before the first frame.
+ * - **`progress`** and **`event`** report what is happening, and the platform turns them into the
+ *   activity summary and the player's weak areas.
+ * - **`save`** keeps the game in progress; **`data`** keeps what outlives it — the record, the totals —
+ *   in the app's own store, which no other app can read.
+ * - **`finish`** reports the score once, and the ranking is built from that.
+ *
+ * There is no build step and no dependency: this file is the whole game. Rendering is SVG, updated one
+ * cell at a time and only where something changed, so a full board costs a handful of attribute writes
+ * per frame rather than a repaint.
  */
 
 (function () {
   "use strict";
 
+  var SVG_NS = "http://www.w3.org/2000/svg";
   var COLS = 10;
   var ROWS = 20;
   var CELL = 30;
 
-  var SHAPES = {
-    I: { colour: "#4cc2ff", cells: [[[0, 1], [1, 1], [2, 1], [3, 1]], [[2, 0], [2, 1], [2, 2], [2, 3]]] },
-    O: { colour: "#ffd34c", cells: [[[1, 0], [2, 0], [1, 1], [2, 1]]] },
-    T: { colour: "#c07cff", cells: [
-      [[1, 0], [0, 1], [1, 1], [2, 1]], [[1, 0], [1, 1], [2, 1], [1, 2]],
-      [[0, 1], [1, 1], [2, 1], [1, 2]], [[1, 0], [0, 1], [1, 1], [1, 2]],
-    ] },
-    S: { colour: "#5ddc82", cells: [[[1, 0], [2, 0], [0, 1], [1, 1]], [[1, 0], [1, 1], [2, 1], [2, 2]]] },
-    Z: { colour: "#ff6b6b", cells: [[[0, 0], [1, 0], [1, 1], [2, 1]], [[2, 0], [1, 1], [2, 1], [1, 2]]] },
-    J: { colour: "#7c9bff", cells: [
-      [[0, 0], [0, 1], [1, 1], [2, 1]], [[1, 0], [2, 0], [1, 1], [1, 2]],
-      [[0, 1], [1, 1], [2, 1], [2, 2]], [[1, 0], [1, 1], [0, 2], [1, 2]],
-    ] },
-    L: { colour: "#ffa14c", cells: [
-      [[2, 0], [0, 1], [1, 1], [2, 1]], [[1, 0], [1, 1], [1, 2], [2, 2]],
-      [[0, 1], [1, 1], [2, 1], [0, 2]], [[0, 0], [1, 0], [1, 1], [1, 2]],
-    ] },
+  /** The seven pieces, as their rotation states. Written out rather than rotated at runtime: it is
+   *  four small arrays per piece, and it makes the wall kicks below readable. */
+  var PIECES = {
+    I: { colour: "#22d3ee", cells: [[[0, 1], [1, 1], [2, 1], [3, 1]], [[2, 0], [2, 1], [2, 2], [2, 3]], [[0, 2], [1, 2], [2, 2], [3, 2]], [[1, 0], [1, 1], [1, 2], [1, 3]]] },
+    J: { colour: "#60a5fa", cells: [[[0, 0], [0, 1], [1, 1], [2, 1]], [[1, 0], [2, 0], [1, 1], [1, 2]], [[0, 1], [1, 1], [2, 1], [2, 2]], [[1, 0], [1, 1], [0, 2], [1, 2]]] },
+    L: { colour: "#fb923c", cells: [[[2, 0], [0, 1], [1, 1], [2, 1]], [[1, 0], [1, 1], [1, 2], [2, 2]], [[0, 1], [1, 1], [2, 1], [0, 2]], [[0, 0], [1, 0], [1, 1], [1, 2]]] },
+    O: { colour: "#facc15", cells: [[[1, 0], [2, 0], [1, 1], [2, 1]], [[1, 0], [2, 0], [1, 1], [2, 1]], [[1, 0], [2, 0], [1, 1], [2, 1]], [[1, 0], [2, 0], [1, 1], [2, 1]]] },
+    S: { colour: "#4ade80", cells: [[[1, 0], [2, 0], [0, 1], [1, 1]], [[1, 0], [1, 1], [2, 1], [2, 2]], [[1, 1], [2, 1], [0, 2], [1, 2]], [[0, 0], [0, 1], [1, 1], [1, 2]]] },
+    T: { colour: "#c084fc", cells: [[[1, 0], [0, 1], [1, 1], [2, 1]], [[1, 0], [1, 1], [2, 1], [1, 2]], [[0, 1], [1, 1], [2, 1], [1, 2]], [[1, 0], [0, 1], [1, 1], [1, 2]]] },
+    Z: { colour: "#f87171", cells: [[[0, 0], [1, 0], [1, 1], [2, 1]], [[2, 0], [1, 1], [2, 1], [1, 2]], [[0, 1], [1, 1], [1, 2], [2, 2]], [[1, 0], [0, 1], [1, 1], [0, 2]]] },
   };
-  var KEYS = Object.keys(SHAPES);
+  var NAMES = ["I", "J", "L", "O", "S", "T", "Z"];
 
-  /** Points per simultaneous line, the classic curve: four at once is worth far more than four in a row. */
+  /** Standard line scores, multiplied by the level. A four-line clear is worth more than four singles,
+   *  which is the whole reason anybody stacks. */
   var LINE_SCORE = [0, 100, 300, 500, 800];
 
-  var board = document.getElementById("board");
-  var ctx = board.getContext("2d");
-  var nextCanvas = document.getElementById("next");
-  var nextCtx = nextCanvas.getContext("2d");
-  var scoreEl = document.getElementById("score");
-  var bestEl = document.getElementById("best");
-  var linesEl = document.getElementById("lines");
-  var overEl = document.getElementById("over");
-  var overText = document.getElementById("over-text");
-
   var TEXT = {
-    es: { score: "Puntos", best: "Récord", lines: "Líneas", next: "Siguiente", end: "Terminar",
-          again: "Jugar otra vez", over: "Fin de la partida", paused: "En pausa",
-          result: function (s, l) { return s + " puntos, " + l + " líneas."; },
-          noSave: "No has iniciado sesión: esta partida no se guardará." },
-    en: { score: "Score", best: "Best", lines: "Lines", next: "Next", end: "Finish",
-          again: "Play again", over: "Game over", paused: "Paused",
-          result: function (s, l) { return s + " points, " + l + " lines."; },
-          noSave: "You are not signed in: this game will not be saved." },
+    es: { score: "Puntos", best: "Récord", lines: "Líneas", next: "Siguiente", pause: "Pausa", resume: "Seguir", end: "Terminar", again: "Jugar otra vez", over: "Fin de la partida", paused: "En pausa", newBest: "¡Nuevo récord!", result: "{score} puntos · {lines} líneas · nivel {level}" },
+    en: { score: "Score", best: "Best", lines: "Lines", next: "Next", pause: "Pause", resume: "Resume", end: "Finish", again: "Play again", over: "Game over", paused: "Paused", newBest: "New best!", result: "{score} points · {lines} lines · level {level}" },
   };
-  var t = TEXT.es;
 
-  var grid, current, next, score, lines, dropEvery, dropTimer, lastFrame, paused, over, best = 0;
-  var coach = null;
-  var canSave = false;
+  /* ─────────────────────────────── state ─────────────────────────────── */
+
+  var grid = [];
+  var piece = null;
+  var bag = [];
+  var nextPiece = null;
+  var score = 0;
+  var lines = 0;
+  var level = 1;
+  var over = false;
+  var paused = false;
   var startedAt = Date.now();
+  var best = 0;
+  var totals = { games: 0, lines: 0, tetrises: 0 };
 
-  /* ── sound ───────────────────────────────────────────────────────────── */
+  var coach = null;
+  var t = TEXT.es;
+  var lastProgress = -1;
+  var dropTimer = 0;
+  var lastFrame = 0;
 
-  // Synthesised rather than shipped: four sounds as audio files would be most of the package's weight,
-  // and a square wave is exactly the right instrument for this.
-  var audio = null;
-  function beep(frequency, ms, type) {
-    try {
-      if (!audio) audio = new (window.AudioContext || window.webkitAudioContext)();
-      if (audio.state === "suspended") audio.resume();
-      var oscillator = audio.createOscillator();
-      var gain = audio.createGain();
-      oscillator.type = type || "square";
-      oscillator.frequency.value = frequency;
-      gain.gain.value = 0.04;
-      gain.gain.exponentialRampToValueAtTime(0.0001, audio.currentTime + ms / 1000);
-      oscillator.connect(gain).connect(audio.destination);
-      oscillator.start();
-      oscillator.stop(audio.currentTime + ms / 1000);
-    } catch (err) {
-      // Sound is a nicety; a browser that refuses it must not stop the game.
+  var boardEl = document.getElementById("board");
+  var nextEl = document.getElementById("next");
+  var cells = [];
+  var painted = [];
+
+  /* ─────────────────────────────── rendering ─────────────────────────────── */
+
+  /** One rect per cell, made once. After this, drawing is setting a fill. */
+  function buildBoard() {
+    var fragment = document.createDocumentFragment();
+    for (var y = 0; y < ROWS; y++) {
+      for (var x = 0; x < COLS; x++) {
+        var rect = document.createElementNS(SVG_NS, "rect");
+        rect.setAttribute("x", String(x * CELL + 1));
+        rect.setAttribute("y", String(y * CELL + 1));
+        rect.setAttribute("width", String(CELL - 2));
+        rect.setAttribute("height", String(CELL - 2));
+        rect.setAttribute("rx", "3");
+        rect.setAttribute("fill", "transparent");
+        fragment.appendChild(rect);
+        cells.push(rect);
+        painted.push("transparent");
+      }
     }
+    boardEl.appendChild(fragment);
   }
 
-  /* ── rules ───────────────────────────────────────────────────────────── */
+  function paint(index, colour) {
+    if (painted[index] === colour) return;
+    painted[index] = colour;
+    cells[index].setAttribute("fill", colour);
+  }
 
-  function emptyGrid() {
-    var rows = [];
-    for (var y = 0; y < ROWS; y++) rows.push(new Array(COLS).fill(null));
-    return rows;
+  function draw() {
+    for (var y = 0; y < ROWS; y++) {
+      for (var x = 0; x < COLS; x++) paint(y * COLS + x, grid[y][x] || "transparent");
+    }
+
+    if (!piece) return;
+
+    // The ghost: where the piece would land. It is what turns guesswork into a decision.
+    var ghost = piece.y;
+    while (fits(piece.name, piece.rotation, piece.x, ghost + 1)) ghost++;
+    each(piece.name, piece.rotation, piece.x, ghost, function (x, y) {
+      if (y >= 0) paint(y * COLS + x, "color-mix(in srgb, " + PIECES[piece.name].colour + " 22%, transparent)");
+    });
+
+    each(piece.name, piece.rotation, piece.x, piece.y, function (x, y) {
+      if (y >= 0) paint(y * COLS + x, PIECES[piece.name].colour);
+    });
+  }
+
+  function drawNext() {
+    while (nextEl.firstChild) nextEl.removeChild(nextEl.firstChild);
+    if (!nextPiece) return;
+    each(nextPiece, 0, 0, 0, function (x, y) {
+      var rect = document.createElementNS(SVG_NS, "rect");
+      rect.setAttribute("x", String(x * 28 + 6));
+      rect.setAttribute("y", String(y * 28 + 20));
+      rect.setAttribute("width", "24");
+      rect.setAttribute("height", "24");
+      rect.setAttribute("rx", "3");
+      rect.setAttribute("fill", PIECES[nextPiece].colour);
+      nextEl.appendChild(rect);
+    });
+  }
+
+  /* ─────────────────────────────── rules ─────────────────────────────── */
+
+  function each(name, rotation, offsetX, offsetY, fn) {
+    var shape = PIECES[name].cells[rotation % 4];
+    for (var i = 0; i < shape.length; i++) fn(shape[i][0] + offsetX, shape[i][1] + offsetY);
+  }
+
+  function fits(name, rotation, offsetX, offsetY) {
+    var ok = true;
+    each(name, rotation, offsetX, offsetY, function (x, y) {
+      if (x < 0 || x >= COLS || y >= ROWS) ok = false;
+      else if (y >= 0 && grid[y][x]) ok = false;
+    });
+    return ok;
+  }
+
+  /** A seven-bag: every piece appears once before any appears twice, so a run of four S pieces —
+   *  which feels like the game cheating — cannot happen. */
+  function nextName() {
+    if (bag.length === 0) {
+      bag = NAMES.slice();
+      for (var i = bag.length - 1; i > 0; i--) {
+        var j = Math.floor(Math.random() * (i + 1));
+        var swap = bag[i];
+        bag[i] = bag[j];
+        bag[j] = swap;
+      }
+    }
+    return bag.pop();
   }
 
   function spawn() {
-    var key = KEYS[Math.floor(Math.random() * KEYS.length)];
-    return { key: key, rotation: 0, x: 3, y: -1 };
+    piece = { name: nextPiece || nextName(), rotation: 0, x: 3, y: -1 };
+    nextPiece = nextName();
+    drawNext();
+    if (!fits(piece.name, piece.rotation, piece.x, piece.y)) finish();
   }
 
-  function cellsOf(piece) {
-    var shape = SHAPES[piece.key];
-    return shape.cells[piece.rotation % shape.cells.length];
-  }
-
-  function fits(piece, dx, dy, rotation) {
-    var test = { key: piece.key, rotation: rotation === undefined ? piece.rotation : rotation, x: piece.x + dx, y: piece.y + dy };
-    var cells = cellsOf(test);
-    for (var i = 0; i < cells.length; i++) {
-      var x = test.x + cells[i][0];
-      var y = test.y + cells[i][1];
-      if (x < 0 || x >= COLS || y >= ROWS) return false;
-      if (y >= 0 && grid[y][x]) return false;
-    }
+  function move(dx, dy) {
+    if (!piece || over || paused) return false;
+    if (!fits(piece.name, piece.rotation, piece.x + dx, piece.y + dy)) return false;
+    piece.x += dx;
+    piece.y += dy;
+    draw();
     return true;
   }
 
-  function lock() {
-    var cells = cellsOf(current);
-    for (var i = 0; i < cells.length; i++) {
-      var x = current.x + cells[i][0];
-      var y = current.y + cells[i][1];
-      if (y < 0) {
-        finish(true);
+  /** Rotation with wall kicks: against a wall, try shifting one or two columns before refusing. Without
+   *  them a piece beside the edge simply will not turn, which reads as the game being broken. */
+  function rotate() {
+    if (!piece || over || paused) return;
+    var turned = (piece.rotation + 1) % 4;
+    var kicks = [0, -1, 1, -2, 2];
+    for (var i = 0; i < kicks.length; i++) {
+      if (fits(piece.name, turned, piece.x + kicks[i], piece.y)) {
+        piece.x += kicks[i];
+        piece.rotation = turned;
+        draw();
+        coach && coach.event("rotate", ["piece-" + piece.name.toLowerCase()]);
         return;
       }
-      grid[y][x] = SHAPES[current.key].colour;
     }
+  }
+
+  function lock() {
+    each(piece.name, piece.rotation, piece.x, piece.y, function (x, y) {
+      if (y >= 0) grid[y][x] = PIECES[piece.name].colour;
+    });
 
     var cleared = 0;
-    for (var row = ROWS - 1; row >= 0; row--) {
-      if (grid[row].every(function (cell) { return cell !== null; })) {
-        grid.splice(row, 1);
-        grid.unshift(new Array(COLS).fill(null));
-        cleared++;
-        row++;
-      }
+    for (var y = ROWS - 1; y >= 0; y--) {
+      var full = true;
+      for (var x = 0; x < COLS; x++) if (!grid[y][x]) full = false;
+      if (!full) continue;
+      grid.splice(y, 1);
+      grid.unshift(new Array(COLS).fill(null));
+      cleared++;
+      y++;
     }
 
     if (cleared > 0) {
+      score += LINE_SCORE[cleared] * level;
       lines += cleared;
-      score += LINE_SCORE[cleared];
-      beep(cleared === 4 ? 880 : 620, 120, "triangle");
-      if (coach) coach.event("line-clear", [cleared === 4 ? "quadruple" : "single"]);
-      // Every ten lines the drop speeds up, which is what turns a puzzle into a game.
-      dropEvery = Math.max(90, 600 - Math.floor(lines / 10) * 60);
-      save();
-    } else {
-      beep(180, 40);
+      totals.lines += cleared;
+      level = Math.floor(lines / 10) + 1;
+
+      // The tags are this game's own vocabulary, and the platform never interprets them: they are what
+      // turns "played for ten minutes" into "good at clearing four at once".
+      coach && coach.event("line-clear", [cleared === 4 ? "tetris" : "lines-" + cleared, "level-" + level]);
+      if (cleared === 4) totals.tetrises++;
+
+      report();
     }
 
-    current = next;
-    next = spawn();
-    if (!fits(current, 0, 0)) finish(true);
-    paint();
+    spawn();
+    refresh();
   }
 
-  function move(dx) {
-    if (fits(current, dx, 0)) {
-      current.x += dx;
-      paint();
-    }
+  function drop() {
+    if (!piece || over || paused) return;
+    var distance = 0;
+    while (move(0, 1)) distance++;
+    score += distance * 2;
+    coach && coach.event("hard-drop", ["rows-" + distance]);
+    lock();
   }
 
-  function rotate() {
-    var shape = SHAPES[current.key];
-    var wanted = (current.rotation + 1) % shape.cells.length;
-    // Where it is, then one cell to each side: enough to turn against a wall without a kick table.
-    var offsets = [0, -1, 1];
-    for (var i = 0; i < offsets.length; i++) {
-      if (fits(current, offsets[i], 0, wanted)) {
-        current.x += offsets[i];
-        current.rotation = wanted;
-        beep(320, 30);
-        paint();
-        return;
-      }
-    }
+  /* ─────────────────────────── the platform ─────────────────────────── */
+
+  /**
+   * Progress, as a fraction of what this app considers a full game.
+   *
+   * Reported only when the whole number changes, because the platform coalesces writes and a report per
+   * frame would be refused anyway. It is what lets the listing say "continue" rather than "start".
+   */
+  function report() {
+    if (!coach) return;
+    var percent = Math.min(100, Math.round((score / 20000) * 100));
+    if (percent === lastProgress) return;
+    lastProgress = percent;
+    coach.progress(percent, "level-" + level);
   }
 
-  function drop(hard) {
-    if (hard) {
-      while (fits(current, 0, 1)) current.y++;
-      beep(120, 60);
-      lock();
-      return;
-    }
-    if (fits(current, 0, 1)) {
-      current.y++;
-      paint();
-    } else {
-      lock();
-    }
+  function refresh() {
+    document.getElementById("score").textContent = String(score);
+    document.getElementById("lines").textContent = String(lines);
+    document.getElementById("best").textContent = String(Math.max(best, score));
+    draw();
   }
 
-  /* ── drawing ─────────────────────────────────────────────────────────── */
-
-  function block(context, x, y, size, colour) {
-    context.fillStyle = colour;
-    context.fillRect(x + 1, y + 1, size - 2, size - 2);
-    context.fillStyle = "rgba(255,255,255,.16)";
-    context.fillRect(x + 1, y + 1, size - 2, 3);
+  /** The game in progress, small enough to be state rather than assets: the board, the piece, the counts. */
+  function snapshot() {
+    return {
+      grid: grid.map(function (row) {
+        return row.map(function (cell) {
+          return cell ? NAMES.indexOf(colourName(cell)) : -1;
+        });
+      }),
+      piece: piece,
+      nextPiece: nextPiece,
+      score: score,
+      lines: lines,
+      level: level,
+    };
   }
 
-  function paint() {
-    ctx.clearRect(0, 0, board.width, board.height);
-
-    ctx.strokeStyle = "rgba(255,255,255,.04)";
-    for (var x = 1; x < COLS; x++) {
-      ctx.beginPath();
-      ctx.moveTo(x * CELL, 0);
-      ctx.lineTo(x * CELL, ROWS * CELL);
-      ctx.stroke();
-    }
-
-    for (var row = 0; row < ROWS; row++) {
-      for (var col = 0; col < COLS; col++) {
-        if (grid[row][col]) block(ctx, col * CELL, row * CELL, CELL, grid[row][col]);
-      }
-    }
-
-    // The landing shadow, which is what makes the game playable rather than a guessing exercise.
-    var ghost = { key: current.key, rotation: current.rotation, x: current.x, y: current.y };
-    while (fits(ghost, 0, 1)) ghost.y++;
-    var ghostCells = cellsOf(ghost);
-    ctx.fillStyle = "rgba(255,255,255,.08)";
-    for (var g = 0; g < ghostCells.length; g++) {
-      ctx.fillRect((ghost.x + ghostCells[g][0]) * CELL + 1, (ghost.y + ghostCells[g][1]) * CELL + 1, CELL - 2, CELL - 2);
-    }
-
-    var cells = cellsOf(current);
-    for (var i = 0; i < cells.length; i++) {
-      var cy = current.y + cells[i][1];
-      if (cy < 0) continue;
-      block(ctx, (current.x + cells[i][0]) * CELL, cy * CELL, CELL, SHAPES[current.key].colour);
-    }
-
-    nextCtx.clearRect(0, 0, nextCanvas.width, nextCanvas.height);
-    var preview = cellsOf(next);
-    for (var n = 0; n < preview.length; n++) {
-      block(nextCtx, preview[n][0] * 22 + 6, preview[n][1] * 22 + 6, 22, SHAPES[next.key].colour);
-    }
-
-    scoreEl.textContent = String(score);
-    linesEl.textContent = String(lines);
-    bestEl.textContent = String(best);
+  function colourName(colour) {
+    for (var i = 0; i < NAMES.length; i++) if (PIECES[NAMES[i]].colour === colour) return NAMES[i];
+    return "I";
   }
 
-  /* ── the platform ────────────────────────────────────────────────────── */
-
-  function save() {
-    if (!coach || !canSave) return;
-    coach.save({ best: Math.max(best, score), lines: lines });
+  function restore(state) {
+    if (!state || !state.grid) return false;
+    grid = state.grid.map(function (row) {
+      return row.map(function (index) {
+        return index >= 0 ? PIECES[NAMES[index]].colour : null;
+      });
+    });
+    piece = state.piece;
+    nextPiece = state.nextPiece;
+    score = state.score || 0;
+    lines = state.lines || 0;
+    level = state.level || 1;
+    drawNext();
+    refresh();
+    return true;
   }
 
-  function finish(gameOver) {
+  /**
+   * The end of a game, and the only place a score is reported.
+   *
+   * Three different things are written, to three different places, and the difference is the point:
+   * the **session** is the run and belongs to the platform's statistics and the ranking; the **record**
+   * and the **totals** are the app's own memory of this player; and the **save** is cleared, because a
+   * finished game is not a game to resume.
+   */
+  function finish() {
     if (over) return;
     over = true;
-    best = Math.max(best, score);
-    save();
+
+    var beaten = score > best;
+    if (beaten) best = score;
+    totals.games++;
+
     if (coach) {
-      coach.finish({ score: score, maxScore: 20000, durationMs: Date.now() - startedAt });
+      coach.data.set("best", best);
+      coach.data.set("totals", totals);
+      coach.save(null);
+      coach.finish({
+        score: score,
+        maxScore: 20000,
+        durationMs: Date.now() - startedAt,
+      });
     }
-    overText.textContent = t.result(score, lines);
-    overEl.classList.add("on");
-    if (gameOver) beep(90, 300, "sawtooth");
+
+    document.getElementById("over-title").textContent = beaten ? t.newBest : t.over;
+    document.getElementById("over-text").textContent = t.result
+      .replace("{score}", String(score))
+      .replace("{lines}", String(lines))
+      .replace("{level}", String(level));
+    document.getElementById("over").classList.add("on");
+    refresh();
   }
 
   function restart() {
-    grid = emptyGrid();
-    current = spawn();
-    next = spawn();
+    grid = [];
+    for (var y = 0; y < ROWS; y++) grid.push(new Array(COLS).fill(null));
     score = 0;
     lines = 0;
-    dropEvery = 600;
-    dropTimer = 0;
-    paused = false;
+    level = 1;
     over = false;
+    paused = false;
     startedAt = Date.now();
-    overEl.classList.remove("on");
-    paint();
+    lastProgress = -1;
+    bag = [];
+    nextPiece = null;
+    document.getElementById("over").classList.remove("on");
+    spawn();
+    refresh();
   }
 
-  function loop(now) {
-    if (!lastFrame) lastFrame = now;
-    var delta = now - lastFrame;
-    lastFrame = now;
+  function setPaused(value) {
+    paused = value;
+    document.getElementById("pause-text").textContent = paused ? t.resume : t.pause;
+    document.getElementById("pause-icon").dataset.icon = paused ? "play" : "pause";
+    // A pause is a good moment to persist: the player has stopped, and the write costs nothing now.
+    if (paused && coach && !over) coach.save(snapshot());
+  }
 
-    if (!paused && !over) {
-      dropTimer += delta;
-      if (dropTimer >= dropEvery) {
-        dropTimer = 0;
-        drop(false);
-      }
+  /* ─────────────────────────────── loop ─────────────────────────────── */
+
+  function frame(now) {
+    requestAnimationFrame(frame);
+    if (over || paused) {
+      lastFrame = now;
+      return;
     }
-    requestAnimationFrame(loop);
+
+    var elapsed = now - lastFrame;
+    lastFrame = now;
+    dropTimer += elapsed;
+
+    // Faster with every level, with a floor: below about 60 ms the game stops being playable and
+    // starts being a slideshow of losses.
+    var interval = Math.max(60, 800 - (level - 1) * 65);
+    if (dropTimer < interval) return;
+    dropTimer = 0;
+
+    if (!move(0, 1)) lock();
   }
 
-  document.addEventListener("keydown", function (event) {
-    if (over) return;
+  /* ─────────────────────────────── input ─────────────────────────────── */
+
+  function onKey(event) {
     var handled = true;
     switch (event.key) {
-      case "ArrowLeft": move(-1); break;
-      case "ArrowRight": move(1); break;
-      case "ArrowUp": rotate(); break;
-      case "ArrowDown": drop(false); break;
-      case " ": drop(true); break;
-      case "p": case "P":
-        paused = !paused;
-        overText.textContent = t.paused;
-        break;
+      case "ArrowLeft": move(-1, 0); break;
+      case "ArrowRight": move(1, 0); break;
+      case "ArrowDown": if (move(0, 1)) score += 1; refresh(); break;
+      case "ArrowUp": case "x": case "X": rotate(); break;
+      case " ": drop(); break;
+      case "p": case "P": setPaused(!paused); break;
       default: handled = false;
     }
-    // Arrows and space scroll a page; inside a game they are the controls.
     if (handled) event.preventDefault();
-  });
+  }
 
-  document.getElementById("end").addEventListener("click", function () { finish(false); });
-  document.getElementById("again").addEventListener("click", restart);
+  /** Touch: a tap turns the piece, a swipe moves it, a swipe down drops it. */
+  function touch() {
+    var from = null;
+    boardEl.addEventListener("touchstart", function (event) {
+      from = { x: event.touches[0].clientX, y: event.touches[0].clientY, at: Date.now() };
+    }, { passive: true });
 
+    boardEl.addEventListener("touchend", function (event) {
+      if (!from) return;
+      var dx = event.changedTouches[0].clientX - from.x;
+      var dy = event.changedTouches[0].clientY - from.y;
+      if (Math.abs(dx) < 24 && Math.abs(dy) < 24 && Date.now() - from.at < 300) rotate();
+      else if (Math.abs(dx) > Math.abs(dy)) move(dx > 0 ? 1 : -1, 0);
+      else if (dy > 0) drop();
+      from = null;
+    }, { passive: true });
+  }
+
+  /* ─────────────────────────────── start ─────────────────────────────── */
+
+  buildBoard();
   restart();
-  requestAnimationFrame(loop);
+  touch();
+  document.addEventListener("keydown", onKey);
+  document.getElementById("pause").addEventListener("click", function () { setPaused(!paused); });
+  document.getElementById("end").addEventListener("click", finish);
+  document.getElementById("again").addEventListener("click", restart);
+  requestAnimationFrame(frame);
 
   coach = window.OpenCoach.connect({
     onInit: function (init) {
-      canSave = init.canSave;
       t = TEXT[(init.locale || "es").slice(0, 2)] || TEXT.es;
-
-      // The theme arrives as CSS custom properties, so the game follows light or dark without knowing how.
-      Object.keys(init.themeTokens || {}).forEach(function (name) {
-        document.documentElement.style.setProperty(name, init.themeTokens[name]);
-      });
-
-      document.getElementById("l-score").textContent = t.score;
-      document.getElementById("l-best").textContent = t.best;
-      document.getElementById("l-lines").textContent = t.lines;
-      document.getElementById("l-next").textContent = t.next;
-      document.getElementById("end").textContent = t.end;
-      document.getElementById("again").textContent = t.again;
-      document.getElementById("over-title").textContent = t.over;
       document.documentElement.lang = (init.locale || "es").slice(0, 2);
 
-      if (init.resume && typeof init.resume.best === "number") best = init.resume.best;
-      if (!init.canSave) overText.textContent = t.noSave;
-      paint();
+      // The reader's theme, as plain custom properties. The app follows light or dark without knowing
+      // anything about the application that sent them.
+      var tokens = init.themeTokens || {};
+      var map = { "--background": "--coach-bg", "--foreground": "--coach-fg", "--muted-foreground": "--coach-muted", "--border": "--coach-border", "--primary": "--coach-accent" };
+      Object.keys(map).forEach(function (name) {
+        if (tokens[name]) document.documentElement.style.setProperty(map[name], tokens[name]);
+      });
+
+      ["score", "best", "lines", "next", "pause", "end", "again"].forEach(function (key) {
+        var label = document.getElementById("l-" + key) || document.getElementById(key + "-text");
+        if (label) label.textContent = t[key];
+      });
+
+      // What outlives a game comes from the app's own store; the game in progress comes from the save.
+      // Both are the platform's, tied to the account, so they follow the player between devices.
+      coach.data.get("best").then(function (value) {
+        best = Number(value || 0);
+        refresh();
+      });
+      coach.data.get("totals").then(function (value) {
+        if (value) totals = value;
+      });
+
+      if (init.resume) restore(init.resume);
     },
+  });
+
+  // A game left mid-air is a game somebody wants back. Saved when the tab goes away, which is the last
+  // moment the browser reliably gives us.
+  document.addEventListener("visibilitychange", function () {
+    if (document.hidden && coach && !over) {
+      setPaused(true);
+      coach.save(snapshot());
+    }
   });
 })();

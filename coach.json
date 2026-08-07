@@ -3,7 +3,7 @@
   "id": "ksike.school",
   "name": "Primary and secondary school content pack",
   "description": "Open Coach content for primary and secondary education: maths with open answers, courses and learning games.",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "license": "MIT",
   "licenseFile": "LICENSE",
   "homepage": "https://github.com/ksike/rep-course-school",
@@ -175,7 +175,8 @@
       "integrity": "sha256-Fy+raMb2zYSzt96Hb23QElBZ8XEa9l5xbpivLZ+sCtg="
     },
     {
-      "type": "game",
+      "type": "app",
+      "profile": "game",
       "name": "maths-times-tables-match",
       "title": {
         "es": "Emparejar tablas de multiplicar",
@@ -208,7 +209,8 @@
       }
     },
     {
-      "type": "game",
+      "type": "app",
+      "profile": "game",
       "name": "maths-number-line-order",
       "title": {
         "es": "Ordenar en la recta numérica",
@@ -241,7 +243,8 @@
       }
     },
     {
-      "type": "game",
+      "type": "app",
+      "profile": "game",
       "name": "language-spelling-gaps",
       "title": {
         "es": "Huecos de ortografía: b y v, g y j",
@@ -274,7 +277,8 @@
       }
     },
     {
-      "type": "game",
+      "type": "app",
+      "profile": "game",
       "name": "arcade-falling-blocks",
       "title": {
         "es": "Bloques que caen",
@@ -284,7 +288,7 @@
         "es": "Encaja las piezas y completa líneas. Teclado, sonido y récord guardado.",
         "en": "Fit the pieces and clear lines. Keyboard, sound and a saved best score."
       },
-      "version": "0.1.0",
+      "version": "0.2.0",
       "path": "data/game/arcade/falling-blocks",
       "category": "arcade",
       "tags": [
@@ -299,13 +303,13 @@
       "audience": {
         "minAge": 6
       },
-      "integrity": "sha256-ongQ/5g/AKu2tAorK1USSJOMQDLOw0Le4CSVSk7ZDik=",
+      "integrity": "sha256-xlccgDRxIUyPt0jYZJ7ClQQsqiGHZibEladB3xR8uaA=",
       "size": {
-        "bytes": 17585,
+        "bytes": 24862,
         "files": 3
       }
     }
   ],
-  "generatedAt": "2026-08-07T07:39:25.076Z",
+  "generatedAt": "2026-08-07T22:20:12.264Z",
   "generatedBy": "coach-pack-cli/0.1.0"
 }

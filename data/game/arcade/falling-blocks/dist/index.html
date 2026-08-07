@@ -5,93 +5,197 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <title>Bloques que caen</title>
     <!--
-      A standalone (tier C) Open Coach game.
+      A standalone (tier C) Open Coach app, and the reference one: everything it does, it does through
+      the SDK, and it ships no dependency of its own.
 
-      It runs in a sandboxed frame with an opaque origin and `connect-src 'none'`, so it has no network, no
-      cookies and no access to the page around it. Everything it needs from the platform — the locale, the
-      theme, the saved game, the score at the end — travels through the SDK, which is the only thing it is
-      allowed to talk to.
+      It runs in a sandboxed frame with an opaque origin, so it has no cookies and no access to the page
+      around it, and its CSP allows only its own package and the shared kit. That is why the two links
+      below are the only external things here: `kit.css` gives it the reader's theme, our controls and
+      our icons, and `v1.js` is the SDK. Both are one cached file for every app on the platform.
 
-      Styling reads the theme tokens the host sends, so the game follows the player's light or dark theme
-      without knowing anything about the application.
+      The board is SVG rather than a canvas. It costs nothing here — 200 cells, and only the ones that
+      changed are touched — and it buys crisp scaling at any size, real focus outlines, and a board a
+      screen reader can be told about.
     -->
-    <script src="/games/sdk/v1.js"></script>
+    <link rel="stylesheet" href="/app/kit/v1/kit.css" />
+    <script src="/app/sdk/v1.js"></script>
     <style>
-      :root {
-        --bg: #0b0f19;
-        --fg: #e8ecf5;
-        --muted: #97a1b5;
-        --line: #263149;
-        --accent: #4f8cff;
-      }
-      * { box-sizing: border-box; }
-      html, body {
-        margin: 0;
+      html,
+      body {
         height: 100%;
-        background: var(--bg);
-        color: var(--fg);
-        font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
         overflow: hidden;
         touch-action: manipulation;
       }
+
       #app {
         height: 100%;
         display: flex;
-        gap: 16px;
+        gap: 1rem;
         align-items: center;
         justify-content: center;
-        padding: 12px;
+        padding: 0.75rem;
       }
-      canvas {
-        background: #060911;
-        border: 1px solid var(--line);
-        border-radius: 10px;
-        max-height: calc(100vh - 24px);
+
+      #board {
+        height: min(100%, 78vh);
+        max-width: 100%;
+        border: 1px solid var(--coach-border);
+        border-radius: var(--coach-radius);
+        background: color-mix(in srgb, var(--coach-fg) 6%, var(--coach-bg));
       }
-      aside { min-width: 132px; display: flex; flex-direction: column; gap: 14px; }
-      .box { border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; }
-      .label { font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
-      .value { font-size: 22px; font-weight: 700; font-variant-numeric: tabular-nums; }
-      .keys { font-size: 12px; color: var(--muted); line-height: 1.7; }
+
+      aside {
+        display: flex;
+        flex-direction: column;
+        gap: 0.6rem;
+        min-width: 9rem;
+      }
+
+      .label {
+        font-size: 0.68rem;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--coach-muted);
+      }
+
+      .value {
+        font-size: 1.4rem;
+        font-weight: 700;
+        font-variant-numeric: tabular-nums;
+      }
+
+      .keys {
+        font-size: 0.75rem;
+        color: var(--coach-muted);
+        line-height: 1.8;
+      }
+
       kbd {
-        border: 1px solid var(--line); border-bottom-width: 2px; border-radius: 4px;
-        padding: 0 5px; font-size: 11px; color: var(--fg);
+        border: 1px solid var(--coach-border);
+        border-bottom-width: 2px;
+        border-radius: 4px;
+        padding: 0 0.3rem;
+        font-size: 0.7rem;
+        font-family: var(--coach-mono);
       }
-      button {
-        font: inherit; color: var(--fg); background: transparent; cursor: pointer;
-        border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px;
+
+      .row {
+        display: flex;
+        gap: 0.4rem;
       }
-      button:hover { border-color: var(--accent); }
-      #over { position: fixed; inset: 0; display: none; place-items: center; background: rgba(6,9,17,.86); }
-      #over.on { display: grid; }
-      #over div { text-align: center; }
-      #over p { margin: 6px 0 16px; color: var(--muted); }
-      @media (max-width: 520px) {
-        #app { flex-direction: column; gap: 10px; }
-        aside { flex-direction: row; flex-wrap: wrap; justify-content: center; min-width: 0; }
-        .keys { display: none; }
+
+      .row .coach-button {
+        flex: 1;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.35rem;
+      }
+
+      #over {
+        position: fixed;
+        inset: 0;
+        display: none;
+        place-items: center;
+        background: color-mix(in srgb, var(--coach-bg) 88%, transparent);
+        backdrop-filter: blur(2px);
+      }
+
+      #over.on {
+        display: grid;
+      }
+
+      #over .coach-panel {
+        text-align: center;
+        min-width: 16rem;
+      }
+
+      #over h2 {
+        margin: 0 0 0.25rem;
+      }
+
+      #over p {
+        margin: 0 0 1rem;
+        color: var(--coach-muted);
+      }
+
+      @media (max-width: 560px) {
+        #app {
+          flex-direction: column;
+          gap: 0.6rem;
+        }
+        aside {
+          flex-direction: row;
+          flex-wrap: wrap;
+          justify-content: center;
+          min-width: 0;
+        }
+        .keys {
+          display: none;
+        }
       }
     </style>
   </head>
   <body>
     <div id="app">
-      <canvas id="board" width="300" height="600" aria-label="Tablero"></canvas>
+      <!-- 10 × 20 cells, each 30 units: the viewBox does the scaling, so there is no pixel arithmetic. -->
+      <svg
+        id="board"
+        viewBox="0 0 300 600"
+        preserveAspectRatio="xMidYMid meet"
+        role="img"
+        aria-label="Tablero de juego"
+      ></svg>
+
       <aside>
-        <div class="box"><div class="label" id="l-score">Puntos</div><div class="value" id="score">0</div></div>
-        <div class="box"><div class="label" id="l-best">Récord</div><div class="value" id="best">0</div></div>
-        <div class="box"><div class="label" id="l-lines">Líneas</div><div class="value" id="lines">0</div></div>
-        <div class="box"><div class="label" id="l-next">Siguiente</div><canvas id="next" width="96" height="96"></canvas></div>
+        <div class="coach-panel">
+          <div class="label" id="l-score">Puntos</div>
+          <div class="value" id="score">0</div>
+        </div>
+        <div class="coach-panel">
+          <div class="label" id="l-best">Récord</div>
+          <div class="value" id="best">0</div>
+        </div>
+        <div class="coach-panel">
+          <div class="label" id="l-lines">Líneas</div>
+          <div class="value" id="lines">0</div>
+        </div>
+        <div class="coach-panel">
+          <div class="label" id="l-next">Siguiente</div>
+          <svg id="next" viewBox="0 0 120 120" width="96" height="96" aria-hidden="true"></svg>
+        </div>
+
         <div class="keys" id="keys">
           <kbd>←</kbd> <kbd>→</kbd> mover<br />
           <kbd>↑</kbd> girar · <kbd>↓</kbd> bajar<br />
           <kbd>espacio</kbd> soltar<br />
           <kbd>P</kbd> pausa
         </div>
-        <button id="end">Terminar</button>
+
+        <div class="row">
+          <button class="coach-button" id="pause" type="button">
+            <span class="coach-icon" data-icon="pause" id="pause-icon"></span>
+            <span id="pause-text">Pausa</span>
+          </button>
+          <button class="coach-button" id="end" type="button">
+            <span class="coach-icon" data-icon="check"></span>
+            <span id="end-text">Terminar</span>
+          </button>
+        </div>
       </aside>
     </div>
 
-    <div id="over"><div><h2 id="over-title">Fin de la partida</h2><p id="over-text"></p><button id="again">Jugar otra vez</button></div></div>
+    <div id="over">
+      <div class="coach-panel">
+        <span class="coach-icon" data-icon="trophy" style="width: 2rem; height: 2rem"></span>
+        <h2 id="over-title">Fin de la partida</h2>
+        <p id="over-text"></p>
+        <button class="coach-button coach-button--primary" id="again" type="button">
+          <span class="coach-icon" data-icon="restart"></span>
+          <span id="again-text">Jugar otra vez</span>
+        </button>
+      </div>
+    </div>
 
     <script src="./falling-blocks.js"></script>
   </body>

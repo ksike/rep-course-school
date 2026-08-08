@@ -11,25 +11,66 @@
   "category": "maths",
   "tier": "a",
   "mechanic": "match",
-  "locales": ["es", "en"],
+  "locales": [
+    "es",
+    "en"
+  ],
   "minAge": 6,
   "maxAge": 11,
-  "tags": ["multiplication", "mental-arithmetic", "primary"],
+  "tags": [
+    "multiplication",
+    "mental-arithmetic",
+    "primary"
+  ],
   "orientation": "any",
-  "scoring": { "maxScore": 24, "passScore": 18, "verifiable": true },
-  "duration": { "estimatedMs": 180000 },
+  "scoring": {
+    "maxScore": 24,
+    "passScore": 18,
+    "verifiable": true
+  },
+  "duration": {
+    "estimatedMs": 180000
+  },
   "data": {
-    "columns": ["operation", "result"],
+    "columns": [
+      "operation",
+      "result"
+    ],
     "pairs": [
-      ["3 × 4", "12"],
-      ["6 × 7", "42"],
-      ["8 × 9", "72"],
-      ["5 × 6", "30"],
-      ["7 × 7", "49"],
-      ["4 × 8", "32"],
-      ["9 × 6", "54"],
-      ["2 × 9", "18"]
+      [
+        "3 × 4",
+        "12"
+      ],
+      [
+        "6 × 7",
+        "42"
+      ],
+      [
+        "8 × 9",
+        "72"
+      ],
+      [
+        "5 × 6",
+        "30"
+      ],
+      [
+        "7 × 7",
+        "49"
+      ],
+      [
+        "4 × 8",
+        "32"
+      ],
+      [
+        "9 × 6",
+        "54"
+      ],
+      [
+        "2 × 9",
+        "18"
+      ]
     ]
   },
-  "license": "CC-BY-4.0"
+  "license": "CC-BY-4.0",
+  "image": "cover.svg"
 }

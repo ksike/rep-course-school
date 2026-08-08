@@ -11,22 +11,66 @@
   "category": "language",
   "tier": "a",
   "mechanic": "fill",
-  "locales": ["es", "en"],
+  "locales": [
+    "es",
+    "en"
+  ],
   "minAge": 8,
   "maxAge": 13,
-  "tags": ["spelling", "primary", "spanish"],
-  "scoring": { "maxScore": 100, "passScore": 70, "verifiable": true },
-  "duration": { "estimatedMs": 150000 },
+  "tags": [
+    "spelling",
+    "primary",
+    "spanish"
+  ],
+  "scoring": {
+    "maxScore": 100,
+    "passScore": 70,
+    "verifiable": true
+  },
+  "duration": {
+    "estimatedMs": 150000
+  },
   "data": {
     "text": "Ayer {{1}} a casa temprano y {{2}} la ventana porque {{3}} mucho viento. Mi hermana {{4}} un dibujo y luego {{5}} a jugar al parque.",
     "gaps": [
-      { "accepts": ["volví", "volvi"], "hint": "v o b" },
-      { "accepts": ["abrí", "abri"], "hint": "b o v" },
-      { "accepts": ["hacía", "hacia"], "hint": "con h" },
-      { "accepts": ["dibujaba"], "hint": "j o g" },
-      { "accepts": ["bajamos", "bajó", "bajo"], "hint": "j o g" }
+      {
+        "accepts": [
+          "volví",
+          "volvi"
+        ],
+        "hint": "v o b"
+      },
+      {
+        "accepts": [
+          "abrí",
+          "abri"
+        ],
+        "hint": "b o v"
+      },
+      {
+        "accepts": [
+          "hacía",
+          "hacia"
+        ],
+        "hint": "con h"
+      },
+      {
+        "accepts": [
+          "dibujaba"
+        ],
+        "hint": "j o g"
+      },
+      {
+        "accepts": [
+          "bajamos",
+          "bajó",
+          "bajo"
+        ],
+        "hint": "j o g"
+      }
     ],
     "ignoreAccents": true
   },
-  "license": "CC-BY-4.0"
+  "license": "CC-BY-4.0",
+  "image": "cover.svg"
 }

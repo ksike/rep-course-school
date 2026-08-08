@@ -3,7 +3,7 @@
   "id": "ksike.school",
   "name": "Primary and secondary school content pack",
   "description": "Open Coach content for primary and secondary education: maths with open answers, courses and learning games.",
-  "version": "0.4.0",
+  "version": "0.4.2",
   "license": "MIT",
   "licenseFile": "LICENSE",
   "homepage": "https://github.com/ksike/rep-course-school",
@@ -46,7 +46,7 @@
         "es": "Repaso de la tabla de multiplicar, una pregunta por producto, con explicación y pista por respuesta.",
         "en": "Multiplication table practice, one question per product, with an explanation and per-answer feedback."
       },
-      "version": "0.1.0",
+      "version": "0.1.2",
       "path": "data/quiz/maths/times-tables",
       "category": "maths",
       "tags": [
@@ -60,14 +60,14 @@
       },
       "size": {
         "questions": 12,
-        "bytes": 24233,
-        "files": 3
+        "bytes": 28055,
+        "files": 4
       },
       "locales": [
         "en",
         "es"
       ],
-      "integrity": "sha256-tJDTAd+Twsn1x4im5c7vOnNeyajnF9pSH8+1oLbEUP8="
+      "integrity": "sha256-C5VCUpDj/WYz4LTTqWNzWhGYR/wpvWDr+6j75Fgik0A="
     },
     {
       "type": "quiz",
@@ -80,7 +80,7 @@
         "es": "Qué vale cada cifra según el lugar que ocupa. La respuesta se escribe, y el evaluador dice en qué posición estaba el error.",
         "en": "What each digit is worth according to its place. The answer is written, and the grader says which place the mistake was in."
       },
-      "version": "0.1.0",
+      "version": "0.1.2",
       "path": "data/quiz/maths/place-value",
       "category": "maths",
       "tags": [
@@ -95,14 +95,14 @@
       },
       "size": {
         "questions": 10,
-        "bytes": 10344,
-        "files": 3
+        "bytes": 12290,
+        "files": 4
       },
       "locales": [
         "en",
         "es"
       ],
-      "integrity": "sha256-iWxoHCba1GWbdgqSAbsEdwxPWmxxRcyVlmBtFHOeXfQ="
+      "integrity": "sha256-Ut0sKOwWBOleMsWvoYN5eQPoi/Q/wfQrsfdtW3lH+Ck="
     },
     {
       "type": "quiz",
@@ -115,7 +115,7 @@
         "es": "De cifra a palabra y de palabra a cifra, admitiendo cómo se escribe de verdad: con conjunción o sin ella, con tildes o sin ellas.",
         "en": "From digits to words and back, accepting what people actually write: with or without \"and\", with or without the hyphen."
       },
-      "version": "0.1.0",
+      "version": "0.1.2",
       "path": "data/quiz/maths/reading-numbers",
       "category": "maths",
       "tags": [
@@ -130,14 +130,14 @@
       },
       "size": {
         "questions": 10,
-        "bytes": 9363,
-        "files": 3
+        "bytes": 10715,
+        "files": 4
       },
       "locales": [
         "en",
         "es"
       ],
-      "integrity": "sha256-nHFwpMwpcFBfKjl0Jg8aF6Tv7i+KOs9ftbEoi5WgGBY="
+      "integrity": "sha256-aPciRiSWLPfHSRSJ2xrRqI4SsuHbX7L/jeEBgDo9ObU="
     },
     {
       "type": "quiz",
@@ -150,7 +150,7 @@
         "es": "Sacar factor común, simplificar fracciones algebraicas y resolver ecuaciones sencillas. Se acepta cualquier forma equivalente salvo cuando el enunciado pide una concreta.",
         "en": "Common factors, simplifying algebraic fractions and simple equations. Any equivalent form is accepted unless the question asks for a particular one."
       },
-      "version": "0.1.0",
+      "version": "0.1.2",
       "path": "data/quiz/maths/early-algebra",
       "category": "maths",
       "tags": [
@@ -165,14 +165,14 @@
       },
       "size": {
         "questions": 10,
-        "bytes": 11935,
-        "files": 3
+        "bytes": 13584,
+        "files": 4
       },
       "locales": [
         "en",
         "es"
       ],
-      "integrity": "sha256-Fy+raMb2zYSzt96Hb23QElBZ8XEa9l5xbpivLZ+sCtg="
+      "integrity": "sha256-N2nmCqkYLj/8SoGUZ+BMYdFPTTY31WigvWwcAVI0s0c="
     },
     {
       "type": "app",
@@ -186,7 +186,7 @@
         "es": "Empareja cada multiplicación con su resultado. Las tablas del 2 al 9, en series cortas para practicar a diario.",
         "en": "Match each multiplication with its result. Tables from 2 to 9, in short runs for daily practice."
       },
-      "version": "0.1.0",
+      "version": "0.1.1",
       "path": "data/game/maths/times-tables-match",
       "category": "maths",
       "tags": [
@@ -202,10 +202,10 @@
       "audience": {
         "minAge": 6
       },
-      "integrity": "sha256-Z6XRQ+nM15eejKwTqFo+IbdYjIZReOSrNNjWd3yVLBM=",
+      "integrity": "sha256-DZ1jSTIt176phDVLQPaTpbDdrQ7JE8DewUsODT3GBQQ=",
       "size": {
-        "bytes": 987,
-        "files": 1
+        "bytes": 3801,
+        "files": 2
       }
     },
     {
@@ -220,7 +220,7 @@
         "es": "Coloca decimales, fracciones y negativos de menor a mayor.",
         "en": "Put decimals, fractions and negatives in order from smallest to largest."
       },
-      "version": "0.1.0",
+      "version": "0.1.1",
       "path": "data/game/maths/number-line-order",
       "category": "maths",
       "tags": [
@@ -236,10 +236,10 @@
       "audience": {
         "minAge": 9
       },
-      "integrity": "sha256-JyFwAJ64+pac8+W46Flg0QLVfrsSnXB4VVRHxA6NxNY=",
+      "integrity": "sha256-8sYHu/4x4w6IJXDkpSZwsCnQcR2F6FDV4eHIXrMsZvk=",
       "size": {
-        "bytes": 887,
-        "files": 1
+        "bytes": 4191,
+        "files": 2
       }
     },
     {
@@ -254,7 +254,7 @@
         "es": "Completa las palabras que más se confunden al escribir.",
         "en": "Complete the words people most often get wrong."
       },
-      "version": "0.1.0",
+      "version": "0.1.1",
       "path": "data/game/language/spelling-gaps",
       "category": "language",
       "tags": [
@@ -270,10 +270,10 @@
       "audience": {
         "minAge": 8
       },
-      "integrity": "sha256-z2u4zU92MRCvN93stso6qlUG5fIYlbFRzB1qvPPW44M=",
+      "integrity": "sha256-fBl2gc/oVS2lC+44vPTQd9tmpBxyeR6dhXwGGMZ9bho=",
       "size": {
-        "bytes": 1186,
-        "files": 1
+        "bytes": 4078,
+        "files": 2
       }
     },
     {
@@ -343,6 +343,6 @@
       }
     }
   ],
-  "generatedAt": "2026-08-08T15:11:05.328Z",
+  "generatedAt": "2026-08-08T15:56:18.737Z",
   "generatedBy": "coach-pack-cli/0.1.0"
 }

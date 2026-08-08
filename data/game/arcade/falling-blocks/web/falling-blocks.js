@@ -48,6 +48,8 @@
       newBest: "¡Nuevo récord!", result: "{score} puntos · {lines} líneas · nivel {level}",
       settingsTitle: "Antes de empezar", settingsDone: "Empezar",
       sound: "Sonido", soundHelp: "Efectos de movimiento, línea y fin de partida.",
+      music: "Música", musicHelp: "Una melodía de fondo mientras juegas.",
+      volume: "Volumen",
       ghost: "Sombra de la pieza", ghostHelp: "Muestra dónde va a caer. Desactívala si el juego va lento.",
     },
     en: {
@@ -56,6 +58,8 @@
       newBest: "New best!", result: "{score} points · {lines} lines · level {level}",
       settingsTitle: "Before you start", settingsDone: "Start",
       sound: "Sound", soundHelp: "Movement, line and game-over effects.",
+      music: "Music", musicHelp: "A tune in the background while you play.",
+      volume: "Volume",
       ghost: "Piece shadow", ghostHelp: "Shows where it will land. Turn it off if the game feels slow.",
     },
   };
@@ -77,6 +81,7 @@
 
   var coach = null;
   var t = TEXT.es;
+  var settings = { sound: true, music: true, volume: 0.7, ghost: true };
   var lastProgress = -1;
   var dropTimer = 0;
   var lastFrame = 0;
@@ -87,78 +92,192 @@
   var painted = [];
 
 
-  /* ─────────────────────────────── sound ─────────────────────────────── */
+  /* --------------------------------- sound --------------------------------- */
 
   /**
-   * Sound, synthesised rather than shipped.
+   * Sound, synthesised rather than shipped, and built around one problem: a browser will not start
+   * audio until somebody has interacted with the page.
    *
-   * No files: an app runs in a frame whose only reachable origin is its own package, so every sound
-   * would be a download the pack has to carry, a licence somebody has to check, and bytes every player
-   * pays for. Six oscillators cost nothing, work offline, and are the whole of the code below.
+   * The first version created the context inside each effect and called `resume()` there. `resume()`
+   * is asynchronous, so whichever notes were scheduled before it settled were scheduled against a
+   * suspended clock and never played -- which is why some key presses were silent and others were
+   * not, with no pattern anybody could hear.
    *
-   * The context is created on the first interaction, never at load. A browser refuses to start audio
-   * without a gesture, and an app that tries anyway just fills the console with warnings.
+   * So: one context, made once, unlocked by the first real gesture, and every effect scheduled only
+   * while the clock is actually running. Everything goes through a master gain, which is what the
+   * volume control moves.
    */
-  var audio = null;
-  var settings = { sound: true, ghost: true };
+  var Audio = {
+    ctx: null,
+    master: null,
+    musicGain: null,
+    ready: false,
 
-  function context() {
-    if (!settings.sound) return null;
-    if (!audio) {
+    /** Called from the first key press or tap, which is the only moment a browser accepts. */
+    unlock: function () {
+      if (this.ctx) {
+        if (this.ctx.state === "suspended") this.ctx.resume().then(markReady, noop);
+        return;
+      }
       var Ctor = window.AudioContext || window.webkitAudioContext;
-      if (!Ctor) return null;
-      audio = new Ctor();
-    }
-    if (audio.state === "suspended") audio.resume();
-    return audio;
+      if (!Ctor) return;
+
+      this.ctx = new Ctor();
+      this.master = this.ctx.createGain();
+      this.master.gain.value = settings.volume;
+      this.master.connect(this.ctx.destination);
+
+      // Music sits on its own gain so it can stay under the effects without touching the master.
+      this.musicGain = this.ctx.createGain();
+      this.musicGain.gain.value = settings.music ? 0.34 : 0;
+      this.musicGain.connect(this.master);
+
+      if (this.ctx.state === "suspended") this.ctx.resume().then(markReady, noop);
+      else markReady();
+    },
+
+    /** True only when a note scheduled now will actually be heard. */
+    live: function () {
+      return this.ready && this.ctx && this.ctx.state === "running";
+    },
+
+    setVolume: function (value) {
+      if (!this.master || !this.ctx) return;
+      // A ramp rather than a jump: moving a slider should not click.
+      this.master.gain.setTargetAtTime(value, this.ctx.currentTime, 0.02);
+    },
+
+    setMusic: function (on) {
+      if (!this.musicGain || !this.ctx) return;
+      this.musicGain.gain.setTargetAtTime(on ? 0.34 : 0, this.ctx.currentTime, 0.05);
+    },
+  };
+
+  function noop() {}
+
+  function markReady() {
+    Audio.ready = true;
+    if (settings.music) Music.start();
   }
 
   /**
-   * One tone. `type` shapes it: a square reads as an action, a sine as a reward, a sawtooth as a fall.
-   * Kept short — anything above about 150 ms in a game this fast becomes a drone.
+   * One note.
+   *
+   * `at` lets the sequencer place notes ahead of the clock; effects pass nothing and play now. The
+   * gain ramps down instead of the oscillator stopping at full amplitude, because that cut is the
+   * click everybody hears and nobody can place.
    */
-  function tone(frequency, ms, type, volume, sweepTo) {
-    var ctx = context();
-    if (!ctx) return;
+  function tone(options) {
+    if (!options.music && !settings.sound) return;
+    if (!Audio.live()) return;
+
+    var ctx = Audio.ctx;
+    var at = Math.max(options.at || 0, ctx.currentTime);
+    var seconds = (options.ms || 80) / 1000;
 
     var osc = ctx.createOscillator();
     var gain = ctx.createGain();
-    var now = ctx.currentTime;
 
-    osc.type = type || "square";
-    osc.frequency.setValueAtTime(frequency, now);
-    if (sweepTo) osc.frequency.exponentialRampToValueAtTime(sweepTo, now + ms / 1000);
+    osc.type = options.type || "square";
+    osc.frequency.setValueAtTime(options.hz, at);
+    if (options.to) osc.frequency.exponentialRampToValueAtTime(options.to, at + seconds);
 
-    // A ramp rather than a stop: cutting a waveform at full amplitude is the click everybody hears.
-    gain.gain.setValueAtTime(0.0001, now);
-    gain.gain.exponentialRampToValueAtTime(volume || 0.06, now + 0.008);
-    gain.gain.exponentialRampToValueAtTime(0.0001, now + ms / 1000);
+    var peak = options.volume || 0.18;
+    gain.gain.setValueAtTime(0.0001, at);
+    gain.gain.exponentialRampToValueAtTime(peak, at + 0.006);
+    gain.gain.exponentialRampToValueAtTime(0.0001, at + seconds);
 
     osc.connect(gain);
-    gain.connect(ctx.destination);
-    osc.start(now);
-    osc.stop(now + ms / 1000 + 0.02);
+    gain.connect(options.music ? Audio.musicGain : Audio.master);
+    osc.start(at);
+    osc.stop(at + seconds + 0.03);
   }
 
   var SOUND = {
-    move: function () { tone(220, 30, "square", 0.03); },
-    rotate: function () { tone(340, 45, "square", 0.04); },
-    drop: function () { tone(180, 90, "sawtooth", 0.05, 70); },
-    lock: function () { tone(130, 60, "triangle", 0.05); },
+    move: function () { tone({ hz: 240, ms: 40, type: "square", volume: 0.1 }); },
+    rotate: function () { tone({ hz: 360, ms: 55, type: "square", volume: 0.13 }); },
+    drop: function () { tone({ hz: 200, ms: 110, type: "sawtooth", volume: 0.16, to: 70 }); },
+    lock: function () { tone({ hz: 140, ms: 70, type: "triangle", volume: 0.15 }); },
     line: function (count) {
-      // A chord, one note per line: four cleared at once should sound like more than four singles.
+      // A chord, one note per line and rising: four at once should sound like more than four singles.
       var notes = [523, 659, 784, 1047];
+      var now = Audio.live() ? Audio.ctx.currentTime : 0;
       for (var i = 0; i < count; i++) {
-        (function (index) {
-          setTimeout(function () { tone(notes[index], 130, "sine", 0.07); }, index * 55);
-        })(i);
+        tone({ hz: notes[i], ms: 160, type: "sine", volume: 0.2, at: now + i * 0.06 });
       }
     },
-    level: function () { tone(660, 90, "sine", 0.06, 990); },
+    level: function () { tone({ hz: 660, ms: 120, type: "sine", volume: 0.18, to: 990 }); },
     over: function () {
+      var now = Audio.live() ? Audio.ctx.currentTime : 0;
       [392, 330, 262, 196].forEach(function (note, index) {
-        setTimeout(function () { tone(note, 220, "triangle", 0.07); }, index * 130);
+        tone({ hz: note, ms: 260, type: "triangle", volume: 0.2, at: now + index * 0.14 });
       });
+    },
+  };
+
+  /* --------------------------------- music --------------------------------- */
+
+  /**
+   * A loop, written here rather than downloaded.
+   *
+   * An original phrase in A minor: nothing to license, nothing to fetch, and the frame has no network
+   * to fetch it with anyway. Two voices, a melody and a bass on the root, which is enough to sound
+   * composed and cheap enough to run beside the game.
+   *
+   * Scheduled with a look-ahead rather than one timer per note. `setInterval` drifts and stutters
+   * whenever the tab is busy; the audio clock does not, so the loop stays in time while the board is
+   * redrawing.
+   */
+  var Music = {
+    timer: null,
+    next: 0,
+    step: 0,
+
+    /** `[semitones from A, beats]`, `null` is a rest. */
+    melody: [
+      [0, 1], [7, 0.5], [3, 0.5], [5, 1], [7, 0.5], [5, 0.5],
+      [3, 1], [0, 0.5], [3, 0.5], [5, 1], [3, 0.5], [0, 0.5],
+      [-2, 1], [3, 0.5], [0, 0.5], [-2, 1], [null, 1],
+      [0, 1], [5, 0.5], [8, 0.5], [7, 1], [5, 0.5], [3, 0.5],
+      [0, 1], [3, 0.5], [7, 0.5], [8, 2],
+    ],
+
+    hz: function (semitone) {
+      return 440 * Math.pow(2, semitone / 12);
+    },
+
+    start: function () {
+      if (this.timer || !Audio.live()) return;
+      this.next = Audio.ctx.currentTime + 0.1;
+      this.step = 0;
+      this.timer = setInterval(this.fill.bind(this), 120);
+    },
+
+    stop: function () {
+      clearInterval(this.timer);
+      this.timer = null;
+    },
+
+    /** Keep about a quarter of a second of notes ahead of the clock, and no more. */
+    fill: function () {
+      if (!Audio.live() || !settings.music) return;
+      var beat = 0.34;
+
+      while (this.next < Audio.ctx.currentTime + 0.25) {
+        var note = this.melody[this.step % this.melody.length];
+        var length = note[1] * beat;
+
+        if (note[0] !== null) {
+          tone({ hz: this.hz(note[0] + 12), ms: length * 900, type: "triangle", volume: 0.14, at: this.next, music: true });
+        }
+        // The bass lands on the first beat of each bar and holds under the phrase.
+        if (this.step % 4 === 0) {
+          tone({ hz: this.hz(-24), ms: beat * 1800, type: "sine", volume: 0.22, at: this.next, music: true });
+        }
+
+        this.next += length;
+        this.step += 1;
+      }
     },
   };
 
@@ -412,6 +531,7 @@
   function finish() {
     if (over) return;
     over = true;
+    Music.stop();
     SOUND.over();
 
     var beaten = score > best;
@@ -436,6 +556,45 @@
       .replace("{level}", String(level));
     document.getElementById("over").classList.add("on");
     refresh();
+    showRanking();
+  }
+
+  /**
+   * The leaderboard, on the screen where somebody has just found out how they did.
+   *
+   * Asked for **after** the score was reported, so the table already includes this game. The platform
+   * builds it from its own sessions: the app never keeps a table of who is winning, which would be a
+   * table it could write.
+   */
+  function showRanking() {
+    var list = document.getElementById("ranking");
+    list.innerHTML = "";
+    if (!coach || !coach.ranking) return;
+
+    coach.ranking({ limit: 5 }).then(function (answer) {
+      if (!answer || !answer.ok || !answer.rows || answer.rows.length === 0) return;
+
+      var rows = answer.rows.slice();
+      // Somebody in fortieth place still wants to know they are fortieth, and a table that stops at
+      // five tells them nothing about themselves.
+      if (answer.you && !rows.some(function (row) { return row.isYou; })) {
+        answer.you.isYou = true;
+        rows.push(answer.you);
+      }
+
+      rows.forEach(function (row) {
+        var item = document.createElement("li");
+        if (row.isYou) item.className = "you";
+        item.innerHTML =
+          '<span class="rank">' + row.rank + "</span>" +
+          '<span class="name"></span>' +
+          '<span class="score">' + row.score + "</span>";
+        // The name goes in as text: it comes from another person's profile, and building it into a
+        // string would be the one place this app could be made to render somebody else's markup.
+        item.querySelector(".name").textContent = row.name;
+        list.appendChild(item);
+      });
+    });
   }
 
   function restart() {
@@ -451,6 +610,7 @@
     bag = [];
     nextPiece = null;
     document.getElementById("over").classList.remove("on");
+    if (settings.music) Music.start();
     spawn();
     refresh();
   }
@@ -463,6 +623,10 @@
     // Not when the settings panel is what paused it, though: opening and closing it would be two
     // writes a second apart, and the second is refused — correctly, and noisily.
     if (paused && persist !== false && coach && !over) coach.save(snapshot());
+
+    // Music follows the game rather than the tab: nobody wants a loop playing over a pause screen.
+    if (paused || over) Music.stop();
+    else if (settings.music) Music.start();
   }
 
   /* ─────────────────────────────── loop ─────────────────────────────── */
@@ -490,6 +654,7 @@
   /* ─────────────────────────────── input ─────────────────────────────── */
 
   function onKey(event) {
+    Audio.unlock();
     var handled = true;
     switch (event.key) {
       case "ArrowLeft": if (move(-1, 0)) SOUND.move(); break;
@@ -507,6 +672,7 @@
   function touch() {
     var from = null;
     boardEl.addEventListener("touchstart", function (event) {
+      Audio.unlock();
       from = { x: event.touches[0].clientX, y: event.touches[0].clientY, at: Date.now() };
     }, { passive: true });
 
@@ -531,14 +697,26 @@
    */
   function applySettings() {
     document.getElementById("opt-sound").checked = settings.sound;
+    document.getElementById("opt-music").checked = settings.music;
     document.getElementById("opt-ghost").checked = settings.ghost;
+    document.getElementById("opt-volume").value = String(Math.round(settings.volume * 100));
+    document.getElementById("volume-value").textContent = Math.round(settings.volume * 100) + "%";
     document.getElementById("sound-icon").dataset.icon = settings.sound ? "sound-on" : "sound-off";
+
+    Audio.setVolume(settings.volume);
+    Audio.setMusic(settings.music);
+    if (settings.music) Music.start();
+    else Music.stop();
     draw();
   }
 
   function saveSettings() {
+    // Any change is a gesture, which is the moment a browser lets audio start.
+    Audio.unlock();
     settings.sound = document.getElementById("opt-sound").checked;
+    settings.music = document.getElementById("opt-music").checked;
     settings.ghost = document.getElementById("opt-ghost").checked;
+    settings.volume = Number(document.getElementById("opt-volume").value) / 100;
     applySettings();
     if (coach) coach.data.set("settings", settings);
   }
@@ -561,14 +739,24 @@
   restart();
   touch();
   document.addEventListener("keydown", onKey);
+  document.addEventListener("pointerdown", Audio.unlock.bind(Audio), { once: false });
   document.getElementById("pause").addEventListener("click", function () { setPaused(!paused); });
   document.getElementById("end").addEventListener("click", finish);
   document.getElementById("again").addEventListener("click", restart);
   document.getElementById("settings-open").addEventListener("click", openSettings);
   document.getElementById("settings-done").addEventListener("click", closeSettings);
-  ["opt-sound", "opt-ghost"].forEach(function (id) {
+  ["opt-sound", "opt-music", "opt-ghost"].forEach(function (id) {
     document.getElementById(id).addEventListener("change", saveSettings);
   });
+  // `input` rather than `change`: a volume slider that only reacts when you let go is a slider you
+  // cannot set by ear.
+  document.getElementById("opt-volume").addEventListener("input", function () {
+    settings.volume = Number(this.value) / 100;
+    document.getElementById("volume-value").textContent = this.value + "%";
+    Audio.unlock();
+    Audio.setVolume(settings.volume);
+  });
+  document.getElementById("opt-volume").addEventListener("change", saveSettings);
   requestAnimationFrame(frame);
 
   coach = window.OpenCoach.connect({
@@ -594,6 +782,9 @@
       document.getElementById("l-sound-help").textContent = t.soundHelp;
       document.getElementById("l-ghost").textContent = t.ghost;
       document.getElementById("l-ghost-help").textContent = t.ghostHelp;
+      document.getElementById("l-music").textContent = t.music;
+      document.getElementById("l-music-help").textContent = t.musicHelp;
+      document.getElementById("l-volume").textContent = t.volume;
 
       // What outlives a game comes from the app's own store; the game in progress comes from the save.
       // Both are the platform's, tied to the account, so they follow the player between devices.
@@ -609,7 +800,9 @@
       // want to be asked every time they play.
       coach.data.get("settings").then(function (stored) {
         if (stored) {
-          settings = stored;
+          Object.keys(stored).forEach(function (key) {
+            if (stored[key] !== undefined) settings[key] = stored[key];
+          });
           applySettings();
         } else {
           openSettings();

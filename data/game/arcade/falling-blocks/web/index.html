@@ -146,11 +146,75 @@
         font-weight: 600;
       }
 
+      .slider {
+        display: block;
+        margin-bottom: 0.9rem;
+      }
+
+      .slider-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        font-size: 0.9rem;
+        font-weight: 600;
+        margin-bottom: 0.3rem;
+      }
+
+      .slider-head span {
+        font-weight: 400;
+        font-size: 0.78rem;
+        color: var(--coach-muted);
+        font-variant-numeric: tabular-nums;
+      }
+
+      .slider input {
+        width: 100%;
+        accent-color: var(--coach-accent);
+      }
+
       .switch em {
         display: block;
         font-style: normal;
         font-size: 0.78rem;
         color: var(--coach-muted);
+      }
+
+      .ranking {
+        list-style: none;
+        margin: 0 0 1rem;
+        padding: 0;
+        text-align: left;
+        font-size: 0.85rem;
+      }
+
+      .ranking li {
+        display: flex;
+        gap: 0.6rem;
+        padding: 0.25rem 0.4rem;
+        border-radius: 6px;
+      }
+
+      .ranking li.you {
+        background: color-mix(in srgb, var(--coach-accent) 18%, transparent);
+        font-weight: 600;
+      }
+
+      .ranking .rank {
+        width: 1.6rem;
+        text-align: right;
+        color: var(--coach-muted);
+        font-variant-numeric: tabular-nums;
+      }
+
+      .ranking .name {
+        flex: 1;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .ranking .score {
+        font-variant-numeric: tabular-nums;
       }
 
       #over .coach-panel {
@@ -256,6 +320,22 @@
         </label>
 
         <label class="switch">
+          <input type="checkbox" id="opt-music" checked />
+          <span>
+            <strong id="l-music">Música</strong>
+            <em id="l-music-help">Una melodía de fondo mientras juegas.</em>
+          </span>
+        </label>
+
+        <label class="slider">
+          <span class="slider-head">
+            <strong id="l-volume">Volumen</strong>
+            <span id="volume-value">70%</span>
+          </span>
+          <input type="range" id="opt-volume" min="0" max="100" step="5" value="70" />
+        </label>
+
+        <label class="switch">
           <input type="checkbox" id="opt-ghost" checked />
           <span>
             <strong id="l-ghost">Sombra de la pieza</strong>
@@ -275,6 +355,9 @@
         <span class="coach-icon" data-icon="trophy" style="width: 2rem; height: 2rem"></span>
         <h2 id="over-title">Fin de la partida</h2>
         <p id="over-text"></p>
+
+        <!-- Filled in after the score has been reported, so the reader sees where it left them. -->
+        <ol id="ranking" class="ranking"></ol>
         <button class="coach-button coach-button--primary" id="again" type="button">
           <span class="coach-icon" data-icon="restart"></span>
           <span id="again-text">Jugar otra vez</span>

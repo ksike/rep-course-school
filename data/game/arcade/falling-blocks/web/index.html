@@ -27,68 +27,173 @@
         touch-action: manipulation;
       }
 
+      /*
+        Two columns: the board takes everything left over, the panel is only as wide as it needs.
+
+        The board used to be centred in the free space with a fixed height, which left a wide margin on
+        the left and a thin one top and bottom — the space was there and nothing used it. Now the board
+        is as tall as the frame allows and its width follows from the 1:2 of the well, so the margins
+        are whatever is left over and they are even.
+      */
       #app {
         height: 100%;
-        display: flex;
-        gap: 1rem;
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
         align-items: center;
-        justify-content: center;
-        padding: 0.75rem;
+        gap: clamp(0.5rem, 2vw, 1.25rem);
+        padding: clamp(0.4rem, 1.5vh, 0.9rem);
       }
 
       #board {
-        height: min(100%, 78vh);
-        max-width: 100%;
+        height: 100%;
+        max-height: 100%;
+        width: auto;
+        aspect-ratio: 1 / 2;
+        justify-self: center;
         border: 1px solid var(--coach-border);
         border-radius: var(--coach-radius);
         background: color-mix(in srgb, var(--coach-fg) 6%, var(--coach-bg));
+        box-shadow: 0 0 0 1px color-mix(in srgb, var(--coach-accent) 12%, transparent);
+        transition: box-shadow 0.25s;
       }
 
+      /* A whole row cleared, and a level gained, are worth seeing as well as hearing. */
+      #board.flash {
+        box-shadow: 0 0 0 3px var(--coach-accent), 0 0 32px color-mix(in srgb, var(--coach-accent) 45%, transparent);
+      }
+
+      /*
+        The panel scrolls rather than losing its end.
+
+        On a short window the controls used to fall off the bottom with nothing to say so. A column
+        that scrolls keeps every control reachable at any height, and the scrollbar is the hint.
+      */
       aside {
         display: flex;
         flex-direction: column;
-        gap: 0.6rem;
-        min-width: 9rem;
+        gap: 0.5rem;
+        width: clamp(9rem, 22vw, 13rem);
+        max-height: 100%;
+        overflow-y: auto;
+        overscroll-behavior: contain;
+        padding-right: 0.15rem;
       }
 
-      .label {
-        font-size: 0.68rem;
+      /* Four small figures in two columns read faster than four stacked panels. */
+      .stats {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0.4rem;
+      }
+
+      .stat {
+        border: 1px solid var(--coach-border);
+        border-radius: var(--coach-radius);
+        padding: 0.4rem 0.5rem;
+        background: color-mix(in srgb, var(--coach-fg) 3%, transparent);
+      }
+
+      .stat .label {
+        font-size: 0.6rem;
         letter-spacing: 0.08em;
         text-transform: uppercase;
         color: var(--coach-muted);
       }
 
-      .value {
-        font-size: 1.4rem;
+      .stat .value {
+        font-size: 1.05rem;
         font-weight: 700;
         font-variant-numeric: tabular-nums;
+        line-height: 1.2;
+      }
+
+      .stat--wide {
+        grid-column: 1 / -1;
+      }
+
+      /* Progress to the next level: what "advancing" looks like while it is happening. */
+      .level-row {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 0.4rem;
+      }
+
+      .level-bar {
+        height: 5px;
+        border-radius: 999px;
+        background: color-mix(in srgb, var(--coach-fg) 12%, transparent);
+        overflow: hidden;
+        margin-top: 0.35rem;
+      }
+
+      .level-bar span {
+        display: block;
+        height: 100%;
+        width: 0%;
+        border-radius: 999px;
+        background: linear-gradient(90deg, var(--coach-accent), color-mix(in srgb, var(--coach-accent) 40%, #fff));
+        transition: width 0.35s ease;
+      }
+
+      .next-box {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.5rem;
+        border: 1px solid var(--coach-border);
+        border-radius: var(--coach-radius);
+        padding: 0.4rem 0.5rem;
+      }
+
+      #next {
+        width: 3.6rem;
+        height: 3.6rem;
+        flex: none;
       }
 
       .keys {
-        font-size: 0.75rem;
+        font-size: 0.68rem;
         color: var(--coach-muted);
-        line-height: 1.8;
+        line-height: 1.7;
       }
 
       kbd {
         border: 1px solid var(--coach-border);
         border-bottom-width: 2px;
         border-radius: 4px;
-        padding: 0 0.3rem;
-        font-size: 0.7rem;
+        padding: 0 0.25rem;
+        font-size: 0.62rem;
         font-family: var(--coach-mono);
       }
 
       .row {
         display: flex;
-        gap: 0.4rem;
+        gap: 0.35rem;
+      }
+
+      .row .coach-button {
+        flex: 1;
+        min-width: 0;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.3rem;
+        padding: 0.4rem 0.5rem;
+        font-size: 0.8rem;
+      }
+
+      .row .coach-button span:last-child {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
       }
 
       .volume-row {
         display: flex;
         align-items: center;
-        gap: 0.5rem;
-        padding: 0.35rem 0.1rem;
+        gap: 0.45rem;
+        padding: 0.1rem;
       }
 
       .volume-row input {
@@ -97,21 +202,19 @@
         accent-color: var(--coach-accent);
       }
 
-      .row .coach-button {
-        flex: 1;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        gap: 0.35rem;
-      }
+      /* ── overlays ───────────────────────────────────────────────────── */
 
-      #over {
+      #over,
+      #settings,
+      #paused,
+      #confirm {
         position: fixed;
         inset: 0;
         display: none;
         place-items: center;
-        background: color-mix(in srgb, var(--coach-bg) 88%, transparent);
-        backdrop-filter: blur(2px);
+        background: color-mix(in srgb, var(--coach-bg) 85%, transparent);
+        backdrop-filter: blur(3px);
+        padding: 1rem;
       }
 
       #over.on,
@@ -121,127 +224,80 @@
         display: grid;
       }
 
-      #confirm {
-        position: fixed;
-        inset: 0;
-        display: none;
-        place-items: center;
-        background: color-mix(in srgb, var(--coach-bg) 86%, transparent);
-        backdrop-filter: blur(2px);
+      #paused {
+        cursor: pointer;
+      }
+
+      #over .coach-panel,
+      #settings .coach-panel,
+      #paused .coach-panel,
+      #confirm .coach-panel {
+        text-align: center;
+        max-width: min(24rem, 90vw);
+        max-height: 88vh;
+        overflow-y: auto;
+        animation: rise 0.28s ease-out;
+      }
+
+      @keyframes rise {
+        from {
+          opacity: 0;
+          transform: translateY(10px) scale(0.98);
+        }
+      }
+
+      #settings .coach-panel,
+      #confirm .coach-panel {
+        text-align: left;
       }
 
       #confirm .coach-panel {
         text-align: center;
-        max-width: 20rem;
       }
 
-      #confirm h2 {
-        margin: 0 0 0.3rem;
-        font-size: 1rem;
+      h2 {
+        margin: 0.25rem 0 0.3rem;
+        font-size: 1.05rem;
       }
 
+      #over p,
+      #paused p,
       #confirm p {
         margin: 0 0 0.9rem;
-        font-size: 0.85rem;
+        font-size: 0.86rem;
         color: var(--coach-muted);
       }
 
-      #paused {
+      /* Winning should look different, not only sound different. */
+      #over.won .coach-panel {
+        border-color: var(--coach-accent);
+        box-shadow: 0 0 40px color-mix(in srgb, var(--coach-accent) 35%, transparent);
+      }
+
+      #confetti {
         position: fixed;
         inset: 0;
+        pointer-events: none;
         display: none;
-        place-items: center;
-        background: color-mix(in srgb, var(--coach-bg) 78%, transparent);
-        backdrop-filter: blur(2px);
-        cursor: pointer;
       }
 
-      #paused .coach-panel {
-        text-align: center;
-      }
-
-      #paused h2 {
-        margin: 0.25rem 0 0.25rem;
-        font-size: 1.05rem;
-      }
-
-      #paused p {
-        margin: 0;
-        font-size: 0.85rem;
-        color: var(--coach-muted);
-      }
-
-      #settings {
-        position: fixed;
-        inset: 0;
-        display: none;
-        place-items: center;
-        background: color-mix(in srgb, var(--coach-bg) 88%, transparent);
-        backdrop-filter: blur(2px);
-      }
-
-      #settings .coach-panel {
-        min-width: 18rem;
-        max-width: 22rem;
-      }
-
-      #settings h2 {
-        margin: 0 0 0.75rem;
-        font-size: 1.05rem;
-      }
-
-      .switch {
-        display: flex;
-        gap: 0.6rem;
-        align-items: start;
-        margin-bottom: 0.9rem;
-        cursor: pointer;
-      }
-
-      .switch input {
-        margin-top: 0.25rem;
-        width: 1rem;
-        height: 1rem;
-        accent-color: var(--coach-accent);
-      }
-
-      .switch strong {
+      #confetti.on {
         display: block;
-        font-size: 0.9rem;
-        font-weight: 600;
       }
 
-      .slider {
-        display: block;
-        margin-bottom: 0.9rem;
+      #confetti rect {
+        animation: fall 1.9s linear forwards;
       }
 
-      .slider-head {
-        display: flex;
-        justify-content: space-between;
-        align-items: baseline;
-        font-size: 0.9rem;
-        font-weight: 600;
-        margin-bottom: 0.3rem;
-      }
-
-      .slider-head span {
-        font-weight: 400;
-        font-size: 0.78rem;
-        color: var(--coach-muted);
-        font-variant-numeric: tabular-nums;
-      }
-
-      .slider input {
-        width: 100%;
-        accent-color: var(--coach-accent);
-      }
-
-      .switch em {
-        display: block;
-        font-style: normal;
-        font-size: 0.78rem;
-        color: var(--coach-muted);
+      @keyframes fall {
+        from {
+          transform: translateY(-12%) rotate(0deg);
+          opacity: 1;
+        }
+        to {
+          transform: translateY(115%) rotate(540deg);
+          opacity: 0;
+        }
       }
 
       .ranking {
@@ -249,13 +305,13 @@
         margin: 0 0 1rem;
         padding: 0;
         text-align: left;
-        font-size: 0.85rem;
+        font-size: 0.82rem;
       }
 
       .ranking li {
         display: flex;
         gap: 0.6rem;
-        padding: 0.25rem 0.4rem;
+        padding: 0.22rem 0.4rem;
         border-radius: 6px;
       }
 
@@ -265,7 +321,7 @@
       }
 
       .ranking .rank {
-        width: 1.6rem;
+        width: 1.5rem;
         text-align: right;
         color: var(--coach-muted);
         font-variant-numeric: tabular-nums;
@@ -282,33 +338,88 @@
         font-variant-numeric: tabular-nums;
       }
 
-      #over .coach-panel {
-        text-align: center;
-        min-width: 16rem;
+      .switch {
+        display: flex;
+        gap: 0.6rem;
+        align-items: start;
+        margin-bottom: 0.8rem;
+        cursor: pointer;
       }
 
-      #over h2 {
-        margin: 0 0 0.25rem;
+      .switch input {
+        margin-top: 0.25rem;
+        width: 1rem;
+        height: 1rem;
+        accent-color: var(--coach-accent);
       }
 
-      #over p {
-        margin: 0 0 1rem;
+      .switch strong {
+        display: block;
+        font-size: 0.88rem;
+        font-weight: 600;
+      }
+
+      .switch em {
+        display: block;
+        font-style: normal;
+        font-size: 0.76rem;
         color: var(--coach-muted);
       }
 
-      @media (max-width: 560px) {
+      .slider {
+        display: block;
+        margin-bottom: 0.8rem;
+      }
+
+      .slider-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        font-size: 0.88rem;
+        font-weight: 600;
+        margin-bottom: 0.3rem;
+      }
+
+      .slider-head span {
+        font-weight: 400;
+        font-size: 0.76rem;
+        color: var(--coach-muted);
+        font-variant-numeric: tabular-nums;
+      }
+
+      .slider input {
+        width: 100%;
+        accent-color: var(--coach-accent);
+      }
+
+      /* On a phone the panel goes under the board and lays itself out sideways. */
+      @media (max-width: 620px), (max-height: 460px) {
         #app {
-          flex-direction: column;
-          gap: 0.6rem;
+          grid-template-columns: 1fr;
+          grid-template-rows: minmax(0, 1fr) auto;
+          align-items: stretch;
         }
+
         aside {
+          width: 100%;
           flex-direction: row;
           flex-wrap: wrap;
-          justify-content: center;
-          min-width: 0;
+          align-items: center;
+          max-height: 9rem;
         }
+
+        .stats {
+          flex: 1;
+          min-width: 11rem;
+        }
+
         .keys {
           display: none;
+        }
+
+        .row {
+          flex: 1;
+          min-width: 9rem;
         }
       }
     </style>
@@ -325,34 +436,38 @@
       ></svg>
 
       <aside>
-        <div class="coach-panel">
-          <div class="label" id="l-score">Puntos</div>
-          <div class="value" id="score">0</div>
-        </div>
-        <div class="coach-panel">
-          <div class="label" id="l-best">Récord</div>
-          <div class="value" id="best">0</div>
-        </div>
-        <div class="coach-panel">
-          <div class="label" id="l-lines">Líneas</div>
-          <div class="value" id="lines">0</div>
-        </div>
-        <div class="coach-panel">
-          <div class="label" id="l-next">Siguiente</div>
-          <svg id="next" viewBox="0 0 120 120" width="96" height="96" aria-hidden="true"></svg>
+        <div class="stats">
+          <div class="stat">
+            <div class="label" id="l-score">Puntos</div>
+            <div class="value" id="score">0</div>
+          </div>
+          <div class="stat">
+            <div class="label" id="l-best">Récord</div>
+            <div class="value" id="best">0</div>
+          </div>
+          <div class="stat">
+            <div class="label" id="l-lines">Líneas</div>
+            <div class="value" id="lines">0</div>
+          </div>
+          <div class="stat">
+            <div class="label" id="l-level">Nivel</div>
+            <div class="value" id="level">1</div>
+          </div>
+
+          <div class="stat stat--wide">
+            <div class="level-row">
+              <span class="label" id="l-toNext">Al siguiente nivel</span>
+              <span class="label" id="toNext">0/10</span>
+            </div>
+            <div class="level-bar"><span id="level-fill"></span></div>
+          </div>
         </div>
 
-        <div class="keys" id="keys">
-          <kbd>←</kbd> <kbd>→</kbd> mover<br />
-          <kbd>↑</kbd> girar · <kbd>↓</kbd> bajar<br />
-          <kbd>espacio</kbd> soltar<br />
-          <kbd>P</kbd> pausa
+        <div class="next-box">
+          <span class="label" id="l-next">Siguiente</span>
+          <svg id="next" viewBox="0 0 120 120" aria-hidden="true"></svg>
         </div>
 
-        <!--
-          The volume lives here rather than only in the settings panel: it is the control people reach
-          for while playing, and a game you have to pause to quieten is a game you turn off instead.
-        -->
         <label class="volume-row">
           <span class="coach-icon" data-icon="sound-on" id="sound-icon"></span>
           <input type="range" id="quick-volume" min="0" max="100" step="5" value="70" aria-label="Volumen" />
@@ -363,7 +478,7 @@
             <span class="coach-icon" data-icon="pause" id="pause-icon"></span>
             <span id="pause-text">Pausa</span>
           </button>
-          <button class="coach-button" id="restart" type="button" title="Reiniciar">
+          <button class="coach-button" id="restart" type="button">
             <span class="coach-icon" data-icon="restart"></span>
             <span id="restart-text">Reiniciar</span>
           </button>
@@ -379,16 +494,16 @@
             <span id="end-text">Terminar</span>
           </button>
         </div>
+
+        <div class="keys" id="keys">
+          <kbd>←</kbd> <kbd>→</kbd> mover · <kbd>↑</kbd> girar<br />
+          <kbd>↓</kbd> bajar · <kbd>espacio</kbd> soltar · <kbd>P</kbd> pausa
+        </div>
       </aside>
     </div>
 
-    <!--
-      Settings, shown before the first game and reachable from the sound button afterwards.
+    <svg id="confetti" aria-hidden="true"></svg>
 
-      Two switches and no more. Sound is the one people want off, and the ghost piece is the one thing
-      here worth turning off on a slow machine — it is a second pass over the board every frame. A
-      settings panel with ten knobs would be a settings panel nobody reads.
-    -->
     <div id="settings">
       <div class="coach-panel">
         <h2 id="settings-title">Antes de empezar</h2>
@@ -432,22 +547,11 @@
       </div>
     </div>
 
-    <!-- Shown when the game is paused and the reader is looking at it: without this, a paused game is
-         indistinguishable from a broken one. -->
-    <div id="paused">
-      <div class="coach-panel">
-        <span class="coach-icon" data-icon="play" style="width: 2rem; height: 2rem"></span>
-        <h2 id="paused-title">En pausa</h2>
-        <p id="paused-help">Pulsa cualquier tecla para seguir.</p>
-      </div>
-    </div>
-
     <!--
       Asked here rather than with `confirm()`.
 
       A sandboxed frame without `allow-modals` ignores `alert`, `confirm` and `prompt` entirely — the
-      call returns and nothing happens — so a game that asks that way silently does nothing. Keeping
-      the sandbox tight and asking in the page is the right way round.
+      call returns and nothing happens — so a game that asks that way silently does nothing.
     -->
     <div id="confirm">
       <div class="coach-panel">
@@ -466,14 +570,23 @@
       </div>
     </div>
 
+    <div id="paused">
+      <div class="coach-panel">
+        <span class="coach-icon" data-icon="play" style="width: 2rem; height: 2rem"></span>
+        <h2 id="paused-title">En pausa</h2>
+        <p id="paused-help">Pulsa cualquier tecla para seguir.</p>
+      </div>
+    </div>
+
     <div id="over">
       <div class="coach-panel">
-        <span class="coach-icon" data-icon="trophy" style="width: 2rem; height: 2rem"></span>
+        <span class="coach-icon" data-icon="trophy" id="over-icon" style="width: 2rem; height: 2rem"></span>
         <h2 id="over-title">Fin de la partida</h2>
         <p id="over-text"></p>
 
         <!-- Filled in after the score has been reported, so the reader sees where it left them. -->
         <ol id="ranking" class="ranking"></ol>
+
         <button class="coach-button coach-button--primary" id="again" type="button">
           <span class="coach-icon" data-icon="restart"></span>
           <span id="again-text">Jugar otra vez</span>

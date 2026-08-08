@@ -41,6 +41,9 @@
    *  which is the whole reason anybody stacks. */
   var LINE_SCORE = [0, 100, 300, 500, 800];
 
+  /** What `scoring.passScore` says in `game.json`: the same number the platform marks a pass at. */
+  var PASS_SCORE = 5000;
+
   var TEXT = {
     es: {
       score: "Puntos", best: "Récord", lines: "Líneas", next: "Siguiente", pause: "Pausa", resume: "Seguir",
@@ -48,7 +51,8 @@
       newBest: "¡Nuevo récord!", result: "{score} puntos · {lines} líneas · nivel {level}",
       settingsTitle: "Antes de empezar", settingsDone: "Empezar",
       pausedTitle: "En pausa", pausedHelp: "Pulsa cualquier tecla para seguir.",
-      restart: "Reiniciar", settingsOpen: "Ajustes",
+      restart: "Reiniciar", settingsOpen: "Ajustes", level: "Nivel", toNext: "Al siguiente nivel",
+      passed: "¡Buena partida!",
       confirmTitle: "¿Empezar una partida nueva?", confirmText: "Se pierde la actual.",
       confirmYes: "Reiniciar", confirmNo: "Cancelar",
       sound: "Sonido", soundHelp: "Efectos de movimiento, línea y fin de partida.",
@@ -62,7 +66,8 @@
       newBest: "New best!", result: "{score} points · {lines} lines · level {level}",
       settingsTitle: "Before you start", settingsDone: "Start",
       pausedTitle: "Paused", pausedHelp: "Press any key to carry on.",
-      restart: "Restart", settingsOpen: "Settings",
+      restart: "Restart", settingsOpen: "Settings", level: "Level", toNext: "To the next level",
+      passed: "Well played!",
       confirmTitle: "Start a new game?", confirmText: "The current one is lost.",
       confirmYes: "Restart", confirmNo: "Cancel",
       sound: "Sound", soundHelp: "Movement, line and game-over effects.",
@@ -215,12 +220,39 @@
         tone({ hz: notes[i], ms: 160, type: "sine", volume: 0.2, at: now + i * 0.06 });
       }
     },
-    level: function () { tone({ hz: 660, ms: 120, type: "sine", volume: 0.18, to: 990 }); },
-    over: function () {
+    level: function () {
       var now = Audio.live() ? Audio.ctx.currentTime : 0;
-      [392, 330, 262, 196].forEach(function (note, index) {
-        tone({ hz: note, ms: 260, type: "triangle", volume: 0.2, at: now + index * 0.14 });
+      tone({ hz: 660, ms: 130, type: "sine", volume: 0.18, to: 990 });
+      tone({ hz: 990, ms: 200, type: "triangle", volume: 0.14, at: now + 0.12 });
+    },
+    /**
+     * Losing: four notes walking down, the last one flat and held.
+     *
+     * The ending has to *say* which ending it was. One tone for both meant somebody who had just beaten
+     * their record heard the same thing as somebody who had been buried, which is the game shrugging.
+     */
+    lose: function () {
+      var now = Audio.live() ? Audio.ctx.currentTime : 0;
+      [392, 330, 262, 175].forEach(function (note, index) {
+        tone({
+          hz: note,
+          ms: index === 3 ? 620 : 240,
+          type: "triangle",
+          volume: 0.2,
+          at: now + index * 0.15,
+          to: index === 3 ? note * 0.85 : undefined,
+        });
       });
+    },
+
+    /** Winning: a major arpeggio climbing, then the octave over it. */
+    win: function () {
+      var now = Audio.live() ? Audio.ctx.currentTime : 0;
+      [523, 659, 784, 1047].forEach(function (note, index) {
+        tone({ hz: note, ms: 180, type: "sine", volume: 0.2, at: now + index * 0.1 });
+      });
+      tone({ hz: 1047, ms: 520, type: "triangle", volume: 0.17, at: now + 0.42 });
+      tone({ hz: 1568, ms: 520, type: "sine", volume: 0.12, at: now + 0.46 });
     },
   };
 
@@ -447,7 +479,11 @@
       // turns "played for ten minutes" into "good at clearing four at once".
       coach && coach.event("line-clear", [cleared === 4 ? "tetris" : "lines-" + cleared, "level-" + level]);
       SOUND.line(cleared);
-      if (level > previousLevel) SOUND.level();
+      flash();
+      if (level > previousLevel) {
+        SOUND.level();
+        celebrate(14);
+      }
       if (cleared === 4) totals.tetrises++;
 
       report();
@@ -488,7 +524,24 @@
     document.getElementById("score").textContent = String(score);
     document.getElementById("lines").textContent = String(lines);
     document.getElementById("best").textContent = String(Math.max(best, score));
+    document.getElementById("level").textContent = String(level);
+
+    // Ten lines a level, so "how far to the next one" is a number somebody can act on rather than a
+    // level that changes without warning.
+    var into = lines % 10;
+    document.getElementById("toNext").textContent = into + "/10";
+    document.getElementById("level-fill").style.width = into * 10 + "%";
+
     draw();
+  }
+
+  /** A short flash on the well: a cleared line and a new level should be visible, not only audible. */
+  function flash() {
+    var board = document.getElementById("board");
+    board.classList.add("flash");
+    setTimeout(function () {
+      board.classList.remove("flash");
+    }, 260);
   }
 
   /** The game in progress, small enough to be state rather than assets: the board, the piece, the counts. */
@@ -541,10 +594,19 @@
     if (over) return;
     over = true;
     Music.stop();
-    SOUND.over();
 
-    var beaten = score > best;
-    if (beaten) best = score;
+    // What counts as winning: the score the manifest calls a pass, or a new personal best. Both are
+    // reasons to be told something other than "you lost".
+    var beatenBest = score > best && score > 0;
+    var won = score >= PASS_SCORE || beatenBest;
+    if (won) {
+      SOUND.win();
+      celebrate(60);
+    } else {
+      SOUND.lose();
+    }
+
+    if (beatenBest) best = score;
     totals.games++;
 
     if (coach) {
@@ -558,7 +620,9 @@
       });
     }
 
-    document.getElementById("over-title").textContent = beaten ? t.newBest : t.over;
+    document.getElementById("over").classList.toggle("won", won);
+    document.getElementById("over-icon").dataset.icon = won ? "trophy" : "close";
+    document.getElementById("over-title").textContent = beatenBest ? t.newBest : won ? t.passed : t.over;
     document.getElementById("over-text").textContent = t.result
       .replace("{score}", String(score))
       .replace("{lines}", String(lines))
@@ -711,6 +775,38 @@
       else if (dy > 0) drop();
       from = null;
     }, { passive: true });
+  }
+
+  /**
+   * Confetti, in the same SVG the rest of the game is drawn in.
+   *
+   * A handful of rectangles with a CSS animation and a timeout that removes them: no library, no
+   * images, and nothing left running afterwards. Skipped entirely when somebody asked for reduced
+   * motion — a celebration nobody wanted is just movement in the way.
+   */
+  function celebrate(count) {
+    if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+    var layer = document.getElementById("confetti");
+    var colours = ["#22d3ee", "#facc15", "#4ade80", "#f87171", "#c084fc", "#60a5fa"];
+    layer.classList.add("on");
+
+    for (var i = 0; i < count; i++) {
+      var piece = document.createElementNS(SVG_NS, "rect");
+      piece.setAttribute("x", Math.random() * 100 + "%");
+      piece.setAttribute("y", "0");
+      piece.setAttribute("width", String(4 + Math.random() * 6));
+      piece.setAttribute("height", String(8 + Math.random() * 10));
+      piece.setAttribute("fill", colours[i % colours.length]);
+      piece.style.animationDelay = Math.random() * 0.5 + "s";
+      piece.style.animationDuration = 1.4 + Math.random() * 0.9 + "s";
+      layer.appendChild(piece);
+    }
+
+    setTimeout(function () {
+      while (layer.firstChild) layer.removeChild(layer.firstChild);
+      layer.classList.remove("on");
+    }, 2600);
   }
 
   /* ─────────────────────────────── settings ─────────────────────────────── */
@@ -874,6 +970,8 @@
       document.getElementById("paused-help").textContent = t.pausedHelp;
       document.getElementById("restart-text").textContent = t.restart;
       document.getElementById("settings-open-text").textContent = t.settingsOpen;
+      document.getElementById("l-level").textContent = t.level;
+      document.getElementById("l-toNext").textContent = t.toNext;
       document.getElementById("confirm-title").textContent = t.confirmTitle;
       document.getElementById("confirm-text").textContent = t.confirmText;
       document.getElementById("confirm-yes-text").textContent = t.confirmYes;

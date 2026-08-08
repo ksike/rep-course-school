@@ -779,6 +779,22 @@
   document.getElementById("opt-volume").addEventListener("change", saveSettings);
   requestAnimationFrame(frame);
 
+  /**
+   * The platform, if it is there.
+   *
+   * `OpenCoach` is absent when the SDK could not load — an older host whose policy does not allow it,
+   * or the file opened straight from disk. Calling `connect` on nothing threw, the script died before
+   * the board was built, and the result was a black screen with no explanation: the worst possible
+   * failure for the one thing a reader was trying to open.
+   *
+   * So the game runs either way. Without a host it keeps nothing and reports nothing, and says so,
+   * which is a game somebody can still play rather than a page that is simply broken.
+   */
+  if (!window.OpenCoach || typeof window.OpenCoach.connect !== "function") {
+    refresh();
+    return;
+  }
+
   coach = window.OpenCoach.connect({
     onInit: function (init) {
       t = TEXT[(init.locale || "es").slice(0, 2)] || TEXT.es;

@@ -201,6 +201,13 @@
   });
   document.getElementById("note").addEventListener("click", note);
 
+  // Same guard as the game: without a host this tool has no settings and no way to call anything, so
+  // it says so rather than dying on  and leaving a blank panel.
+  if (!window.OpenCoach || typeof window.OpenCoach.connect !== "function") {
+    say(t.failed, "error");
+    return;
+  }
+
   coach = window.OpenCoach.connect({
     onInit: function (init) {
       t = TEXT[(init.locale || "es").slice(0, 2)] || TEXT.es;

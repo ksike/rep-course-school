@@ -42,8 +42,22 @@
   var LINE_SCORE = [0, 100, 300, 500, 800];
 
   var TEXT = {
-    es: { score: "Puntos", best: "Récord", lines: "Líneas", next: "Siguiente", pause: "Pausa", resume: "Seguir", end: "Terminar", again: "Jugar otra vez", over: "Fin de la partida", paused: "En pausa", newBest: "¡Nuevo récord!", result: "{score} puntos · {lines} líneas · nivel {level}" },
-    en: { score: "Score", best: "Best", lines: "Lines", next: "Next", pause: "Pause", resume: "Resume", end: "Finish", again: "Play again", over: "Game over", paused: "Paused", newBest: "New best!", result: "{score} points · {lines} lines · level {level}" },
+    es: {
+      score: "Puntos", best: "Récord", lines: "Líneas", next: "Siguiente", pause: "Pausa", resume: "Seguir",
+      end: "Terminar", again: "Jugar otra vez", over: "Fin de la partida", paused: "En pausa",
+      newBest: "¡Nuevo récord!", result: "{score} puntos · {lines} líneas · nivel {level}",
+      settingsTitle: "Antes de empezar", settingsDone: "Empezar",
+      sound: "Sonido", soundHelp: "Efectos de movimiento, línea y fin de partida.",
+      ghost: "Sombra de la pieza", ghostHelp: "Muestra dónde va a caer. Desactívala si el juego va lento.",
+    },
+    en: {
+      score: "Score", best: "Best", lines: "Lines", next: "Next", pause: "Pause", resume: "Resume",
+      end: "Finish", again: "Play again", over: "Game over", paused: "Paused",
+      newBest: "New best!", result: "{score} points · {lines} lines · level {level}",
+      settingsTitle: "Before you start", settingsDone: "Start",
+      sound: "Sound", soundHelp: "Movement, line and game-over effects.",
+      ghost: "Piece shadow", ghostHelp: "Shows where it will land. Turn it off if the game feels slow.",
+    },
   };
 
   /* ─────────────────────────────── state ─────────────────────────────── */
@@ -71,6 +85,82 @@
   var nextEl = document.getElementById("next");
   var cells = [];
   var painted = [];
+
+
+  /* ─────────────────────────────── sound ─────────────────────────────── */
+
+  /**
+   * Sound, synthesised rather than shipped.
+   *
+   * No files: an app runs in a frame whose only reachable origin is its own package, so every sound
+   * would be a download the pack has to carry, a licence somebody has to check, and bytes every player
+   * pays for. Six oscillators cost nothing, work offline, and are the whole of the code below.
+   *
+   * The context is created on the first interaction, never at load. A browser refuses to start audio
+   * without a gesture, and an app that tries anyway just fills the console with warnings.
+   */
+  var audio = null;
+  var settings = { sound: true, ghost: true };
+
+  function context() {
+    if (!settings.sound) return null;
+    if (!audio) {
+      var Ctor = window.AudioContext || window.webkitAudioContext;
+      if (!Ctor) return null;
+      audio = new Ctor();
+    }
+    if (audio.state === "suspended") audio.resume();
+    return audio;
+  }
+
+  /**
+   * One tone. `type` shapes it: a square reads as an action, a sine as a reward, a sawtooth as a fall.
+   * Kept short — anything above about 150 ms in a game this fast becomes a drone.
+   */
+  function tone(frequency, ms, type, volume, sweepTo) {
+    var ctx = context();
+    if (!ctx) return;
+
+    var osc = ctx.createOscillator();
+    var gain = ctx.createGain();
+    var now = ctx.currentTime;
+
+    osc.type = type || "square";
+    osc.frequency.setValueAtTime(frequency, now);
+    if (sweepTo) osc.frequency.exponentialRampToValueAtTime(sweepTo, now + ms / 1000);
+
+    // A ramp rather than a stop: cutting a waveform at full amplitude is the click everybody hears.
+    gain.gain.setValueAtTime(0.0001, now);
+    gain.gain.exponentialRampToValueAtTime(volume || 0.06, now + 0.008);
+    gain.gain.exponentialRampToValueAtTime(0.0001, now + ms / 1000);
+
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.start(now);
+    osc.stop(now + ms / 1000 + 0.02);
+  }
+
+  var SOUND = {
+    move: function () { tone(220, 30, "square", 0.03); },
+    rotate: function () { tone(340, 45, "square", 0.04); },
+    drop: function () { tone(180, 90, "sawtooth", 0.05, 70); },
+    lock: function () { tone(130, 60, "triangle", 0.05); },
+    line: function (count) {
+      // A chord, one note per line: four cleared at once should sound like more than four singles.
+      var notes = [523, 659, 784, 1047];
+      for (var i = 0; i < count; i++) {
+        (function (index) {
+          setTimeout(function () { tone(notes[index], 130, "sine", 0.07); }, index * 55);
+        })(i);
+      }
+    },
+    level: function () { tone(660, 90, "sine", 0.06, 990); },
+    over: function () {
+      [392, 330, 262, 196].forEach(function (note, index) {
+        setTimeout(function () { tone(note, 220, "triangle", 0.07); }, index * 130);
+      });
+    },
+  };
 
   /* ─────────────────────────────── rendering ─────────────────────────────── */
 
@@ -107,12 +197,15 @@
 
     if (!piece) return;
 
-    // The ghost: where the piece would land. It is what turns guesswork into a decision.
+    // The ghost: where the piece would land. It is what turns guesswork into a decision, and it is
+    // also a second pass over the board, so it is what the settings offer to switch off.
+    if (settings.ghost) {
     var ghost = piece.y;
     while (fits(piece.name, piece.rotation, piece.x, ghost + 1)) ghost++;
     each(piece.name, piece.rotation, piece.x, ghost, function (x, y) {
       if (y >= 0) paint(y * COLS + x, "color-mix(in srgb, " + PIECES[piece.name].colour + " 22%, transparent)");
     });
+    }
 
     each(piece.name, piece.rotation, piece.x, piece.y, function (x, y) {
       if (y >= 0) paint(y * COLS + x, PIECES[piece.name].colour);
@@ -193,6 +286,7 @@
         piece.rotation = turned;
         draw();
         coach && coach.event("rotate", ["piece-" + piece.name.toLowerCase()]);
+        SOUND.rotate();
         return;
       }
     }
@@ -214,6 +308,7 @@
       y++;
     }
 
+    var previousLevel = level;
     if (cleared > 0) {
       score += LINE_SCORE[cleared] * level;
       lines += cleared;
@@ -223,11 +318,14 @@
       // The tags are this game's own vocabulary, and the platform never interprets them: they are what
       // turns "played for ten minutes" into "good at clearing four at once".
       coach && coach.event("line-clear", [cleared === 4 ? "tetris" : "lines-" + cleared, "level-" + level]);
+      SOUND.line(cleared);
+      if (level > previousLevel) SOUND.level();
       if (cleared === 4) totals.tetrises++;
 
       report();
     }
 
+    if (cleared === 0) SOUND.lock();
     spawn();
     refresh();
   }
@@ -238,6 +336,7 @@
     while (move(0, 1)) distance++;
     score += distance * 2;
     coach && coach.event("hard-drop", ["rows-" + distance]);
+    SOUND.drop();
     lock();
   }
 
@@ -313,6 +412,7 @@
   function finish() {
     if (over) return;
     over = true;
+    SOUND.over();
 
     var beaten = score > best;
     if (beaten) best = score;
@@ -355,12 +455,14 @@
     refresh();
   }
 
-  function setPaused(value) {
+  function setPaused(value, persist) {
     paused = value;
     document.getElementById("pause-text").textContent = paused ? t.resume : t.pause;
     document.getElementById("pause-icon").dataset.icon = paused ? "play" : "pause";
     // A pause is a good moment to persist: the player has stopped, and the write costs nothing now.
-    if (paused && coach && !over) coach.save(snapshot());
+    // Not when the settings panel is what paused it, though: opening and closing it would be two
+    // writes a second apart, and the second is refused — correctly, and noisily.
+    if (paused && persist !== false && coach && !over) coach.save(snapshot());
   }
 
   /* ─────────────────────────────── loop ─────────────────────────────── */
@@ -390,8 +492,8 @@
   function onKey(event) {
     var handled = true;
     switch (event.key) {
-      case "ArrowLeft": move(-1, 0); break;
-      case "ArrowRight": move(1, 0); break;
+      case "ArrowLeft": if (move(-1, 0)) SOUND.move(); break;
+      case "ArrowRight": if (move(1, 0)) SOUND.move(); break;
       case "ArrowDown": if (move(0, 1)) score += 1; refresh(); break;
       case "ArrowUp": case "x": case "X": rotate(); break;
       case " ": drop(); break;
@@ -419,6 +521,40 @@
     }, { passive: true });
   }
 
+  /* ─────────────────────────────── settings ─────────────────────────────── */
+
+  /**
+   * Shown once before the first game, and reachable afterwards from the sound button.
+   *
+   * Kept in the app's own store, so somebody who turned the sound off does not have to turn it off
+   * again on their phone. Paused while it is open: reading a panel is not a reason to lose a game.
+   */
+  function applySettings() {
+    document.getElementById("opt-sound").checked = settings.sound;
+    document.getElementById("opt-ghost").checked = settings.ghost;
+    document.getElementById("sound-icon").dataset.icon = settings.sound ? "sound-on" : "sound-off";
+    draw();
+  }
+
+  function saveSettings() {
+    settings.sound = document.getElementById("opt-sound").checked;
+    settings.ghost = document.getElementById("opt-ghost").checked;
+    applySettings();
+    if (coach) coach.data.set("settings", settings);
+  }
+
+  function openSettings() {
+    if (!over) setPaused(true, false);
+    applySettings();
+    document.getElementById("settings").classList.add("on");
+  }
+
+  function closeSettings() {
+    saveSettings();
+    document.getElementById("settings").classList.remove("on");
+    if (!over && paused) setPaused(false, false);
+  }
+
   /* ─────────────────────────────── start ─────────────────────────────── */
 
   buildBoard();
@@ -428,6 +564,11 @@
   document.getElementById("pause").addEventListener("click", function () { setPaused(!paused); });
   document.getElementById("end").addEventListener("click", finish);
   document.getElementById("again").addEventListener("click", restart);
+  document.getElementById("settings-open").addEventListener("click", openSettings);
+  document.getElementById("settings-done").addEventListener("click", closeSettings);
+  ["opt-sound", "opt-ghost"].forEach(function (id) {
+    document.getElementById(id).addEventListener("change", saveSettings);
+  });
   requestAnimationFrame(frame);
 
   coach = window.OpenCoach.connect({
@@ -447,6 +588,12 @@
         var label = document.getElementById("l-" + key) || document.getElementById(key + "-text");
         if (label) label.textContent = t[key];
       });
+      document.getElementById("settings-title").textContent = t.settingsTitle;
+      document.getElementById("settings-done-text").textContent = t.settingsDone;
+      document.getElementById("l-sound").textContent = t.sound;
+      document.getElementById("l-sound-help").textContent = t.soundHelp;
+      document.getElementById("l-ghost").textContent = t.ghost;
+      document.getElementById("l-ghost-help").textContent = t.ghostHelp;
 
       // What outlives a game comes from the app's own store; the game in progress comes from the save.
       // Both are the platform's, tied to the account, so they follow the player between devices.
@@ -456,6 +603,17 @@
       });
       coach.data.get("totals").then(function (value) {
         if (value) totals = value;
+      });
+
+      // The panel opens on the first game and never again: somebody who has already answered does not
+      // want to be asked every time they play.
+      coach.data.get("settings").then(function (stored) {
+        if (stored) {
+          settings = stored;
+          applySettings();
+        } else {
+          openSettings();
+        }
       });
 
       if (init.resume) restore(init.resume);

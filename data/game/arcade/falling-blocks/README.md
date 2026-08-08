@@ -52,6 +52,8 @@ Eso es todo el contrato. No hay más API que ésta.
 | Dónde va cada cosa que se guarda | `finish`: la sesión es de la plataforma, el récord es de la app, la partida se borra al terminar |
 | Cómo se sigue el tema claro/oscuro sin saber nada de la plataforma | el bloque `themeTokens` de `onInit` |
 | Cómo se usan nuestros iconos | `<span class="coach-icon" data-icon="pause">` en `index.html` |
+| Cómo suena sin traer ni un fichero de audio | el bloque `SOUND` y la función `tone`: seis osciladores, cero bytes |
+| Cómo se ofrecen ajustes sin marear | `openSettings`: dos interruptores, y la respuesta se recuerda en la cuenta |
 
 ## Reglas que conviene no romper
 
@@ -62,6 +64,9 @@ Eso es todo el contrato. No hay más API que ésta.
 - **Puntuar es opcional.** Una herramienta que no puntúa registra que se usó; un cero falso ensucia
   todas las medias donde caiga.
 - **`finish` se manda una vez.** La segunda se ignora aquí y se rechaza en el servidor.
+- **El sonido se sintetiza, no se descarga.** El marco sólo alcanza su propio paquete, así que cada
+  efecto en fichero es peso que carga el pack y una licencia que alguien tiene que revisar. Y crea el
+  contexto de audio en la primera pulsación, nunca al cargar: sin un gesto el navegador lo rechaza.
 
 ## Probarlo sin publicar nada
 

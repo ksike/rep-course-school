@@ -101,8 +101,56 @@
         backdrop-filter: blur(2px);
       }
 
-      #over.on {
+      #over.on,
+      #settings.on {
         display: grid;
+      }
+
+      #settings {
+        position: fixed;
+        inset: 0;
+        display: none;
+        place-items: center;
+        background: color-mix(in srgb, var(--coach-bg) 88%, transparent);
+        backdrop-filter: blur(2px);
+      }
+
+      #settings .coach-panel {
+        min-width: 18rem;
+        max-width: 22rem;
+      }
+
+      #settings h2 {
+        margin: 0 0 0.75rem;
+        font-size: 1.05rem;
+      }
+
+      .switch {
+        display: flex;
+        gap: 0.6rem;
+        align-items: start;
+        margin-bottom: 0.9rem;
+        cursor: pointer;
+      }
+
+      .switch input {
+        margin-top: 0.25rem;
+        width: 1rem;
+        height: 1rem;
+        accent-color: var(--coach-accent);
+      }
+
+      .switch strong {
+        display: block;
+        font-size: 0.9rem;
+        font-weight: 600;
+      }
+
+      .switch em {
+        display: block;
+        font-style: normal;
+        font-size: 0.78rem;
+        color: var(--coach-muted);
       }
 
       #over .coach-panel {
@@ -173,6 +221,9 @@
         </div>
 
         <div class="row">
+          <button class="coach-button" id="settings-open" type="button" title="Ajustes">
+            <span class="coach-icon" data-icon="sound-on" id="sound-icon"></span>
+          </button>
           <button class="coach-button" id="pause" type="button">
             <span class="coach-icon" data-icon="pause" id="pause-icon"></span>
             <span id="pause-text">Pausa</span>
@@ -183,6 +234,40 @@
           </button>
         </div>
       </aside>
+    </div>
+
+    <!--
+      Settings, shown before the first game and reachable from the sound button afterwards.
+
+      Two switches and no more. Sound is the one people want off, and the ghost piece is the one thing
+      here worth turning off on a slow machine — it is a second pass over the board every frame. A
+      settings panel with ten knobs would be a settings panel nobody reads.
+    -->
+    <div id="settings">
+      <div class="coach-panel">
+        <h2 id="settings-title">Antes de empezar</h2>
+
+        <label class="switch">
+          <input type="checkbox" id="opt-sound" checked />
+          <span>
+            <strong id="l-sound">Sonido</strong>
+            <em id="l-sound-help">Efectos de movimiento, línea y fin de partida.</em>
+          </span>
+        </label>
+
+        <label class="switch">
+          <input type="checkbox" id="opt-ghost" checked />
+          <span>
+            <strong id="l-ghost">Sombra de la pieza</strong>
+            <em id="l-ghost-help">Muestra dónde va a caer. Desactívala si el juego va lento.</em>
+          </span>
+        </label>
+
+        <button class="coach-button coach-button--primary" id="settings-done" type="button">
+          <span class="coach-icon" data-icon="play"></span>
+          <span id="settings-done-text">Empezar</span>
+        </button>
+      </div>
     </div>
 
     <div id="over">

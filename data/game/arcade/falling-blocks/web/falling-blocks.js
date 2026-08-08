@@ -47,6 +47,7 @@
       end: "Terminar", again: "Jugar otra vez", over: "Fin de la partida", paused: "En pausa",
       newBest: "¡Nuevo récord!", result: "{score} puntos · {lines} líneas · nivel {level}",
       settingsTitle: "Antes de empezar", settingsDone: "Empezar",
+      pausedTitle: "En pausa", pausedHelp: "Pulsa cualquier tecla para seguir.",
       sound: "Sonido", soundHelp: "Efectos de movimiento, línea y fin de partida.",
       music: "Música", musicHelp: "Una melodía de fondo mientras juegas.",
       volume: "Volumen",
@@ -57,6 +58,7 @@
       end: "Finish", again: "Play again", over: "Game over", paused: "Paused",
       newBest: "New best!", result: "{score} points · {lines} lines · level {level}",
       settingsTitle: "Before you start", settingsDone: "Start",
+      pausedTitle: "Paused", pausedHelp: "Press any key to carry on.",
       sound: "Sound", soundHelp: "Movement, line and game-over effects.",
       music: "Music", musicHelp: "A tune in the background while you play.",
       volume: "Volume",
@@ -83,6 +85,7 @@
   var t = TEXT.es;
   var settings = { sound: true, music: true, volume: 0.7, ghost: true };
   var lastProgress = -1;
+  var lastSaveAt = 0;
   var dropTimer = 0;
   var lastFrame = 0;
 
@@ -622,11 +625,28 @@
     // A pause is a good moment to persist: the player has stopped, and the write costs nothing now.
     // Not when the settings panel is what paused it, though: opening and closing it would be two
     // writes a second apart, and the second is refused — correctly, and noisily.
-    if (paused && persist !== false && coach && !over) coach.save(snapshot());
+    if (paused && persist !== false && coach && !over) persist_();
+
+    showPaused(paused && !over && document.getElementById("settings").classList.contains("on") === false);
 
     // Music follows the game rather than the tab: nobody wants a loop playing over a pause screen.
     if (paused || over) Music.stop();
     else if (settings.music) Music.start();
+  }
+
+  /**
+   * Save, unless the platform would only refuse it.
+   *
+   * Writes are coalesced to one a second per key, so asking again inside that window earns a 429 and
+   * a red line in the console for nothing — the app already holds the state, and the previous save is
+   * still there. Better not to ask than to be told no.
+   */
+  function persist_() {
+    if (!coach || over) return;
+    var now = Date.now();
+    if (now - lastSaveAt < 1500) return;
+    lastSaveAt = now;
+    coach.save(snapshot());
   }
 
   /* ─────────────────────────────── loop ─────────────────────────────── */
@@ -785,6 +805,8 @@
       document.getElementById("l-music").textContent = t.music;
       document.getElementById("l-music-help").textContent = t.musicHelp;
       document.getElementById("l-volume").textContent = t.volume;
+      document.getElementById("paused-title").textContent = t.pausedTitle;
+      document.getElementById("paused-help").textContent = t.pausedHelp;
 
       // What outlives a game comes from the app's own store; the game in progress comes from the save.
       // Both are the platform's, tied to the account, so they follow the player between devices.
@@ -813,12 +835,36 @@
     },
   });
 
-  // A game left mid-air is a game somebody wants back. Saved when the tab goes away, which is the last
-  // moment the browser reliably gives us.
+  /**
+   * Leaving the tab pauses and saves; coming back says so instead of sitting there.
+   *
+   * Pausing on `visibilitychange` is right — the last moment the browser reliably gives us to save —
+   * but only pausing was a trap: the board is still drawn, so the game looks alive while every key is
+   * ignored, and nothing on screen says why. Coming back now shows the pause overlay, and the first
+   * key or click resumes.
+   */
   document.addEventListener("visibilitychange", function () {
-    if (document.hidden && coach && !over) {
-      setPaused(true);
-      coach.save(snapshot());
+    if (document.hidden) {
+      if (!over && !paused) setPaused(true);
+      return;
     }
+    if (!over && paused) showPaused(true);
   });
+
+  /** The overlay that says a game is waiting, rather than leaving somebody guessing. */
+  function showPaused(on) {
+    document.getElementById("paused").classList.toggle("on", Boolean(on));
+  }
+
+  function resumeFromPause() {
+    if (over || !paused) return;
+    showPaused(false);
+    setPaused(false, false);
+  }
+
+  document.getElementById("paused").addEventListener("click", resumeFromPause);
+  document.addEventListener("keydown", function (event) {
+    // Any key resumes, except the one that would immediately pause again.
+    if (paused && !over && event.key !== "p" && event.key !== "P") resumeFromPause();
+  }, true);
 })();

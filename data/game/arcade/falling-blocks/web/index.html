@@ -102,8 +102,34 @@
       }
 
       #over.on,
-      #settings.on {
+      #settings.on,
+      #paused.on {
         display: grid;
+      }
+
+      #paused {
+        position: fixed;
+        inset: 0;
+        display: none;
+        place-items: center;
+        background: color-mix(in srgb, var(--coach-bg) 78%, transparent);
+        backdrop-filter: blur(2px);
+        cursor: pointer;
+      }
+
+      #paused .coach-panel {
+        text-align: center;
+      }
+
+      #paused h2 {
+        margin: 0.25rem 0 0.25rem;
+        font-size: 1.05rem;
+      }
+
+      #paused p {
+        margin: 0;
+        font-size: 0.85rem;
+        color: var(--coach-muted);
       }
 
       #settings {
@@ -347,6 +373,16 @@
           <span class="coach-icon" data-icon="play"></span>
           <span id="settings-done-text">Empezar</span>
         </button>
+      </div>
+    </div>
+
+    <!-- Shown when the game is paused and the reader is looking at it: without this, a paused game is
+         indistinguishable from a broken one. -->
+    <div id="paused">
+      <div class="coach-panel">
+        <span class="coach-icon" data-icon="play" style="width: 2rem; height: 2rem"></span>
+        <h2 id="paused-title">En pausa</h2>
+        <p id="paused-help">Pulsa cualquier tecla para seguir.</p>
       </div>
     </div>
 

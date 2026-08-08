@@ -3,7 +3,7 @@
   "id": "ksike.school",
   "name": "Primary and secondary school content pack",
   "description": "Open Coach content for primary and secondary education: maths with open answers, courses and learning games.",
-  "version": "0.10.1",
+  "version": "0.10.2",
   "license": "MIT",
   "licenseFile": "LICENSE",
   "homepage": "https://github.com/ksike/rep-course-school",
@@ -288,7 +288,7 @@
         "es": "Encaja las piezas y completa líneas. Teclado, sonido y récord guardado.",
         "en": "Fit the pieces and clear lines. Keyboard, sound and a saved best score."
       },
-      "version": "0.9.1",
+      "version": "0.9.2",
       "path": "data/game/arcade/falling-blocks",
       "category": "arcade",
       "tags": [
@@ -303,9 +303,9 @@
       "audience": {
         "minAge": 6
       },
-      "integrity": "sha256-9G9mRzbxNOnZ6uwg/oXEO9uNDIY7mjMeAW1s+6evKWY=",
+      "integrity": "sha256-YbDwWuIJaM0oTbIhf9YsXDPRAvwByOR1tXa3Hwoer1E=",
       "size": {
-        "bytes": 81732,
+        "bytes": 82317,
         "files": 5
       }
     },
@@ -321,7 +321,7 @@
         "es": "Consulta el tiempo de tu localidad y apunta la temperatura cada día, para leer datos reales en clase de ciencias.",
         "en": "Look up the weather where you are and note the temperature each day, for reading real data in a science lesson."
       },
-      "version": "0.2.3",
+      "version": "0.2.4",
       "path": "data/app/science/weather-station",
       "category": "science",
       "tags": [
@@ -336,13 +336,13 @@
       "audience": {
         "minAge": 8
       },
-      "integrity": "sha256-HaHadf7iTWVVPLR9uqJEuVlYKuBptMeQJGodMb3T8w0=",
+      "integrity": "sha256-a31L2cdj8LjHhdfDG5qYPSGIo9pL5+hTq3PfMAmfous=",
       "size": {
-        "bytes": 22270,
+        "bytes": 22855,
         "files": 5
       }
     }
   ],
-  "generatedAt": "2026-08-08T22:29:36.353Z",
+  "generatedAt": "2026-08-08T22:58:27.059Z",
   "generatedBy": "coach-pack-cli/0.1.0"
 }

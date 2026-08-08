@@ -17,7 +17,16 @@
       changed are touched — and it buys crisp scaling at any size, real focus outlines, and a board a
       screen reader can be told about.
     -->
-    <link rel="stylesheet" href="/app/kit/v2/kit.css" />
+    <!--
+      The cache buster goes in the query, not in the path.
+
+      A stale copy of the kit had to be got round, and moving it to /app/kit/v2/ did that — on a server
+      new enough to answer there. An older one 404s, and a package that only works against the newest
+      platform is a package that breaks on update day: the buttons lost their frames and their icons,
+      because both live here. The version the server has always served, asked for under a URL no cache
+      has an answer for, solves the same problem without requiring anything of the server.
+    -->
+    <link rel="stylesheet" href="/app/kit/v1/kit.css?v=2" />
     <script src="/app/sdk/v1.js"></script>
     <style>
       /*

@@ -481,6 +481,16 @@
         }
       }
 
+      .coach-select {
+        min-width: 8.5rem;
+        padding: 0.35rem 0.5rem;
+        border-radius: var(--coach-radius, 0.5rem);
+        border: 1px solid var(--coach-border, #263149);
+        background: color-mix(in srgb, var(--coach-fg, #e8ecf5) 8%, transparent);
+        color: var(--coach-fg, #e8ecf5);
+        font: inherit;
+      }
+
       #levelup {
         position: fixed;
         inset: 0;
@@ -840,6 +850,19 @@
           <span>
             <strong id="l-ghost">Sombra de la pieza</strong>
             <em id="l-ghost-help">Muestra dónde va a caer. Desactívala si el juego va lento.</em>
+          </span>
+        </label>
+
+        <!--
+          The game's own language, because the platform's is not always the one somebody wants to play
+          in — and because a host too old to send the language at all should not leave the app stuck in
+          one. Empty means "follow the platform", and that is the default.
+        -->
+        <label class="switch">
+          <select id="opt-locale" class="coach-select"></select>
+          <span>
+            <strong id="l-language">Idioma</strong>
+            <em id="l-language-help">Por defecto, el mismo que la plataforma.</em>
           </span>
         </label>
 

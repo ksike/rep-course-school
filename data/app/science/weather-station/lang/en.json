@@ -1,0 +1,15 @@
+{
+  "empty": "You have not noted a temperature yet.",
+  "failed": "I could not look up the weather just now.",
+  "humidity": "Humidity",
+  "loading": "Looking up…",
+  "log": "Your notes",
+  "max": "High",
+  "min": "Low",
+  "noCity": "Your town is not set in the app's settings yet.",
+  "notFound": "I could not find that town. Check how it is spelled in the settings.",
+  "note": "Note today",
+  "noted": "Noted.",
+  "refresh": "Refresh",
+  "wind": "Wind"
+}

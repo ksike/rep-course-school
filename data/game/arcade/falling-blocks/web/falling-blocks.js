@@ -44,42 +44,19 @@
   /** What `scoring.passScore` says in `game.json`: the same number the platform marks a pass at. */
   var PASS_SCORE = 5000;
 
-  var TEXT = {
-    es: {
-      score: "Puntos", best: "Récord", lines: "Líneas", next: "Siguiente", pause: "Pausa", resume: "Seguir",
-      end: "Terminar", again: "Jugar otra vez", over: "Fin de la partida", paused: "En pausa",
-      newBest: "¡Nuevo récord!", result: "{score} puntos · {lines} líneas · nivel {level}",
-      settingsTitle: "Antes de empezar", settingsDone: "Empezar",
-      pausedTitle: "En pausa", pausedHelp: "Pulsa cualquier tecla para seguir.",
-      restart: "Reiniciar", settingsOpen: "Ajustes", level: "Nivel", toNext: "Al siguiente nivel",
-      panelStats: "Partida", panelControls: "Controles", panelKeys: "Teclas", leave: "Salir",
-      kRotate: "girar", kLeft: "izq.", kRight: "der.", kDown: "bajar", kDrop: "soltar", kPause: "pausa",
-      passed: "¡Buena partida!",
-      confirmTitle: "¿Empezar una partida nueva?", confirmText: "Se pierde la actual.",
-      confirmYes: "Reiniciar", confirmNo: "Cancelar",
-      sound: "Sonido", soundHelp: "Efectos de movimiento, línea y fin de partida.",
-      music: "Música", musicHelp: "Una melodía de fondo mientras juegas.",
-      volume: "Volumen",
-      ghost: "Sombra de la pieza", ghostHelp: "Muestra dónde va a caer. Desactívala si el juego va lento.",
-    },
-    en: {
-      score: "Score", best: "Best", lines: "Lines", next: "Next", pause: "Pause", resume: "Resume",
-      end: "Finish", again: "Play again", over: "Game over", paused: "Paused",
-      newBest: "New best!", result: "{score} points · {lines} lines · level {level}",
-      settingsTitle: "Before you start", settingsDone: "Start",
-      pausedTitle: "Paused", pausedHelp: "Press any key to carry on.",
-      restart: "Restart", settingsOpen: "Settings", level: "Level", toNext: "To the next level",
-      panelStats: "Game", panelControls: "Controls", panelKeys: "Keys", leave: "Leave",
-      kRotate: "rotate", kLeft: "left", kRight: "right", kDown: "down", kDrop: "drop", kPause: "pause",
-      passed: "Well played!",
-      confirmTitle: "Start a new game?", confirmText: "The current one is lost.",
-      confirmYes: "Restart", confirmNo: "Cancel",
-      sound: "Sound", soundHelp: "Movement, line and game-over effects.",
-      music: "Music", musicHelp: "A tune in the background while you play.",
-      volume: "Volume",
-      ghost: "Piece shadow", ghostHelp: "Shows where it will land. Turn it off if the game feels slow.",
-    },
-  };
+  /**
+   * The languages this game speaks, and the one it falls back to.
+   *
+   * The strings themselves live in `lang/es.json` and `lang/en.json` beside `game.json`, loaded by the
+   * SDK: adding a third language is a file and a line here, not a change to this script. Whatever is
+   * declared in `game.json` under `locales` should match, because that is what the platform lists.
+   */
+  var LOCALES = ["es", "en"];
+  var LOCALE_NAMES = { es: "Espanol", en: "English" };
+  var FALLBACK = "es";
+
+  /** Filled from the loaded bundle before anything is drawn; the keys are the same as before. */
+  var t = {};
 
   /* ─────────────────────────────── state ─────────────────────────────── */
 
@@ -97,8 +74,7 @@
   var totals = { games: 0, lines: 0, tetrises: 0 };
 
   var coach = null;
-  var t = TEXT.es;
-  var settings = { sound: true, music: true, volume: 0.7, ghost: true };
+  var settings = { sound: true, music: true, volume: 0.7, ghost: true, locale: null };
   var lastProgress = -1;
   var lastSaveAt = 0;
   var dropTimer = 0;
@@ -877,9 +853,56 @@
    * game in the old one until it was reloaded — and reloading throws away the run. Every label is
    * named here, and the host sends `update` when somebody changes it.
    */
+  /**
+   * Load a language and put it on screen, without disturbing the game underneath.
+   *
+   * Called when the platform says the reader changed language and when the reader changes it in the
+   * game's own settings. Nothing is reset and nothing is reloaded: a language is a set of labels, and
+   * losing a game in progress to change one is not a trade anybody would accept.
+   */
   function applyLanguage(locale) {
-    t = TEXT[String(locale || "es").slice(0, 2)] || TEXT.es;
-    document.documentElement.lang = String(locale || "es").slice(0, 2);
+    if (!coach || !coach.i18n) return Promise.resolve();
+    return coach.i18n({ locale: locale, fallback: FALLBACK }).then(function (bundle) {
+      t = {};
+      // The bundle answers by key; the rest of this file reads `t.score`, so it is filled once here.
+      Object.keys(SAMPLE_KEYS).forEach(function (key) {
+        t[key] = bundle.t(key);
+      });
+      paintLanguage(bundle.locale);
+      return bundle.locale;
+    });
+  }
+
+  /** Every key the game asks for, so the bundle can be flattened into `t` in one place. */
+  var SAMPLE_KEYS = {
+    score: 1, best: 1, lines: 1, next: 1, pause: 1, resume: 1, end: 1, again: 1, over: 1, paused: 1,
+    newBest: 1, result: 1, settingsTitle: 1, settingsDone: 1, pausedTitle: 1, pausedHelp: 1,
+    restart: 1, settingsOpen: 1, level: 1, toNext: 1, panelStats: 1, panelControls: 1, panelKeys: 1,
+    leave: 1, kRotate: 1, kLeft: 1, kRight: 1, kDown: 1, kDrop: 1, kPause: 1, passed: 1,
+    confirmTitle: 1, confirmText: 1, confirmYes: 1, confirmNo: 1, sound: 1, soundHelp: 1, music: 1,
+    musicHelp: 1, volume: 1, ghost: 1, ghostHelp: 1, language: 1, languageHelp: 1, languagePlatform: 1,
+  };
+
+  function paintLanguage(locale) {
+    document.documentElement.lang = String(locale || FALLBACK).slice(0, 2);
+
+    // Built here rather than in the markup: the list is whatever the game declares, and the first
+    // option has to be worded in the language currently on screen.
+    var select = document.getElementById("opt-locale");
+    if (select) {
+      select.innerHTML = "";
+      var follow = document.createElement("option");
+      follow.value = "";
+      follow.textContent = t.languagePlatform || "Platform language";
+      select.appendChild(follow);
+      LOCALES.forEach(function (code) {
+        var option = document.createElement("option");
+        option.value = code;
+        option.textContent = LOCALE_NAMES[code] || code;
+        select.appendChild(option);
+      });
+      select.value = settings.locale || "";
+    }
 
     var labels = {
       "l-score": t.score, "l-best": t.best, "l-lines": t.lines, "l-next": t.next, "l-level": t.level,
@@ -887,6 +910,7 @@
       "l-panel-keys": t.panelKeys, "l-sound": t.sound, "l-sound-help": t.soundHelp,
       "l-music": t.music, "l-music-help": t.musicHelp, "l-volume": t.volume,
       "l-ghost": t.ghost, "l-ghost-help": t.ghostHelp,
+      "l-language": t.language, "l-language-help": t.languageHelp,
       "pause-text": paused ? t.resume : t.pause, "end-text": t.end, "again-text": t.again,
       "leave-text": t.leave, "restart-text": t.restart, "settings-open-text": t.settingsOpen,
       "settings-title": t.settingsTitle, "settings-done-text": t.settingsDone,
@@ -921,6 +945,7 @@
     document.getElementById("opt-sound").checked = settings.sound;
     document.getElementById("opt-music").checked = settings.music;
     document.getElementById("opt-ghost").checked = settings.ghost;
+    document.getElementById("opt-locale").value = settings.locale || "";
     document.getElementById("opt-volume").value = String(Math.round(settings.volume * 100));
     document.getElementById("quick-volume").value = String(Math.round(settings.volume * 100));
     document.getElementById("volume-value").textContent = Math.round(settings.volume * 100) + "%";
@@ -940,6 +965,15 @@
     settings.music = document.getElementById("opt-music").checked;
     settings.ghost = document.getElementById("opt-ghost").checked;
     settings.volume = Number(document.getElementById("opt-volume").value) / 100;
+
+    // An empty choice means "follow the platform", which is why it is stored as null rather than as a
+    // language code: the reader who never chose should keep following the site when they change it.
+    var picked = document.getElementById("opt-locale").value;
+    if (picked !== (settings.locale || "")) {
+      settings.locale = picked || null;
+      applyLanguage(settings.locale);
+    }
+
     applySettings();
     if (coach) coach.data.set("settings", settings);
   }
@@ -1022,7 +1056,7 @@
     if (coach) coach.data.set("settings", settings);
   });
   document.getElementById("settings-done").addEventListener("click", closeSettings);
-  ["opt-sound", "opt-music", "opt-ghost"].forEach(function (id) {
+  ["opt-sound", "opt-music", "opt-ghost", "opt-locale"].forEach(function (id) {
     document.getElementById(id).addEventListener("change", saveSettings);
   });
   // `input` rather than `change`: a volume slider that only reacts when you let go is a slider you
@@ -1056,7 +1090,9 @@
     /** The reader changed the language or the theme while playing: relabel, do not reload. */
     onUpdate: function (update) {
       applyTheme(update.themeTokens);
-      applyLanguage(update.locale);
+      // A choice made in the game's own settings outranks the site's: somebody reading in one language
+      // and playing in another asked for that on purpose, and a site-wide switch should not undo it.
+      if (!settings.locale) applyLanguage(update.locale);
     },
 
     onInit: function (init) {
@@ -1082,6 +1118,8 @@
           Object.keys(stored).forEach(function (key) {
             if (stored[key] !== undefined) settings[key] = stored[key];
           });
+          // The stored choice arrives after the first paint, so the labels are redrawn if it differs.
+          if (settings.locale) applyLanguage(settings.locale);
           applySettings();
         } else {
           openSettings();

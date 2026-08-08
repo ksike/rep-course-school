@@ -25,25 +25,47 @@
   var place = null;
   var log = [];
 
-  var TEXT = {
-    es: {
-      humidity: "Humedad", wind: "Viento", max: "Máxima", min: "Mínima", refresh: "Actualizar",
-      note: "Apuntar hoy", log: "Tus apuntes", empty: "Todavía no has apuntado ninguna temperatura.",
-      noCity: "Falta indicar tu localidad en los ajustes de la app.",
-      notFound: "No he encontrado esa localidad. Revisa cómo está escrita en los ajustes.",
-      failed: "No he podido consultar el tiempo ahora mismo.",
-      noted: "Apuntado.", loading: "Consultando…",
-    },
-    en: {
-      humidity: "Humidity", wind: "Wind", max: "High", min: "Low", refresh: "Refresh",
-      note: "Note today", log: "Your notes", empty: "You have not noted a temperature yet.",
-      noCity: "Your town is not set in the app's settings yet.",
-      notFound: "I could not find that town. Check how it is spelled in the settings.",
-      failed: "I could not look up the weather just now.",
-      noted: "Noted.", loading: "Looking up…",
-    },
-  };
-  var t = TEXT.es;
+  /** Declared in `app.json` under `locales`; the strings live in `lang/<locale>.json`. */
+  var LOCALES = ["es", "en"];
+  var FALLBACK = "es";
+
+  /** Filled from the loaded bundle before anything is said on screen. */
+  var t = {};
+  var KEYS = ["empty", "failed", "humidity", "loading", "log", "max", "min", "noCity", "notFound", "note", "noted", "refresh", "wind"];
+
+  /**
+   * Load a language and repaint the labels.
+   *
+   * Called on `init` and again on `update`, which is what arrives when the reader changes the site's
+   * language while the app is open — relabelling rather than reloading, so nothing being read or
+   * typed is lost to a change of wording.
+   */
+  function applyLanguage(locale) {
+    if (!coach || !coach.i18n) return Promise.resolve();
+    return coach.i18n({ locale: locale, fallback: FALLBACK }).then(function (bundle) {
+      KEYS.forEach(function (key) {
+        t[key] = bundle.t(key);
+      });
+      document.documentElement.lang = String(bundle.locale).slice(0, 2);
+      paintLabels();
+      return bundle.locale;
+    });
+  }
+
+  /** Every static label, in one place, so `applyLanguage` can call it whenever the language changes. */
+  function paintLabels() {
+    ["humidity", "wind", "max", "min", "log"].forEach(function (key) {
+      var label = document.getElementById("l-" + key);
+      if (label) label.textContent = t[key];
+    });
+    var set = function (id, text) {
+      var node = document.getElementById(id);
+      if (node) node.textContent = text;
+    };
+    set("refresh-text", t.refresh);
+    set("note-text", t.note);
+    set("log-empty", t.empty);
+  }
 
   function say(text, kind) {
     var element = document.getElementById("message");
@@ -209,9 +231,13 @@
   }
 
   coach = window.OpenCoach.connect({
+    /** The reader changed the site's language while this was open: relabel, do not reload. */
+    onUpdate: function (update) {
+      applyLanguage(update.locale);
+    },
+
     onInit: function (init) {
-      t = TEXT[(init.locale || "es").slice(0, 2)] || TEXT.es;
-      document.documentElement.lang = (init.locale || "es").slice(0, 2);
+      applyLanguage(init.locale);
       settings = init.config || {};
 
       var tokens = init.themeTokens || {};
@@ -225,14 +251,6 @@
       Object.keys(map).forEach(function (name) {
         if (tokens[name]) document.documentElement.style.setProperty(map[name], tokens[name]);
       });
-
-      ["humidity", "wind", "max", "min", "log"].forEach(function (key) {
-        var label = document.getElementById("l-" + key);
-        if (label) label.textContent = t[key];
-      });
-      document.getElementById("refresh-text").textContent = t.refresh;
-      document.getElementById("note-text").textContent = t.note;
-      document.getElementById("log-empty").textContent = t.empty;
 
       coach.data.get("log").then(function (stored) {
         log = Array.isArray(stored) ? stored : [];

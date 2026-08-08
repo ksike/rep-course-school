@@ -1,0 +1,15 @@
+{
+  "empty": "Todavía no has apuntado ninguna temperatura.",
+  "failed": "No he podido consultar el tiempo ahora mismo.",
+  "humidity": "Humedad",
+  "loading": "Consultando…",
+  "log": "Tus apuntes",
+  "max": "Máxima",
+  "min": "Mínima",
+  "noCity": "Falta indicar tu localidad en los ajustes de la app.",
+  "notFound": "No he encontrado esa localidad. Revisa cómo está escrita en los ajustes.",
+  "note": "Apuntar hoy",
+  "noted": "Apuntado.",
+  "refresh": "Actualizar",
+  "wind": "Viento"
+}

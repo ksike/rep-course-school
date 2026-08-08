@@ -13,11 +13,27 @@
   "tier": "c",
   "entry": "dist/index.html",
   "apiVersion": 1,
-  "locales": ["es", "en"],
+  "locales": [
+    "es",
+    "en"
+  ],
   "minAge": 8,
-  "tags": ["science", "geography", "data"],
-  "capabilities": ["data:user", "net:external", "config:read", "secrets:use"],
-  "externalOrigins": ["api.open-meteo.com", "geocoding-api.open-meteo.com"],
+  "tags": [
+    "science",
+    "geography",
+    "data"
+  ],
+  "capabilities": [
+    "data:user",
+    "data:shared",
+    "net:external",
+    "config:read",
+    "secrets:use"
+  ],
+  "externalOrigins": [
+    "api.open-meteo.com",
+    "geocoding-api.open-meteo.com"
+  ],
   "config": [
     {
       "name": "city",
@@ -56,6 +72,16 @@
       "url": "https://api.open-meteo.com/v1/forecast?latitude={lat}&longitude={lon}&current=temperature_2m,relative_humidity_2m,wind_speed_10m&daily=temperature_2m_max,temperature_2m_min&timezone=auto&temperature_unit={units}"
     }
   ],
-  "duration": { "estimatedMs": 120000 },
-  "license": "CC-BY-4.0"
+  "duration": {
+    "estimatedMs": 120000
+  },
+  "license": "CC-BY-4.0",
+  "server": {
+    "endpoint": "https://example.invalid/coach",
+    "events": [
+      "installed",
+      "uninstalled",
+      "configured"
+    ]
+  }
 }

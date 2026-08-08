@@ -3,7 +3,7 @@
   "id": "ksike.school",
   "name": "Primary and secondary school content pack",
   "description": "Open Coach content for primary and secondary education: maths with open answers, courses and learning games.",
-  "version": "0.2.1",
+  "version": "0.3.0",
   "license": "MIT",
   "licenseFile": "LICENSE",
   "homepage": "https://github.com/ksike/rep-course-school",
@@ -321,7 +321,7 @@
         "es": "Consulta el tiempo de tu localidad y apunta la temperatura cada día, para leer datos reales en clase de ciencias.",
         "en": "Look up the weather where you are and note the temperature each day, for reading real data in a science lesson."
       },
-      "version": "0.1.0",
+      "version": "0.2.0",
       "path": "data/app/science/weather-station",
       "category": "science",
       "tags": [
@@ -336,13 +336,13 @@
       "audience": {
         "minAge": 8
       },
-      "integrity": "sha256-M1l/q4zRKoKM4d1e3w24gIGHpuxGrTMy1R/Pcjyy8hg=",
+      "integrity": "sha256-By4+epIDPLqSSJe3alio+kIdsFpJUy6VXpYQuHVY8e8=",
       "size": {
-        "bytes": 16005,
+        "bytes": 16239,
         "files": 3
       }
     }
   ],
-  "generatedAt": "2026-08-07T23:17:59.162Z",
+  "generatedAt": "2026-08-08T06:03:52.390Z",
   "generatedBy": "coach-pack-cli/0.1.0"
 }

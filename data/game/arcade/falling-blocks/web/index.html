@@ -17,11 +17,32 @@
       changed are touched — and it buys crisp scaling at any size, real focus outlines, and a board a
       screen reader can be told about.
     -->
-    <link rel="stylesheet" href="/app/kit/v1/kit.css" />
+    <link rel="stylesheet" href="/app/kit/v2/kit.css" />
     <script src="/app/sdk/v1.js"></script>
     <style>
+      /*
+        The app's own copy of the few values it needs.
+        
+        `kit.css` supplies these and the host overrides them with the reader's theme, but neither is
+        guaranteed to arrive: a stale cached copy of the kit, or a host too old to serve it, used to
+        leave the game on a black background with invisible text. Declaring them here means the worst
+        case is "not themed", not "unreadable".
+      */
+      :root {
+        --coach-bg: #0b1220;
+        --coach-fg: #e8ecf5;
+        --coach-muted: #8ea3c7;
+        --coach-border: #263149;
+        --coach-accent: #4f8cff;
+        --coach-radius: 0.5rem;
+        --coach-mono: ui-monospace, SFMono-Regular, Menlo, monospace;
+      }
+
       html,
       body {
+        background: var(--coach-bg);
+        color: var(--coach-fg);
+        font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
         height: 100%;
         overflow: hidden;
         touch-action: manipulation;
@@ -182,19 +203,74 @@
         flex: none;
       }
 
-      .keys {
-        font-size: clamp(0.68rem, 1.1vw, 0.78rem);
-        color: var(--coach-muted);
-        line-height: 1.7;
+      /* Three columns, two rows: the arrow cluster as it is under somebody's hand. */
+      .keypad {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 0.3rem;
+        justify-items: center;
       }
 
-      kbd {
+      .keycap--up {
+        grid-column: 2;
+        grid-row: 1;
+      }
+
+      .keycap--left {
+        grid-column: 1;
+        grid-row: 2;
+      }
+
+      .keycap--down {
+        grid-column: 2;
+        grid-row: 2;
+      }
+
+      .keycap--right {
+        grid-column: 3;
+        grid-row: 2;
+      }
+
+      .keyline {
+        display: flex;
+        gap: 0.3rem;
+        margin-top: 0.3rem;
+      }
+
+      .keyline .keycap--wide {
+        flex: 1;
+      }
+
+      .keycap {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.15rem;
+        width: 100%;
+        padding: 0.3rem 0.2rem;
+        border-radius: 8px;
+        background: color-mix(in srgb, var(--coach-fg) 6%, transparent);
         border: 1px solid var(--coach-border);
-        border-bottom-width: 2px;
-        border-radius: 4px;
-        padding: 0 0.25rem;
-        font-size: 0.62rem;
+        font-size: 0.58rem;
+        color: var(--coach-muted);
+        text-align: center;
+      }
+
+      .keycap kbd {
         font-family: var(--coach-mono);
+        font-size: 0.8rem;
+        line-height: 1;
+        color: var(--coach-fg);
+        border: 0;
+        background: none;
+        padding: 0;
+      }
+
+      /* Lit while the key is actually down: the panel answers, so it reads as the keyboard it draws. */
+      .keycap.down {
+        background: color-mix(in srgb, var(--coach-accent) 26%, transparent);
+        border-color: var(--coach-accent);
+        color: var(--coach-fg);
       }
 
       .row {
@@ -597,7 +673,8 @@
           min-width: 11rem;
         }
 
-        .keys {
+        .keypad,
+        .keyline {
           display: none;
         }
 
@@ -684,9 +761,24 @@
         </div>
 
         <hr class="panel-sep" />
-        <div class="keys" id="keys">
-          <kbd>←</kbd> <kbd>→</kbd> mover · <kbd>↑</kbd> girar<br />
-          <kbd>↓</kbd> bajar · <kbd>espacio</kbd> soltar · <kbd>P</kbd> pausa
+        <p class="panel-title" id="l-panel-keys">Teclas</p>
+
+        <!--
+          The arrows as they sit on a keyboard, rather than a sentence about them.
+
+          A list of names has to be read and translated into a shape; the shape *is* the answer, and
+          somebody glancing at it while a piece is falling has no time for a sentence.
+        -->
+        <div class="keypad">
+          <div class="keycap keycap--up"><kbd>↑</kbd><span id="k-rotate">girar</span></div>
+          <div class="keycap keycap--left"><kbd>←</kbd><span id="k-left">izq.</span></div>
+          <div class="keycap keycap--down"><kbd>↓</kbd><span id="k-down">bajar</span></div>
+          <div class="keycap keycap--right"><kbd>→</kbd><span id="k-right">der.</span></div>
+        </div>
+
+        <div class="keyline">
+          <span class="keycap keycap--wide"><kbd>espacio</kbd><span id="k-drop">soltar</span></span>
+          <span class="keycap"><kbd>P</kbd><span id="k-pause">pausa</span></span>
         </div>
       </aside>
     </div>
@@ -814,10 +906,16 @@
         <!-- Filled in after the score has been reported, so the reader sees where it left them. -->
         <ol id="ranking" class="ranking"></ol>
 
-        <button class="coach-button coach-button--primary" id="again" type="button">
-          <span class="coach-icon" data-icon="restart"></span>
-          <span id="again-text">Jugar otra vez</span>
-        </button>
+        <div class="row" style="justify-content: center">
+          <button class="coach-button coach-button--primary" id="again" type="button">
+            <span class="coach-icon" data-icon="restart"></span>
+            <span id="again-text">Jugar otra vez</span>
+          </button>
+          <button class="coach-button" id="leave" type="button">
+            <span class="coach-icon" data-icon="close"></span>
+            <span id="leave-text">Salir</span>
+          </button>
+        </div>
       </div>
     </div>
 

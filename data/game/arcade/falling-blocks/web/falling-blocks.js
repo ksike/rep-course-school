@@ -52,7 +52,8 @@
       settingsTitle: "Antes de empezar", settingsDone: "Empezar",
       pausedTitle: "En pausa", pausedHelp: "Pulsa cualquier tecla para seguir.",
       restart: "Reiniciar", settingsOpen: "Ajustes", level: "Nivel", toNext: "Al siguiente nivel",
-      panelStats: "Partida", panelControls: "Controles",
+      panelStats: "Partida", panelControls: "Controles", panelKeys: "Teclas", leave: "Salir",
+      kRotate: "girar", kLeft: "izq.", kRight: "der.", kDown: "bajar", kDrop: "soltar", kPause: "pausa",
       passed: "¡Buena partida!",
       confirmTitle: "¿Empezar una partida nueva?", confirmText: "Se pierde la actual.",
       confirmYes: "Reiniciar", confirmNo: "Cancelar",
@@ -68,7 +69,8 @@
       settingsTitle: "Before you start", settingsDone: "Start",
       pausedTitle: "Paused", pausedHelp: "Press any key to carry on.",
       restart: "Restart", settingsOpen: "Settings", level: "Level", toNext: "To the next level",
-      panelStats: "Game", panelControls: "Controls",
+      panelStats: "Game", panelControls: "Controls", panelKeys: "Keys", leave: "Leave",
+      kRotate: "rotate", kLeft: "left", kRight: "right", kDown: "down", kDrop: "drop", kPause: "pause",
       passed: "Well played!",
       confirmTitle: "Start a new game?", confirmText: "The current one is lost.",
       confirmYes: "Restart", confirmNo: "Cancel",
@@ -750,8 +752,21 @@
 
   /* ─────────────────────────────── input ─────────────────────────────── */
 
+  /** Which drawn key belongs to which real one, so the panel can light up with the keyboard. */
+  var KEYCAP = {
+    ArrowLeft: "left", ArrowRight: "right", ArrowUp: "up", ArrowDown: "down", " ": "wide", p: null, P: null,
+  };
+
+  function litKey(key, on) {
+    var name = KEYCAP[key];
+    if (name === undefined || name === null) return;
+    var cap = document.querySelector(".keycap--" + name);
+    if (cap) cap.classList.toggle("down", on);
+  }
+
   function onKey(event) {
     Audio.unlock();
+    litKey(event.key, true);
     var handled = true;
     switch (event.key) {
       case "ArrowLeft": if (move(-1, 0)) SOUND.move(); break;
@@ -838,6 +853,62 @@
     }, 2600);
   }
 
+  /**
+   * The reader's theme, as plain custom properties. The app follows light or dark without knowing
+   * anything about the application that sent them, and follows a change the same way.
+   */
+  function applyTheme(tokens) {
+    var map = {
+      "--background": "--coach-bg",
+      "--foreground": "--coach-fg",
+      "--muted-foreground": "--coach-muted",
+      "--border": "--coach-border",
+      "--primary": "--coach-accent",
+    };
+    Object.keys(map).forEach(function (name) {
+      if (tokens && tokens[name]) document.documentElement.style.setProperty(map[name], tokens[name]);
+    });
+  }
+
+  /**
+   * Put every label in the reader's language, and be able to do it again.
+   *
+   * The wording used to be written once inside `onInit`, so changing the language afterwards left the
+   * game in the old one until it was reloaded — and reloading throws away the run. Every label is
+   * named here, and the host sends `update` when somebody changes it.
+   */
+  function applyLanguage(locale) {
+    t = TEXT[String(locale || "es").slice(0, 2)] || TEXT.es;
+    document.documentElement.lang = String(locale || "es").slice(0, 2);
+
+    var labels = {
+      "l-score": t.score, "l-best": t.best, "l-lines": t.lines, "l-next": t.next, "l-level": t.level,
+      "l-toNext": t.toNext, "l-panel-stats": t.panelStats, "l-panel-controls": t.panelControls,
+      "l-panel-keys": t.panelKeys, "l-sound": t.sound, "l-sound-help": t.soundHelp,
+      "l-music": t.music, "l-music-help": t.musicHelp, "l-volume": t.volume,
+      "l-ghost": t.ghost, "l-ghost-help": t.ghostHelp,
+      "pause-text": paused ? t.resume : t.pause, "end-text": t.end, "again-text": t.again,
+      "leave-text": t.leave, "restart-text": t.restart, "settings-open-text": t.settingsOpen,
+      "settings-title": t.settingsTitle, "settings-done-text": t.settingsDone,
+      "paused-title": t.pausedTitle, "paused-help": t.pausedHelp,
+      "confirm-title": t.confirmTitle, "confirm-text": t.confirmText,
+      "confirm-yes-text": t.confirmYes, "confirm-no-text": t.confirmNo,
+      "k-rotate": t.kRotate, "k-left": t.kLeft, "k-right": t.kRight, "k-down": t.kDown,
+      "k-drop": t.kDrop, "k-pause": t.kPause,
+    };
+
+    Object.keys(labels).forEach(function (id) {
+      var node = document.getElementById(id);
+      if (node && labels[id] !== undefined) node.textContent = labels[id];
+    });
+
+    // The one label that is not static: the ending already on screen, if there is one.
+    if (over) {
+      document.getElementById("over-title").textContent =
+        document.getElementById("over").classList.contains("won") ? t.passed : t.over;
+    }
+  }
+
   /* ─────────────────────────────── settings ─────────────────────────────── */
 
   /**
@@ -893,10 +964,18 @@
   restart();
   touch();
   document.addEventListener("keydown", onKey);
+  document.addEventListener("keyup", function (event) {
+    litKey(event.key, false);
+  });
   document.addEventListener("pointerdown", Audio.unlock.bind(Audio), { once: false });
   document.getElementById("pause").addEventListener("click", function () { setPaused(!paused); });
   document.getElementById("end").addEventListener("click", finish);
   document.getElementById("again").addEventListener("click", restart);
+
+  // Leaving is the platform's to do: a sandboxed frame cannot navigate the page it sits in, so it asks.
+  document.getElementById("leave").addEventListener("click", function () {
+    if (coach && coach.exit) coach.exit();
+  });
   document.getElementById("settings-open").addEventListener("click", openSettings);
 
   /**
@@ -974,43 +1053,17 @@
   }
 
   coach = window.OpenCoach.connect({
+    /** The reader changed the language or the theme while playing: relabel, do not reload. */
+    onUpdate: function (update) {
+      applyTheme(update.themeTokens);
+      applyLanguage(update.locale);
+    },
+
     onInit: function (init) {
-      t = TEXT[(init.locale || "es").slice(0, 2)] || TEXT.es;
-      document.documentElement.lang = (init.locale || "es").slice(0, 2);
 
-      // The reader's theme, as plain custom properties. The app follows light or dark without knowing
-      // anything about the application that sent them.
-      var tokens = init.themeTokens || {};
-      var map = { "--background": "--coach-bg", "--foreground": "--coach-fg", "--muted-foreground": "--coach-muted", "--border": "--coach-border", "--primary": "--coach-accent" };
-      Object.keys(map).forEach(function (name) {
-        if (tokens[name]) document.documentElement.style.setProperty(map[name], tokens[name]);
-      });
+      applyTheme(init.themeTokens);
 
-      ["score", "best", "lines", "next", "pause", "end", "again"].forEach(function (key) {
-        var label = document.getElementById("l-" + key) || document.getElementById(key + "-text");
-        if (label) label.textContent = t[key];
-      });
-      document.getElementById("settings-title").textContent = t.settingsTitle;
-      document.getElementById("settings-done-text").textContent = t.settingsDone;
-      document.getElementById("l-sound").textContent = t.sound;
-      document.getElementById("l-sound-help").textContent = t.soundHelp;
-      document.getElementById("l-ghost").textContent = t.ghost;
-      document.getElementById("l-ghost-help").textContent = t.ghostHelp;
-      document.getElementById("l-music").textContent = t.music;
-      document.getElementById("l-music-help").textContent = t.musicHelp;
-      document.getElementById("l-volume").textContent = t.volume;
-      document.getElementById("paused-title").textContent = t.pausedTitle;
-      document.getElementById("paused-help").textContent = t.pausedHelp;
-      document.getElementById("restart-text").textContent = t.restart;
-      document.getElementById("settings-open-text").textContent = t.settingsOpen;
-      document.getElementById("l-level").textContent = t.level;
-      document.getElementById("l-toNext").textContent = t.toNext;
-      document.getElementById("l-panel-stats").textContent = t.panelStats;
-      document.getElementById("l-panel-controls").textContent = t.panelControls;
-      document.getElementById("confirm-title").textContent = t.confirmTitle;
-      document.getElementById("confirm-text").textContent = t.confirmText;
-      document.getElementById("confirm-yes-text").textContent = t.confirmYes;
-      document.getElementById("confirm-no-text").textContent = t.confirmNo;
+      applyLanguage(init.locale);
 
       // What outlives a game comes from the app's own store; the game in progress comes from the save.
       // Both are the platform's, tied to the account, so they follow the player between devices.

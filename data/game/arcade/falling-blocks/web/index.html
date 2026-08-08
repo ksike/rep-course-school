@@ -84,6 +84,19 @@
         gap: 0.4rem;
       }
 
+      .volume-row {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.35rem 0.1rem;
+      }
+
+      .volume-row input {
+        flex: 1;
+        min-width: 0;
+        accent-color: var(--coach-accent);
+      }
+
       .row .coach-button {
         flex: 1;
         display: inline-flex;
@@ -103,8 +116,34 @@
 
       #over.on,
       #settings.on,
-      #paused.on {
+      #paused.on,
+      #confirm.on {
         display: grid;
+      }
+
+      #confirm {
+        position: fixed;
+        inset: 0;
+        display: none;
+        place-items: center;
+        background: color-mix(in srgb, var(--coach-bg) 86%, transparent);
+        backdrop-filter: blur(2px);
+      }
+
+      #confirm .coach-panel {
+        text-align: center;
+        max-width: 20rem;
+      }
+
+      #confirm h2 {
+        margin: 0 0 0.3rem;
+        font-size: 1rem;
+      }
+
+      #confirm p {
+        margin: 0 0 0.9rem;
+        font-size: 0.85rem;
+        color: var(--coach-muted);
       }
 
       #paused {
@@ -310,13 +349,30 @@
           <kbd>P</kbd> pausa
         </div>
 
+        <!--
+          The volume lives here rather than only in the settings panel: it is the control people reach
+          for while playing, and a game you have to pause to quieten is a game you turn off instead.
+        -->
+        <label class="volume-row">
+          <span class="coach-icon" data-icon="sound-on" id="sound-icon"></span>
+          <input type="range" id="quick-volume" min="0" max="100" step="5" value="70" aria-label="Volumen" />
+        </label>
+
         <div class="row">
-          <button class="coach-button" id="settings-open" type="button" title="Ajustes">
-            <span class="coach-icon" data-icon="sound-on" id="sound-icon"></span>
-          </button>
           <button class="coach-button" id="pause" type="button">
             <span class="coach-icon" data-icon="pause" id="pause-icon"></span>
             <span id="pause-text">Pausa</span>
+          </button>
+          <button class="coach-button" id="restart" type="button" title="Reiniciar">
+            <span class="coach-icon" data-icon="restart"></span>
+            <span id="restart-text">Reiniciar</span>
+          </button>
+        </div>
+
+        <div class="row">
+          <button class="coach-button" id="settings-open" type="button">
+            <span class="coach-icon" data-icon="save"></span>
+            <span id="settings-open-text">Ajustes</span>
           </button>
           <button class="coach-button" id="end" type="button">
             <span class="coach-icon" data-icon="check"></span>
@@ -383,6 +439,30 @@
         <span class="coach-icon" data-icon="play" style="width: 2rem; height: 2rem"></span>
         <h2 id="paused-title">En pausa</h2>
         <p id="paused-help">Pulsa cualquier tecla para seguir.</p>
+      </div>
+    </div>
+
+    <!--
+      Asked here rather than with `confirm()`.
+
+      A sandboxed frame without `allow-modals` ignores `alert`, `confirm` and `prompt` entirely — the
+      call returns and nothing happens — so a game that asks that way silently does nothing. Keeping
+      the sandbox tight and asking in the page is the right way round.
+    -->
+    <div id="confirm">
+      <div class="coach-panel">
+        <h2 id="confirm-title">¿Empezar una partida nueva?</h2>
+        <p id="confirm-text">Se pierde la actual.</p>
+        <div class="row" style="justify-content: center">
+          <button class="coach-button coach-button--primary" id="confirm-yes" type="button">
+            <span class="coach-icon" data-icon="restart"></span>
+            <span id="confirm-yes-text">Reiniciar</span>
+          </button>
+          <button class="coach-button" id="confirm-no" type="button">
+            <span class="coach-icon" data-icon="close"></span>
+            <span id="confirm-no-text">Cancelar</span>
+          </button>
+        </div>
       </div>
     </div>
 

@@ -48,6 +48,9 @@
       newBest: "¡Nuevo récord!", result: "{score} puntos · {lines} líneas · nivel {level}",
       settingsTitle: "Antes de empezar", settingsDone: "Empezar",
       pausedTitle: "En pausa", pausedHelp: "Pulsa cualquier tecla para seguir.",
+      restart: "Reiniciar", settingsOpen: "Ajustes",
+      confirmTitle: "¿Empezar una partida nueva?", confirmText: "Se pierde la actual.",
+      confirmYes: "Reiniciar", confirmNo: "Cancelar",
       sound: "Sonido", soundHelp: "Efectos de movimiento, línea y fin de partida.",
       music: "Música", musicHelp: "Una melodía de fondo mientras juegas.",
       volume: "Volumen",
@@ -59,6 +62,9 @@
       newBest: "New best!", result: "{score} points · {lines} lines · level {level}",
       settingsTitle: "Before you start", settingsDone: "Start",
       pausedTitle: "Paused", pausedHelp: "Press any key to carry on.",
+      restart: "Restart", settingsOpen: "Settings",
+      confirmTitle: "Start a new game?", confirmText: "The current one is lost.",
+      confirmYes: "Restart", confirmNo: "Cancel",
       sound: "Sound", soundHelp: "Movement, line and game-over effects.",
       music: "Music", musicHelp: "A tune in the background while you play.",
       volume: "Volume",
@@ -627,7 +633,7 @@
     // writes a second apart, and the second is refused — correctly, and noisily.
     if (paused && persist !== false && coach && !over) persist_();
 
-    showPaused(paused && !over && document.getElementById("settings").classList.contains("on") === false);
+    showPaused(paused && !over);
 
     // Music follows the game rather than the tab: nobody wants a loop playing over a pause screen.
     if (paused || over) Music.stop();
@@ -720,6 +726,7 @@
     document.getElementById("opt-music").checked = settings.music;
     document.getElementById("opt-ghost").checked = settings.ghost;
     document.getElementById("opt-volume").value = String(Math.round(settings.volume * 100));
+    document.getElementById("quick-volume").value = String(Math.round(settings.volume * 100));
     document.getElementById("volume-value").textContent = Math.round(settings.volume * 100) + "%";
     document.getElementById("sound-icon").dataset.icon = settings.sound ? "sound-on" : "sound-off";
 
@@ -764,6 +771,48 @@
   document.getElementById("end").addEventListener("click", finish);
   document.getElementById("again").addEventListener("click", restart);
   document.getElementById("settings-open").addEventListener("click", openSettings);
+
+  /**
+   * Restart, always reachable.
+   *
+   * Confirmed only when there is something to lose: asking "are you sure?" about a board with two
+   * pieces on it is a question nobody wants. It is also the way out of any state the game has got
+   * itself into, which is worth having within reach rather than behind a reload.
+   */
+  document.getElementById("restart").addEventListener("click", function () {
+    // Nothing to lose, nothing to ask.
+    if (over || score === 0) {
+      restart();
+      return;
+    }
+    document.getElementById("confirm").classList.add("on");
+    if (!paused) setPaused(true, false);
+    showPaused(false);
+  });
+
+  document.getElementById("confirm-yes").addEventListener("click", function () {
+    document.getElementById("confirm").classList.remove("on");
+    restart();
+  });
+
+  document.getElementById("confirm-no").addEventListener("click", function () {
+    document.getElementById("confirm").classList.remove("on");
+    if (paused && !over) setPaused(false, false);
+  });
+
+  // The volume beside the board, mirrored into the settings panel and kept in the account.
+  document.getElementById("quick-volume").addEventListener("input", function () {
+    settings.volume = Number(this.value) / 100;
+    Audio.unlock();
+    Audio.setVolume(settings.volume);
+    var inPanel = document.getElementById("opt-volume");
+    if (inPanel) inPanel.value = this.value;
+    var label = document.getElementById("volume-value");
+    if (label) label.textContent = this.value + "%";
+  });
+  document.getElementById("quick-volume").addEventListener("change", function () {
+    if (coach) coach.data.set("settings", settings);
+  });
   document.getElementById("settings-done").addEventListener("click", closeSettings);
   ["opt-sound", "opt-music", "opt-ghost"].forEach(function (id) {
     document.getElementById(id).addEventListener("change", saveSettings);
@@ -823,6 +872,12 @@
       document.getElementById("l-volume").textContent = t.volume;
       document.getElementById("paused-title").textContent = t.pausedTitle;
       document.getElementById("paused-help").textContent = t.pausedHelp;
+      document.getElementById("restart-text").textContent = t.restart;
+      document.getElementById("settings-open-text").textContent = t.settingsOpen;
+      document.getElementById("confirm-title").textContent = t.confirmTitle;
+      document.getElementById("confirm-text").textContent = t.confirmText;
+      document.getElementById("confirm-yes-text").textContent = t.confirmYes;
+      document.getElementById("confirm-no-text").textContent = t.confirmNo;
 
       // What outlives a game comes from the app's own store; the game in progress comes from the save.
       // Both are the platform's, tied to the account, so they follow the player between devices.
@@ -867,9 +922,19 @@
     if (!over && paused) showPaused(true);
   });
 
-  /** The overlay that says a game is waiting, rather than leaving somebody guessing. */
+  /**
+   * The overlay that says a game is waiting, rather than leaving somebody guessing.
+   *
+   * Never while another panel is up. Pausing to ask a question also raised this one, so two overlays
+   * stacked and the top one swallowed the clicks meant for the buttons underneath — the restart was
+   * asked for, and the answer could not be given.
+   */
   function showPaused(on) {
-    document.getElementById("paused").classList.toggle("on", Boolean(on));
+    var blocked =
+      document.getElementById("settings").classList.contains("on") ||
+      document.getElementById("confirm").classList.contains("on") ||
+      document.getElementById("over").classList.contains("on");
+    document.getElementById("paused").classList.toggle("on", Boolean(on) && !blocked);
   }
 
   function resumeFromPause() {
@@ -881,6 +946,8 @@
   document.getElementById("paused").addEventListener("click", resumeFromPause);
   document.addEventListener("keydown", function (event) {
     // Any key resumes, except the one that would immediately pause again.
+    if (document.getElementById("confirm").classList.contains("on")) return;
+    if (document.getElementById("settings").classList.contains("on")) return;
     if (paused && !over && event.key !== "p" && event.key !== "P") resumeFromPause();
   }, true);
 })();

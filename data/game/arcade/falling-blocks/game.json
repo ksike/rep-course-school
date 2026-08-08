@@ -10,7 +10,7 @@
   },
   "category": "arcade",
   "tier": "c",
-  "entry": "dist/index.html",
+  "entry": "web/index.html",
   "apiVersion": 1,
   "locales": [
     "es",
@@ -37,5 +37,6 @@
   "license": "CC-BY-4.0",
   "capabilities": [
     "data:user"
-  ]
+  ],
+  "image": "cover.svg"
 }

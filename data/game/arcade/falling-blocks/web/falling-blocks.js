@@ -52,6 +52,7 @@
       settingsTitle: "Antes de empezar", settingsDone: "Empezar",
       pausedTitle: "En pausa", pausedHelp: "Pulsa cualquier tecla para seguir.",
       restart: "Reiniciar", settingsOpen: "Ajustes", level: "Nivel", toNext: "Al siguiente nivel",
+      panelStats: "Partida", panelControls: "Controles",
       passed: "¡Buena partida!",
       confirmTitle: "¿Empezar una partida nueva?", confirmText: "Se pierde la actual.",
       confirmYes: "Reiniciar", confirmNo: "Cancelar",
@@ -67,6 +68,7 @@
       settingsTitle: "Before you start", settingsDone: "Start",
       pausedTitle: "Paused", pausedHelp: "Press any key to carry on.",
       restart: "Restart", settingsOpen: "Settings", level: "Level", toNext: "To the next level",
+      panelStats: "Game", panelControls: "Controls",
       passed: "Well played!",
       confirmTitle: "Start a new game?", confirmText: "The current one is lost.",
       confirmYes: "Restart", confirmNo: "Cancel",
@@ -482,7 +484,8 @@
       flash();
       if (level > previousLevel) {
         SOUND.level();
-        celebrate(14);
+        celebrate(18);
+        showLevelUp(level);
       }
       if (cleared === 4) totals.tetrises++;
 
@@ -621,13 +624,15 @@
     }
 
     document.getElementById("over").classList.toggle("won", won);
-    document.getElementById("over-icon").dataset.icon = won ? "trophy" : "close";
+    document.getElementById("fig-win").classList.toggle("on", won);
+    document.getElementById("fig-lose").classList.toggle("on", !won);
     document.getElementById("over-title").textContent = beatenBest ? t.newBest : won ? t.passed : t.over;
     document.getElementById("over-text").textContent = t.result
       .replace("{score}", String(score))
       .replace("{lines}", String(lines))
       .replace("{level}", String(level));
     document.getElementById("over").classList.add("on");
+    syncOverlays();
     refresh();
     showRanking();
   }
@@ -683,6 +688,8 @@
     bag = [];
     nextPiece = null;
     document.getElementById("over").classList.remove("on");
+    document.getElementById("confirm").classList.remove("on");
+    syncOverlays();
     if (settings.music) Music.start();
     spawn();
     refresh();
@@ -697,7 +704,7 @@
     // writes a second apart, and the second is refused — correctly, and noisily.
     if (paused && persist !== false && coach && !over) persist_();
 
-    showPaused(paused && !over);
+    syncOverlays();
 
     // Music follows the game rather than the tab: nobody wants a loop playing over a pause screen.
     if (paused || over) Music.stop();
@@ -778,6 +785,28 @@
   }
 
   /**
+   * The banner for a new level.
+   *
+   * Over the board and out of the way: no pause, nothing to dismiss, pointer events off. Congratulating
+   * somebody by interrupting the piece they are placing is worse than not congratulating them.
+   */
+  function showLevelUp(reached) {
+    var banner = document.getElementById("levelup");
+    document.getElementById("levelup-value").textContent = String(reached);
+    document.getElementById("levelup-label").textContent = t.level;
+
+    // Restarting the animation needs the class off and a reflow, or two levels in a row show nothing.
+    banner.classList.remove("on");
+    void banner.offsetWidth;
+    banner.classList.add("on");
+
+    clearTimeout(showLevelUp.timer);
+    showLevelUp.timer = setTimeout(function () {
+      banner.classList.remove("on");
+    }, 1500);
+  }
+
+  /**
    * Confetti, in the same SVG the rest of the game is drawn in.
    *
    * A handful of rectangles with a CSS animation and a timeout that removes them: no library, no
@@ -845,15 +874,17 @@
   }
 
   function openSettings() {
+    document.getElementById("settings").classList.add("on");
     if (!over) setPaused(true, false);
     applySettings();
-    document.getElementById("settings").classList.add("on");
+    syncOverlays();
   }
 
   function closeSettings() {
     saveSettings();
     document.getElementById("settings").classList.remove("on");
     if (!over && paused) setPaused(false, false);
+    syncOverlays();
   }
 
   /* ─────────────────────────────── start ─────────────────────────────── */
@@ -883,17 +914,19 @@
     }
     document.getElementById("confirm").classList.add("on");
     if (!paused) setPaused(true, false);
-    showPaused(false);
+    syncOverlays();
   });
 
   document.getElementById("confirm-yes").addEventListener("click", function () {
     document.getElementById("confirm").classList.remove("on");
     restart();
+    syncOverlays();
   });
 
   document.getElementById("confirm-no").addEventListener("click", function () {
     document.getElementById("confirm").classList.remove("on");
     if (paused && !over) setPaused(false, false);
+    syncOverlays();
   });
 
   // The volume beside the board, mirrored into the settings panel and kept in the account.
@@ -972,6 +1005,8 @@
       document.getElementById("settings-open-text").textContent = t.settingsOpen;
       document.getElementById("l-level").textContent = t.level;
       document.getElementById("l-toNext").textContent = t.toNext;
+      document.getElementById("l-panel-stats").textContent = t.panelStats;
+      document.getElementById("l-panel-controls").textContent = t.panelControls;
       document.getElementById("confirm-title").textContent = t.confirmTitle;
       document.getElementById("confirm-text").textContent = t.confirmText;
       document.getElementById("confirm-yes-text").textContent = t.confirmYes;
@@ -1017,28 +1052,32 @@
       if (!over && !paused) setPaused(true);
       return;
     }
-    if (!over && paused) showPaused(true);
+    if (!over && paused) syncOverlays();
   });
 
   /**
-   * The overlay that says a game is waiting, rather than leaving somebody guessing.
+   * One place that decides which overlay is showing.
    *
-   * Never while another panel is up. Pausing to ask a question also raised this one, so two overlays
-   * stacked and the top one swallowed the clicks meant for the buttons underneath — the restart was
-   * asked for, and the answer could not be given.
+   * There are four — settings, confirm, game over, paused — and only one may be on top. Each used to
+   * manage its own visibility, which meant the answer depended on the order the calls happened in:
+   * pausing to open the settings raised the pause panel *before* the settings panel was marked, so it
+   * covered the buttons underneath and swallowed the clicks meant for them. Twice.
+   *
+   * So nothing toggles `paused` directly any more. Everything changes state and calls this, and this
+   * decides — which is the difference between a rule and a habit.
    */
-  function showPaused(on) {
-    var blocked =
-      document.getElementById("settings").classList.contains("on") ||
-      document.getElementById("confirm").classList.contains("on") ||
-      document.getElementById("over").classList.contains("on");
-    document.getElementById("paused").classList.toggle("on", Boolean(on) && !blocked);
+  function syncOverlays() {
+    var open = function (id) {
+      return document.getElementById(id).classList.contains("on");
+    };
+    var blocked = open("settings") || open("confirm") || open("over");
+    document.getElementById("paused").classList.toggle("on", paused && !over && !blocked);
   }
 
   function resumeFromPause() {
     if (over || !paused) return;
-    showPaused(false);
     setPaused(false, false);
+    syncOverlays();
   }
 
   document.getElementById("paused").addEventListener("click", resumeFromPause);

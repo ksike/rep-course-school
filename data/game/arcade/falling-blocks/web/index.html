@@ -28,17 +28,19 @@
       }
 
       /*
-        Two columns: the board takes everything left over, the panel is only as wide as it needs.
+        Two thirds for the well, one for everything else.
 
-        The board used to be centred in the free space with a fixed height, which left a wide margin on
-        the left and a thin one top and bottom — the space was there and nothing used it. Now the board
-        is as tall as the frame allows and its width follows from the 1:2 of the well, so the margins
-        are whatever is left over and they are even.
+        The panel used to be as narrow as it could be, which kept the figures cramped and pushed the
+        controls into a column that ran out of room. Given a third of the width it can show the score,
+        the next piece and the controls at a size somebody reads at a glance while playing.
+
+        The panel is capped, because a third of an ultrawide screen is a third nobody needs: past that
+        the extra goes back to the board, which is what people are looking at.
       */
       #app {
         height: 100%;
         display: grid;
-        grid-template-columns: minmax(0, 1fr) auto;
+        grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
         align-items: center;
         gap: clamp(0.5rem, 2vw, 1.25rem);
         padding: clamp(0.4rem, 1.5vh, 0.9rem);
@@ -71,12 +73,40 @@
       aside {
         display: flex;
         flex-direction: column;
-        gap: 0.5rem;
-        width: clamp(9rem, 22vw, 13rem);
+        gap: 0.55rem;
+        width: 100%;
+        max-width: 24rem;
+        justify-self: stretch;
         max-height: 100%;
         overflow-y: auto;
         overscroll-behavior: contain;
-        padding-right: 0.15rem;
+
+        /* A surface of its own, so the side reads as "this is where the controls are" rather than as
+           things floating beside the board. */
+        border: 1px solid var(--coach-border);
+        border-radius: calc(var(--coach-radius) * 1.5);
+        background: color-mix(in srgb, var(--coach-fg) 4%, var(--coach-bg));
+        padding: 0.7rem;
+      }
+
+      /* Each part of the panel says what it is; the rule is the boundary between them. */
+      .panel-title {
+        font-size: 0.62rem;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--coach-muted);
+        margin: 0.25rem 0 -0.1rem;
+      }
+
+      .panel-title + * {
+        margin-top: 0;
+      }
+
+      .panel-sep {
+        height: 1px;
+        background: var(--coach-border);
+        margin: 0.15rem 0;
+        border: 0;
       }
 
       /* Four small figures in two columns read faster than four stacked panels. */
@@ -94,14 +124,14 @@
       }
 
       .stat .label {
-        font-size: 0.6rem;
+        font-size: clamp(0.6rem, 1vw, 0.7rem);
         letter-spacing: 0.08em;
         text-transform: uppercase;
         color: var(--coach-muted);
       }
 
       .stat .value {
-        font-size: 1.05rem;
+        font-size: clamp(1.05rem, 2.2vw, 1.5rem);
         font-weight: 700;
         font-variant-numeric: tabular-nums;
         line-height: 1.2;
@@ -147,13 +177,13 @@
       }
 
       #next {
-        width: 3.6rem;
-        height: 3.6rem;
+        width: clamp(3.6rem, 7vw, 5.2rem);
+        height: clamp(3.6rem, 7vw, 5.2rem);
         flex: none;
       }
 
       .keys {
-        font-size: 0.68rem;
+        font-size: clamp(0.68rem, 1.1vw, 0.78rem);
         color: var(--coach-muted);
         line-height: 1.7;
       }
@@ -178,9 +208,9 @@
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        gap: 0.3rem;
-        padding: 0.4rem 0.5rem;
-        font-size: 0.8rem;
+        gap: 0.35rem;
+        padding: 0.5rem 0.6rem;
+        font-size: clamp(0.8rem, 1.2vw, 0.9rem);
       }
 
       .row .coach-button span:last-child {
@@ -283,6 +313,154 @@
 
       #confetti.on {
         display: block;
+      }
+
+      /* ── the two endings, and the good news in between ──────────────── */
+
+      .figure {
+        width: 6.5rem;
+        height: 5rem;
+        display: none;
+        margin: 0 auto 0.25rem;
+        color: var(--coach-fg);
+      }
+
+      .figure.on {
+        display: block;
+      }
+
+      /* The winning stack grows into place; the star turns as it lands. */
+      #fig-win .rise rect {
+        transform-box: fill-box;
+        transform-origin: bottom;
+        animation: grow 0.5s cubic-bezier(0.2, 0.9, 0.3, 1.3) both;
+      }
+
+      #fig-win .rise rect:nth-child(2) {
+        animation-delay: 0.12s;
+      }
+
+      #fig-win .rise rect:nth-child(3) {
+        animation-delay: 0.24s;
+      }
+
+      #fig-win .spark {
+        transform-box: fill-box;
+        transform-origin: center;
+        animation: pop 0.5s 0.36s ease-out both;
+      }
+
+      @keyframes grow {
+        from {
+          transform: scaleY(0);
+        }
+      }
+
+      @keyframes pop {
+        from {
+          transform: scale(0) rotate(-90deg);
+          opacity: 0;
+        }
+      }
+
+      /* The losing stack tips over and settles. */
+      #fig-lose .topple rect {
+        transform-box: fill-box;
+        transform-origin: bottom;
+        animation: topple 0.6s ease-in both;
+      }
+
+      #fig-lose .topple rect:nth-child(2) {
+        animation-delay: 0.08s;
+      }
+
+      #fig-lose .topple rect:nth-child(3) {
+        animation-delay: 0.16s;
+      }
+
+      #fig-lose .down {
+        animation: sink 0.7s 0.2s ease-in both;
+      }
+
+      @keyframes topple {
+        to {
+          transform: translateY(10px) rotate(14deg);
+          opacity: 0.7;
+        }
+      }
+
+      @keyframes sink {
+        from {
+          opacity: 0;
+          transform: translateY(-8px);
+        }
+      }
+
+      #levelup {
+        position: fixed;
+        inset: 0;
+        display: none;
+        place-items: center;
+        pointer-events: none;
+      }
+
+      #levelup.on {
+        display: grid;
+      }
+
+      .levelup-card {
+        display: flex;
+        align-items: baseline;
+        gap: 0.6rem;
+        padding: 0.7rem 1.4rem;
+        border-radius: 999px;
+        color: var(--coach-bg);
+        background: linear-gradient(90deg, var(--coach-accent), color-mix(in srgb, var(--coach-accent) 45%, #fff));
+        box-shadow: 0 8px 30px color-mix(in srgb, var(--coach-accent) 45%, transparent);
+        animation: banner 1.4s ease-out forwards;
+      }
+
+      .levelup-label {
+        font-size: 0.75rem;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        opacity: 0.85;
+      }
+
+      .levelup-value {
+        font-size: 1.8rem;
+        font-weight: 800;
+        font-variant-numeric: tabular-nums;
+        line-height: 1;
+      }
+
+      @keyframes banner {
+        0% {
+          opacity: 0;
+          transform: scale(0.8);
+        }
+        18% {
+          opacity: 1;
+          transform: scale(1.04);
+        }
+        30% {
+          transform: scale(1);
+        }
+        80% {
+          opacity: 1;
+        }
+        100% {
+          opacity: 0;
+          transform: translateY(-14px);
+        }
+      }
+
+      /* Somebody who asked for less movement gets the news without the movement. */
+      @media (prefers-reduced-motion: reduce) {
+        .figure * ,
+        .levelup-card {
+          animation: none !important;
+        }
       }
 
       #confetti rect {
@@ -400,8 +578,14 @@
           align-items: stretch;
         }
 
+        .panel-title,
+        .panel-sep {
+          display: none;
+        }
+
         aside {
           width: 100%;
+          max-width: none;
           flex-direction: row;
           flex-wrap: wrap;
           align-items: center;
@@ -435,7 +619,8 @@
         aria-label="Tablero de juego"
       ></svg>
 
-      <aside>
+      <aside aria-label="Marcador y controles">
+        <p class="panel-title" id="l-panel-stats">Partida</p>
         <div class="stats">
           <div class="stat">
             <div class="label" id="l-score">Puntos</div>
@@ -468,6 +653,9 @@
           <svg id="next" viewBox="0 0 120 120" aria-hidden="true"></svg>
         </div>
 
+        <hr class="panel-sep" />
+        <p class="panel-title" id="l-panel-controls">Controles</p>
+
         <label class="volume-row">
           <span class="coach-icon" data-icon="sound-on" id="sound-icon"></span>
           <input type="range" id="quick-volume" min="0" max="100" step="5" value="70" aria-label="Volumen" />
@@ -495,6 +683,7 @@
           </button>
         </div>
 
+        <hr class="panel-sep" />
         <div class="keys" id="keys">
           <kbd>←</kbd> <kbd>→</kbd> mover · <kbd>↑</kbd> girar<br />
           <kbd>↓</kbd> bajar · <kbd>espacio</kbd> soltar · <kbd>P</kbd> pausa
@@ -503,6 +692,19 @@
     </div>
 
     <svg id="confetti" aria-hidden="true"></svg>
+
+    <!--
+      Reaching a level is the only good news that happens mid-game, and it used to be a number quietly
+      changing in the corner. It is a banner over the board for a second: it does not pause anything and
+      it does not need dismissing, because interrupting somebody mid-piece to congratulate them is worse
+      than saying nothing.
+    -->
+    <div id="levelup" aria-live="polite">
+      <div class="levelup-card">
+        <span class="levelup-label" id="levelup-label">Nivel</span>
+        <span class="levelup-value" id="levelup-value">2</span>
+      </div>
+    </div>
 
     <div id="settings">
       <div class="coach-panel">
@@ -580,7 +782,32 @@
 
     <div id="over">
       <div class="coach-panel">
-        <span class="coach-icon" data-icon="trophy" id="over-icon" style="width: 2rem; height: 2rem"></span>
+        <!--
+          Two figures rather than two words. Whether it went well is the first thing somebody wants to
+          know, and a shape says it before a sentence is read — the blocks stack up into a cup when it
+          went well, and topple over the line when it did not.
+        -->
+        <svg id="fig-win" class="figure" viewBox="0 0 120 90" aria-hidden="true">
+          <g class="rise">
+            <rect x="30" y="46" width="16" height="16" rx="3" fill="#4ade80" />
+            <rect x="52" y="34" width="16" height="28" rx="3" fill="#22d3ee" />
+            <rect x="74" y="22" width="16" height="40" rx="3" fill="#facc15" />
+          </g>
+          <path class="spark" d="M60 6 L64 16 L74 18 L64 22 L60 32 L56 22 L46 18 L56 16 Z" fill="#facc15" />
+          <line x1="22" y1="70" x2="98" y2="70" stroke="currentColor" stroke-width="2" opacity=".35" />
+        </svg>
+
+        <svg id="fig-lose" class="figure" viewBox="0 0 120 90" aria-hidden="true">
+          <g class="topple">
+            <rect x="30" y="44" width="16" height="16" rx="3" fill="#64748b" />
+            <rect x="52" y="44" width="16" height="16" rx="3" fill="#64748b" />
+            <rect x="74" y="44" width="16" height="16" rx="3" fill="#64748b" />
+          </g>
+          <!-- The line it did not clear. -->
+          <line x1="22" y1="70" x2="98" y2="70" stroke="#f87171" stroke-width="3" stroke-dasharray="6 5" />
+          <path class="down" d="M60 12 L60 34 M52 27 L60 35 L68 27" stroke="#f87171" stroke-width="3"
+                fill="none" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
         <h2 id="over-title">Fin de la partida</h2>
         <p id="over-text"></p>
 

@@ -2,6 +2,7 @@
   "specVersion": 1,
   "type": "app",
   "profile": "game",
+  "version": "0.1.2",
   "title": {
     "es": "Ordenar en la recta numérica",
     "en": "Order on the number line"

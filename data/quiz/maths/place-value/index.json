@@ -1,4 +1,5 @@
 {
+  "version": "0.1.2",
   "limit": 10,
   "quota": 8,
   "time": 12,

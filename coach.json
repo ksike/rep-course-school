@@ -3,7 +3,7 @@
   "id": "ksike.school",
   "name": "Primary and secondary school content pack",
   "description": "Open Coach content for primary and secondary education: maths with open answers, courses and learning games.",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "license": "MIT",
   "licenseFile": "LICENSE",
   "homepage": "https://github.com/ksike/rep-course-school",
@@ -60,14 +60,14 @@
       },
       "size": {
         "questions": 12,
-        "bytes": 28055,
+        "bytes": 28077,
         "files": 4
       },
       "locales": [
         "en",
         "es"
       ],
-      "integrity": "sha256-C5VCUpDj/WYz4LTTqWNzWhGYR/wpvWDr+6j75Fgik0A=",
+      "integrity": "sha256-alB8zcEb6GAhf1odi33/9jQLBWmlTZ+h8QCDwiyKHeg=",
       "ref": "v1.0.0"
     },
     {
@@ -96,14 +96,14 @@
       },
       "size": {
         "questions": 10,
-        "bytes": 12290,
+        "bytes": 12312,
         "files": 4
       },
       "locales": [
         "en",
         "es"
       ],
-      "integrity": "sha256-Ut0sKOwWBOleMsWvoYN5eQPoi/Q/wfQrsfdtW3lH+Ck=",
+      "integrity": "sha256-riqs8Sv3PXr+l05Cs2ED9aiyN4/9o8p8DiusAc2O/Es=",
       "ref": "v1.0.0"
     },
     {
@@ -132,14 +132,14 @@
       },
       "size": {
         "questions": 10,
-        "bytes": 10715,
+        "bytes": 10737,
         "files": 4
       },
       "locales": [
         "en",
         "es"
       ],
-      "integrity": "sha256-aPciRiSWLPfHSRSJ2xrRqI4SsuHbX7L/jeEBgDo9ObU=",
+      "integrity": "sha256-FaUEl2JPKBCdjr5cvp+mIrJh7ukpyyNgQNptvWTHJZY=",
       "ref": "v1.0.0"
     },
     {
@@ -168,14 +168,14 @@
       },
       "size": {
         "questions": 10,
-        "bytes": 13584,
+        "bytes": 13606,
         "files": 4
       },
       "locales": [
         "en",
         "es"
       ],
-      "integrity": "sha256-N2nmCqkYLj/8SoGUZ+BMYdFPTTY31WigvWwcAVI0s0c=",
+      "integrity": "sha256-l/otUelDJ5M/DATknVJp3x55cqVpYP1Hnbisfpj+OWI=",
       "ref": "v1.0.0"
     },
     {
@@ -206,9 +206,9 @@
       "audience": {
         "minAge": 6
       },
-      "integrity": "sha256-cr4AeexpnE9cu1zO++F1mjwJi0XC7f6KPrReNyZKmzU=",
+      "integrity": "sha256-2Yelj6FVpUGcU2RRZViku6qa01snT7rb2fWHJbETEbY=",
       "size": {
-        "bytes": 3839,
+        "bytes": 3861,
         "files": 2
       },
       "ref": "v1.0.0"
@@ -241,9 +241,9 @@
       "audience": {
         "minAge": 9
       },
-      "integrity": "sha256-UvLv28HHAbmsjuJXEeimNrAzDtipUvkVjTwZCsvar/0=",
+      "integrity": "sha256-FhrbKusV6riyxAQp+7irYRwBhecjNYlJUqh/Ood58hs=",
       "size": {
-        "bytes": 4229,
+        "bytes": 4251,
         "files": 2
       },
       "ref": "v1.0.0"
@@ -276,9 +276,9 @@
       "audience": {
         "minAge": 8
       },
-      "integrity": "sha256-Q32lC2wJTZwmHGNSQgHnF0WBgRBeS5jUdJ+ysWBLKqU=",
+      "integrity": "sha256-Xmf8dQD/6zLpPksuWVdLme8Iculxt7NB33yiecZ+dk4=",
       "size": {
-        "bytes": 4116,
+        "bytes": 4138,
         "files": 2
       },
       "ref": "v1.0.0"
@@ -310,9 +310,9 @@
       "audience": {
         "minAge": 6
       },
-      "integrity": "sha256-nd2YY5ONTzSyg9WiG22Z8XLLlYk/k8wkPD15zfi9RT4=",
+      "integrity": "sha256-BJy617QqA1OgIemDprH+X5JqNWpUc/KAnuytSluSrCE=",
       "size": {
-        "bytes": 94962,
+        "bytes": 94985,
         "files": 7
       },
       "ref": "v1.1.0"
@@ -344,9 +344,9 @@
       "audience": {
         "minAge": 8
       },
-      "integrity": "sha256-a6nHLLNws999YURycHumovV7cP/O3gQ4E6G8LknHm2w=",
+      "integrity": "sha256-pG5c9/ADL/eGKdXnuuUwDKJ/gdPXY47Joe5pkF7msLs=",
       "size": {
-        "bytes": 24631,
+        "bytes": 24653,
         "files": 7
       },
       "ref": "v1.1.0"
@@ -363,7 +363,7 @@
         "es": "Junta fichas iguales y llega a la 2048. Flechas para mover, Z para deshacer, P para pausar. La partida y el récord se guardan en tu cuenta.",
         "en": "Join matching tiles and reach 2048. Arrows to move, Z to undo, P to pause. Your game and your best score are kept in your account."
       },
-      "version": "0.2.0",
+      "version": "0.2.1",
       "path": "data/game/arcade/2048",
       "category": "arcade",
       "tags": [
@@ -378,14 +378,14 @@
       "audience": {
         "minAge": 6
       },
-      "integrity": "sha256-y/XX8wkZY7iKH3HaWu6skx80GLymyS0CmKIyWv4WWXc=",
+      "integrity": "sha256-6eucTHiWRRPzftyVExNLy9oomwq2e3/NsX13ybJMz2o=",
       "size": {
-        "bytes": 65170,
+        "bytes": 65192,
         "files": 7
       },
       "ref": "v1.1.0"
     }
   ],
-  "generatedAt": "2026-08-09T13:42:07.001Z",
+  "generatedAt": "2026-08-09T13:44:07.348Z",
   "generatedBy": "coach-pack-cli/0.1.0"
 }

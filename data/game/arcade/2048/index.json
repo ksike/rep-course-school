@@ -2,6 +2,7 @@
   "specVersion": 1,
   "type": "app",
   "profile": "game",
+  "version": "0.2.1",
   "title": {
     "es": "2048",
     "en": "2048"

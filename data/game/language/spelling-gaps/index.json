@@ -2,6 +2,7 @@
   "specVersion": 1,
   "type": "app",
   "profile": "game",
+  "version": "0.1.2",
   "title": {
     "es": "Huecos de ortografía: b y v, g y j",
     "en": "Spelling gaps: b and v, g and j"

@@ -46,6 +46,23 @@ const packages = (manifest.packages ?? []).flatMap((pkg) => {
 });
 const apps = packages.filter((pkg) => (pkg.type ?? pkg.kind) === "app");
 
+/** Newest first, and `0.10.0` after `0.9.0` rather than before it, which is what text sorting says. */
+const compare = (a, b) => {
+  const parse = (value) => value.split(/[.-]/).map((part) => (/^\d+$/.test(part) ? Number(part) : part));
+  const left = parse(a);
+  const right = parse(b);
+  for (let index = 0; index < Math.max(left.length, right.length); index++) {
+    const x = left[index];
+    const y = right[index];
+    if (x === y) continue;
+    if (x === undefined) return typeof y === "string" ? -1 : 1;
+    if (y === undefined) return typeof x === "string" ? 1 : -1;
+    if (typeof x === "number" && typeof y === "number") return y - x;
+    return typeof x === "number" ? -1 : typeof y === "number" ? 1 : String(x) < String(y) ? 1 : -1;
+  }
+  return 0;
+};
+
 const manifestOf = (pkg) => {
   const dir = join(PACK, pkg.path);
   const name = MANIFESTS.find((candidate) => existsSync(join(dir, candidate)));
@@ -82,9 +99,22 @@ test("has a manifest of its own", () => {
   assert.deepEqual(without, []);
 });
 
+/**
+ * The index and the package agreeing on which version this *is*.
+ *
+ * Only the newest: a working tree holds one version of a package, and the older entries in the index
+ * describe files that live somewhere else — on a release branch, or in a folder of their own. Asking
+ * them to match the manifest in front of us would be asking the tree to be three versions at once.
+ */
 test("says the same version in the index and in the package", () => {
-  const disagreeing = [];
+  const newest = new Map();
   for (const pkg of packages) {
+    const seen = newest.get(pkg.name);
+    if (!seen || compare(pkg.version, seen.version) < 0) newest.set(pkg.name, pkg);
+  }
+
+  const disagreeing = [];
+  for (const pkg of newest.values()) {
     const own = manifestOf(pkg);
     if (!own) continue;
     if (own.data.version !== pkg.version) {

@@ -2,7 +2,7 @@
   "specVersion": 1,
   "type": "app",
   "profile": "game",
-  "version": "0.13.4",
+  "version": "0.13.5",
   "title": {
     "es": "Bloques que caen",
     "en": "Falling blocks"

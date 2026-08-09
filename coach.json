@@ -3,7 +3,7 @@
   "id": "ksike.school",
   "name": "Primary and secondary school content pack",
   "description": "Open Coach content for primary and secondary education: maths with open answers, courses and learning games.",
-  "version": "1.1.2",
+  "version": "1.1.5",
   "license": "MIT",
   "licenseFile": "LICENSE",
   "homepage": "https://github.com/ksike/rep-course-school",
@@ -63,7 +63,6 @@
       ],
       "versions": {
         "0.1.2": {
-          "ref": "v1.0.0",
           "integrity": "sha256-alB8zcEb6GAhf1odi33/9jQLBWmlTZ+h8QCDwiyKHeg=",
           "size": {
             "questions": 12,
@@ -102,7 +101,6 @@
       ],
       "versions": {
         "0.1.2": {
-          "ref": "v1.0.0",
           "integrity": "sha256-riqs8Sv3PXr+l05Cs2ED9aiyN4/9o8p8DiusAc2O/Es=",
           "size": {
             "questions": 10,
@@ -141,7 +139,6 @@
       ],
       "versions": {
         "0.1.2": {
-          "ref": "v1.0.0",
           "integrity": "sha256-FaUEl2JPKBCdjr5cvp+mIrJh7ukpyyNgQNptvWTHJZY=",
           "size": {
             "questions": 10,
@@ -180,7 +177,6 @@
       ],
       "versions": {
         "0.1.2": {
-          "ref": "v1.0.0",
           "integrity": "sha256-l/otUelDJ5M/DATknVJp3x55cqVpYP1Hnbisfpj+OWI=",
           "size": {
             "questions": 10,
@@ -219,7 +215,6 @@
       },
       "versions": {
         "0.1.2": {
-          "ref": "v1.0.0",
           "integrity": "sha256-2Yelj6FVpUGcU2RRZViku6qa01snT7rb2fWHJbETEbY=",
           "size": {
             "bytes": 3861,
@@ -257,7 +252,6 @@
       },
       "versions": {
         "0.1.2": {
-          "ref": "v1.0.0",
           "integrity": "sha256-FhrbKusV6riyxAQp+7irYRwBhecjNYlJUqh/Ood58hs=",
           "size": {
             "bytes": 4251,
@@ -295,7 +289,6 @@
       },
       "versions": {
         "0.1.2": {
-          "ref": "v1.0.0",
           "integrity": "sha256-Xmf8dQD/6zLpPksuWVdLme8Iculxt7NB33yiecZ+dk4=",
           "size": {
             "bytes": 4138,
@@ -331,11 +324,18 @@
         "minAge": 6
       },
       "versions": {
-        "0.13.4": {
-          "ref": "v1.1.0",
-          "integrity": "sha256-Pk1x2x5E6ytH+zXcoj4bSzClH9V7f0KakQAoQW5m6YU=",
+        "0.13.5": {
+          "integrity": "sha256-jtM9zSdvLLAdVXD/wnFpR/+eVzdQLS2qeZ5akTOfc7w=",
           "size": {
             "bytes": 98027,
+            "files": 7
+          }
+        },
+        "0.13.0": {
+          "ref": "v1.0.0",
+          "integrity": "sha256-QnnjNjitv3FWXNT+3X3unbjOxx1C40HzJozNmd99r/o=",
+          "size": {
+            "bytes": 96122,
             "files": 7
           }
         }
@@ -368,11 +368,18 @@
         "minAge": 8
       },
       "versions": {
-        "0.4.0": {
-          "ref": "v1.1.0",
-          "integrity": "sha256-pG5c9/ADL/eGKdXnuuUwDKJ/gdPXY47Joe5pkF7msLs=",
+        "0.4.1": {
+          "integrity": "sha256-2YLegM2P2LcM+VM9H42MISwVVQvqA7zDd7SiJeMslys=",
           "size": {
             "bytes": 24653,
+            "files": 7
+          }
+        },
+        "0.4.0": {
+          "ref": "v1.0.0",
+          "integrity": "sha256-LfxrYVXoyzsCKlbSvG+kUkIcLz/t62B2ZNLaqamFrcg=",
+          "size": {
+            "bytes": 24808,
             "files": 7
           }
         }
@@ -405,9 +412,8 @@
         "minAge": 6
       },
       "versions": {
-        "0.2.2": {
-          "ref": "v1.1.0",
-          "integrity": "sha256-XJXxI4dGd15wDXLpXoIWtvYdJEXxdej6SmA2HGPY25Q=",
+        "0.2.3": {
+          "integrity": "sha256-X7Xm2aNAAB+R6bLRnBGmKFwFseWt+KGyCzLCoENUu/8=",
           "size": {
             "bytes": 67877,
             "files": 7
@@ -416,6 +422,6 @@
       }
     }
   ],
-  "generatedAt": "2026-08-09T15:03:18.484Z",
+  "generatedAt": "2026-08-09T15:36:15.810Z",
   "generatedBy": "coach-pack-cli/0.1.0"
 }

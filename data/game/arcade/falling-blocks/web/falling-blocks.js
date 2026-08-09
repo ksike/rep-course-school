@@ -566,6 +566,14 @@
     return "I";
   }
 
+  /**
+   * Pick a saved game back up.
+   *
+   * A save without a live piece is a save that has to spawn one, and until now it did not: the well
+   * came back, the score came back, and nothing fell ever again — a game that looks alive and ignores
+   * every key. A save written between two pieces is a normal save, so this is not a corrupt file, it
+   * is a moment.
+   */
   function restore(state) {
     if (!state || !state.grid) return false;
     grid = state.grid.map(function (row) {
@@ -573,11 +581,15 @@
         return index >= 0 ? PIECES[NAMES[index]].colour : null;
       });
     });
-    piece = state.piece;
+    piece = state.piece || null;
     nextPiece = state.nextPiece;
     score = state.score || 0;
     lines = state.lines || 0;
     level = state.level || 1;
+
+    // No piece in the save means one is owed, not that the game is over.
+    if (!piece) spawn();
+
     drawNext();
     refresh();
     return true;

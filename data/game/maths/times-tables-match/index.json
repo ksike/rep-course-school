@@ -1,5 +1,7 @@
 {
   "specVersion": 1,
+  "type": "app",
+  "profile": "game",
   "title": {
     "es": "Emparejar tablas de multiplicar",
     "en": "Times tables match"

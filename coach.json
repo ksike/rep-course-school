@@ -3,7 +3,7 @@
   "id": "ksike.school",
   "name": "Primary and secondary school content pack",
   "description": "Open Coach content for primary and secondary education: maths with open answers, courses and learning games.",
-  "version": "0.13.1",
+  "version": "1.0.0",
   "license": "MIT",
   "licenseFile": "LICENSE",
   "homepage": "https://github.com/ksike/rep-course-school",
@@ -22,7 +22,7 @@
   "repository": {
     "type": "github",
     "url": "https://github.com/ksike/rep-course-school",
-    "defaultRef": "main"
+    "defaultRef": "v1.0.0"
   },
   "audience": {
     "minAge": 6
@@ -186,7 +186,7 @@
         "es": "Empareja cada multiplicación con su resultado. Las tablas del 2 al 9, en series cortas para practicar a diario.",
         "en": "Match each multiplication with its result. Tables from 2 to 9, in short runs for daily practice."
       },
-      "version": "0.1.1",
+      "version": "0.1.2",
       "path": "data/game/maths/times-tables-match",
       "category": "maths",
       "tags": [
@@ -202,9 +202,9 @@
       "audience": {
         "minAge": 6
       },
-      "integrity": "sha256-DZ1jSTIt176phDVLQPaTpbDdrQ7JE8DewUsODT3GBQQ=",
+      "integrity": "sha256-cr4AeexpnE9cu1zO++F1mjwJi0XC7f6KPrReNyZKmzU=",
       "size": {
-        "bytes": 3801,
+        "bytes": 3839,
         "files": 2
       }
     },
@@ -220,7 +220,7 @@
         "es": "Coloca decimales, fracciones y negativos de menor a mayor.",
         "en": "Put decimals, fractions and negatives in order from smallest to largest."
       },
-      "version": "0.1.1",
+      "version": "0.1.2",
       "path": "data/game/maths/number-line-order",
       "category": "maths",
       "tags": [
@@ -236,9 +236,9 @@
       "audience": {
         "minAge": 9
       },
-      "integrity": "sha256-8sYHu/4x4w6IJXDkpSZwsCnQcR2F6FDV4eHIXrMsZvk=",
+      "integrity": "sha256-UvLv28HHAbmsjuJXEeimNrAzDtipUvkVjTwZCsvar/0=",
       "size": {
-        "bytes": 4191,
+        "bytes": 4229,
         "files": 2
       }
     },
@@ -254,7 +254,7 @@
         "es": "Completa las palabras que más se confunden al escribir.",
         "en": "Complete the words people most often get wrong."
       },
-      "version": "0.1.1",
+      "version": "0.1.2",
       "path": "data/game/language/spelling-gaps",
       "category": "language",
       "tags": [
@@ -270,9 +270,9 @@
       "audience": {
         "minAge": 8
       },
-      "integrity": "sha256-fBl2gc/oVS2lC+44vPTQd9tmpBxyeR6dhXwGGMZ9bho=",
+      "integrity": "sha256-Q32lC2wJTZwmHGNSQgHnF0WBgRBeS5jUdJ+ysWBLKqU=",
       "size": {
-        "bytes": 4078,
+        "bytes": 4116,
         "files": 2
       }
     },
@@ -288,7 +288,7 @@
         "es": "Encaja las piezas y completa líneas. Teclado, sonido y récord guardado.",
         "en": "Fit the pieces and clear lines. Keyboard, sound and a saved best score."
       },
-      "version": "0.11.1",
+      "version": "0.12.0",
       "path": "data/game/arcade/falling-blocks",
       "category": "arcade",
       "tags": [
@@ -303,9 +303,9 @@
       "audience": {
         "minAge": 6
       },
-      "integrity": "sha256-MCwAJv+pU0tof/jaNEXx5YPwRdruKoyYCeup6emvcDk=",
+      "integrity": "sha256-ZL0cxkYAzSyVNsEemVHbmpgiQ6O9i92ZTYKOjAv19os=",
       "size": {
-        "bytes": 93416,
+        "bytes": 93454,
         "files": 7
       }
     },
@@ -321,7 +321,7 @@
         "es": "Consulta el tiempo de tu localidad y apunta la temperatura cada día, para leer datos reales en clase de ciencias.",
         "en": "Look up the weather where you are and note the temperature each day, for reading real data in a science lesson."
       },
-      "version": "0.3.0",
+      "version": "0.4.0",
       "path": "data/app/science/weather-station",
       "category": "science",
       "tags": [
@@ -336,13 +336,13 @@
       "audience": {
         "minAge": 8
       },
-      "integrity": "sha256-U+46kCBWrFP8RROwbb6M1WnjlrkgThkBWMTERECEhIc=",
+      "integrity": "sha256-N183HwgXEnJVKCMoWyC57Y45aEQ6G/v8lxzWXobzRfA=",
       "size": {
-        "bytes": 24113,
+        "bytes": 24130,
         "files": 7
       }
     }
   ],
-  "generatedAt": "2026-08-09T12:35:35.305Z",
+  "generatedAt": "2026-08-09T12:51:54.999Z",
   "generatedBy": "coach-pack-cli/0.1.0"
 }

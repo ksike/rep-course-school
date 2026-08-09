@@ -1,5 +1,7 @@
 {
   "specVersion": 1,
+  "type": "app",
+  "profile": "game",
   "title": {
     "es": "Bloques que caen",
     "en": "Falling blocks"

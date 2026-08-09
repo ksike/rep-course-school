@@ -16,7 +16,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { existsSync, readFileSync, readdirSync } from "node:fs";
-import { dirname, join, resolve } from "node:path";
+import { dirname, join, resolve, sep } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const PACK = resolve(dirname(fileURLToPath(import.meta.url)), "..");
@@ -25,7 +25,25 @@ const PACK = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const MANIFESTS = ["index.json", "app.json", "game.json", "course.json", "theme.json"];
 
 const manifest = JSON.parse(readFileSync(join(PACK, "coach.json"), "utf8"));
-const packages = manifest.packages ?? [];
+
+/**
+ * One entry per package-version, whichever shape the file is in.
+ *
+ * A package is written once with its versions inside it — the identity said once, and the digest,
+ * size and location of each release with that release. These checks are each about one set of files,
+ * so they read the flat form.
+ */
+const packages = (manifest.packages ?? []).flatMap((pkg) => {
+  const map = pkg.versions ?? (typeof pkg.version === "object" ? pkg.version : null);
+  if (!map) return [pkg];
+  return Object.entries(map).map(([version, own]) => ({
+    ...pkg,
+    ...own,
+    version,
+    ref: own.ref ?? pkg.ref,
+    path: own.path ?? pkg.path,
+  }));
+});
 const apps = packages.filter((pkg) => (pkg.type ?? pkg.kind) === "app");
 
 const manifestOf = (pkg) => {
@@ -186,3 +204,17 @@ test("has a language file for every locale it declares, with the same keys in ea
   assert.deepEqual(missing, []);
   assert.deepEqual(untranslated, []);
 });
+
+/*
+  Digests are not checked here on purpose.
+
+  Whether the recorded integrity matches the bytes is a real and important promise, but verifying it
+  means implementing the normative algorithm — the ordering, the line-ending rule, what is excluded —
+  and a second implementation of a normative algorithm is two implementations that will disagree. The
+  one that counts lives with the platform, and the authoring tool answers the question directly:
+
+      npx tsx shared/tools/coach-pack.ts <packDir> --check
+
+  which reports any package whose files have drifted from what the catalogue records, and exits
+  non-zero. That belongs in the publishing step, not in a suite that runs with nothing but Node.
+*/

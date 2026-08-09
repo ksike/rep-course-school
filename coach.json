@@ -46,7 +46,6 @@
         "es": "Repaso de la tabla de multiplicar, una pregunta por producto, con explicación y pista por respuesta.",
         "en": "Multiplication table practice, one question per product, with an explanation and per-answer feedback."
       },
-      "version": "0.1.2",
       "path": "data/quiz/maths/times-tables",
       "category": "maths",
       "tags": [
@@ -58,17 +57,21 @@
       "audience": {
         "minAge": 6
       },
-      "size": {
-        "questions": 12,
-        "bytes": 28077,
-        "files": 4
-      },
       "locales": [
         "en",
         "es"
       ],
-      "integrity": "sha256-alB8zcEb6GAhf1odi33/9jQLBWmlTZ+h8QCDwiyKHeg=",
-      "ref": "v1.0.0"
+      "versions": {
+        "0.1.2": {
+          "ref": "v1.0.0",
+          "integrity": "sha256-alB8zcEb6GAhf1odi33/9jQLBWmlTZ+h8QCDwiyKHeg=",
+          "size": {
+            "questions": 12,
+            "bytes": 28077,
+            "files": 4
+          }
+        }
+      }
     },
     {
       "type": "quiz",
@@ -81,7 +84,6 @@
         "es": "Qué vale cada cifra según el lugar que ocupa. La respuesta se escribe, y el evaluador dice en qué posición estaba el error.",
         "en": "What each digit is worth according to its place. The answer is written, and the grader says which place the mistake was in."
       },
-      "version": "0.1.2",
       "path": "data/quiz/maths/place-value",
       "category": "maths",
       "tags": [
@@ -94,17 +96,21 @@
       "audience": {
         "minAge": 6
       },
-      "size": {
-        "questions": 10,
-        "bytes": 12312,
-        "files": 4
-      },
       "locales": [
         "en",
         "es"
       ],
-      "integrity": "sha256-riqs8Sv3PXr+l05Cs2ED9aiyN4/9o8p8DiusAc2O/Es=",
-      "ref": "v1.0.0"
+      "versions": {
+        "0.1.2": {
+          "ref": "v1.0.0",
+          "integrity": "sha256-riqs8Sv3PXr+l05Cs2ED9aiyN4/9o8p8DiusAc2O/Es=",
+          "size": {
+            "questions": 10,
+            "bytes": 12312,
+            "files": 4
+          }
+        }
+      }
     },
     {
       "type": "quiz",
@@ -117,7 +123,6 @@
         "es": "De cifra a palabra y de palabra a cifra, admitiendo cómo se escribe de verdad: con conjunción o sin ella, con tildes o sin ellas.",
         "en": "From digits to words and back, accepting what people actually write: with or without \"and\", with or without the hyphen."
       },
-      "version": "0.1.2",
       "path": "data/quiz/maths/reading-numbers",
       "category": "maths",
       "tags": [
@@ -130,17 +135,21 @@
       "audience": {
         "minAge": 6
       },
-      "size": {
-        "questions": 10,
-        "bytes": 10737,
-        "files": 4
-      },
       "locales": [
         "en",
         "es"
       ],
-      "integrity": "sha256-FaUEl2JPKBCdjr5cvp+mIrJh7ukpyyNgQNptvWTHJZY=",
-      "ref": "v1.0.0"
+      "versions": {
+        "0.1.2": {
+          "ref": "v1.0.0",
+          "integrity": "sha256-FaUEl2JPKBCdjr5cvp+mIrJh7ukpyyNgQNptvWTHJZY=",
+          "size": {
+            "questions": 10,
+            "bytes": 10737,
+            "files": 4
+          }
+        }
+      }
     },
     {
       "type": "quiz",
@@ -153,7 +162,6 @@
         "es": "Sacar factor común, simplificar fracciones algebraicas y resolver ecuaciones sencillas. Se acepta cualquier forma equivalente salvo cuando el enunciado pide una concreta.",
         "en": "Common factors, simplifying algebraic fractions and simple equations. Any equivalent form is accepted unless the question asks for a particular one."
       },
-      "version": "0.1.2",
       "path": "data/quiz/maths/early-algebra",
       "category": "maths",
       "tags": [
@@ -166,17 +174,21 @@
       "audience": {
         "minAge": 12
       },
-      "size": {
-        "questions": 10,
-        "bytes": 13606,
-        "files": 4
-      },
       "locales": [
         "en",
         "es"
       ],
-      "integrity": "sha256-l/otUelDJ5M/DATknVJp3x55cqVpYP1Hnbisfpj+OWI=",
-      "ref": "v1.0.0"
+      "versions": {
+        "0.1.2": {
+          "ref": "v1.0.0",
+          "integrity": "sha256-l/otUelDJ5M/DATknVJp3x55cqVpYP1Hnbisfpj+OWI=",
+          "size": {
+            "questions": 10,
+            "bytes": 13606,
+            "files": 4
+          }
+        }
+      }
     },
     {
       "type": "app",
@@ -190,7 +202,6 @@
         "es": "Empareja cada multiplicación con su resultado. Las tablas del 2 al 9, en series cortas para practicar a diario.",
         "en": "Match each multiplication with its result. Tables from 2 to 9, in short runs for daily practice."
       },
-      "version": "0.1.2",
       "path": "data/game/maths/times-tables-match",
       "category": "maths",
       "tags": [
@@ -206,12 +217,16 @@
       "audience": {
         "minAge": 6
       },
-      "integrity": "sha256-2Yelj6FVpUGcU2RRZViku6qa01snT7rb2fWHJbETEbY=",
-      "size": {
-        "bytes": 3861,
-        "files": 2
-      },
-      "ref": "v1.0.0"
+      "versions": {
+        "0.1.2": {
+          "ref": "v1.0.0",
+          "integrity": "sha256-2Yelj6FVpUGcU2RRZViku6qa01snT7rb2fWHJbETEbY=",
+          "size": {
+            "bytes": 3861,
+            "files": 2
+          }
+        }
+      }
     },
     {
       "type": "app",
@@ -225,7 +240,6 @@
         "es": "Coloca decimales, fracciones y negativos de menor a mayor.",
         "en": "Put decimals, fractions and negatives in order from smallest to largest."
       },
-      "version": "0.1.2",
       "path": "data/game/maths/number-line-order",
       "category": "maths",
       "tags": [
@@ -241,12 +255,16 @@
       "audience": {
         "minAge": 9
       },
-      "integrity": "sha256-FhrbKusV6riyxAQp+7irYRwBhecjNYlJUqh/Ood58hs=",
-      "size": {
-        "bytes": 4251,
-        "files": 2
-      },
-      "ref": "v1.0.0"
+      "versions": {
+        "0.1.2": {
+          "ref": "v1.0.0",
+          "integrity": "sha256-FhrbKusV6riyxAQp+7irYRwBhecjNYlJUqh/Ood58hs=",
+          "size": {
+            "bytes": 4251,
+            "files": 2
+          }
+        }
+      }
     },
     {
       "type": "app",
@@ -260,7 +278,6 @@
         "es": "Completa las palabras que más se confunden al escribir.",
         "en": "Complete the words people most often get wrong."
       },
-      "version": "0.1.2",
       "path": "data/game/language/spelling-gaps",
       "category": "language",
       "tags": [
@@ -276,12 +293,16 @@
       "audience": {
         "minAge": 8
       },
-      "integrity": "sha256-Xmf8dQD/6zLpPksuWVdLme8Iculxt7NB33yiecZ+dk4=",
-      "size": {
-        "bytes": 4138,
-        "files": 2
-      },
-      "ref": "v1.0.0"
+      "versions": {
+        "0.1.2": {
+          "ref": "v1.0.0",
+          "integrity": "sha256-Xmf8dQD/6zLpPksuWVdLme8Iculxt7NB33yiecZ+dk4=",
+          "size": {
+            "bytes": 4138,
+            "files": 2
+          }
+        }
+      }
     },
     {
       "type": "app",
@@ -295,7 +316,6 @@
         "es": "Encaja las piezas y completa líneas. Teclado, sonido y récord guardado.",
         "en": "Fit the pieces and clear lines. Keyboard, sound and a saved best score."
       },
-      "version": "0.13.4",
       "path": "data/game/arcade/falling-blocks",
       "category": "arcade",
       "tags": [
@@ -310,12 +330,16 @@
       "audience": {
         "minAge": 6
       },
-      "integrity": "sha256-G3o02G/HEABEzOziI5JBZGd49sXdXP1kNDFhG6TOlQk=",
-      "size": {
-        "bytes": 96929,
-        "files": 7
-      },
-      "ref": "v1.1.0"
+      "versions": {
+        "0.13.4": {
+          "ref": "v1.1.0",
+          "integrity": "sha256-Pk1x2x5E6ytH+zXcoj4bSzClH9V7f0KakQAoQW5m6YU=",
+          "size": {
+            "bytes": 98027,
+            "files": 7
+          }
+        }
+      }
     },
     {
       "type": "app",
@@ -329,7 +353,6 @@
         "es": "Consulta el tiempo de tu localidad y apunta la temperatura cada día, para leer datos reales en clase de ciencias.",
         "en": "Look up the weather where you are and note the temperature each day, for reading real data in a science lesson."
       },
-      "version": "0.4.0",
       "path": "data/app/science/weather-station",
       "category": "science",
       "tags": [
@@ -344,12 +367,16 @@
       "audience": {
         "minAge": 8
       },
-      "integrity": "sha256-pG5c9/ADL/eGKdXnuuUwDKJ/gdPXY47Joe5pkF7msLs=",
-      "size": {
-        "bytes": 24653,
-        "files": 7
-      },
-      "ref": "v1.1.0"
+      "versions": {
+        "0.4.0": {
+          "ref": "v1.1.0",
+          "integrity": "sha256-pG5c9/ADL/eGKdXnuuUwDKJ/gdPXY47Joe5pkF7msLs=",
+          "size": {
+            "bytes": 24653,
+            "files": 7
+          }
+        }
+      }
     },
     {
       "type": "app",
@@ -363,7 +390,6 @@
         "es": "Junta fichas iguales y llega a la 2048. Flechas para mover, Z para deshacer, P para pausar. La partida y el récord se guardan en tu cuenta.",
         "en": "Join matching tiles and reach 2048. Arrows to move, Z to undo, P to pause. Your game and your best score are kept in your account."
       },
-      "version": "0.2.2",
       "path": "data/game/arcade/2048",
       "category": "arcade",
       "tags": [
@@ -378,14 +404,18 @@
       "audience": {
         "minAge": 6
       },
-      "integrity": "sha256-J3zy3iDLSK4KjVIpIARvl4PmZZYykaFZmZz8zuIpJQc=",
-      "size": {
-        "bytes": 67136,
-        "files": 7
-      },
-      "ref": "v1.1.0"
+      "versions": {
+        "0.2.2": {
+          "ref": "v1.1.0",
+          "integrity": "sha256-XJXxI4dGd15wDXLpXoIWtvYdJEXxdej6SmA2HGPY25Q=",
+          "size": {
+            "bytes": 67877,
+            "files": 7
+          }
+        }
+      }
     }
   ],
-  "generatedAt": "2026-08-09T14:07:53.982Z",
+  "generatedAt": "2026-08-09T15:03:18.484Z",
   "generatedBy": "coach-pack-cli/0.1.0"
 }

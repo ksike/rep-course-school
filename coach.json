@@ -3,7 +3,7 @@
   "id": "ksike.school",
   "name": "Primary and secondary school content pack",
   "description": "Open Coach content for primary and secondary education: maths with open answers, courses and learning games.",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "license": "MIT",
   "licenseFile": "LICENSE",
   "homepage": "https://github.com/ksike/rep-course-school",
@@ -22,7 +22,7 @@
   "repository": {
     "type": "github",
     "url": "https://github.com/ksike/rep-course-school",
-    "defaultRef": "v1.0.0"
+    "defaultRef": "main"
   },
   "audience": {
     "minAge": 6
@@ -67,7 +67,8 @@
         "en",
         "es"
       ],
-      "integrity": "sha256-C5VCUpDj/WYz4LTTqWNzWhGYR/wpvWDr+6j75Fgik0A="
+      "integrity": "sha256-C5VCUpDj/WYz4LTTqWNzWhGYR/wpvWDr+6j75Fgik0A=",
+      "ref": "v1.0.0"
     },
     {
       "type": "quiz",
@@ -102,7 +103,8 @@
         "en",
         "es"
       ],
-      "integrity": "sha256-Ut0sKOwWBOleMsWvoYN5eQPoi/Q/wfQrsfdtW3lH+Ck="
+      "integrity": "sha256-Ut0sKOwWBOleMsWvoYN5eQPoi/Q/wfQrsfdtW3lH+Ck=",
+      "ref": "v1.0.0"
     },
     {
       "type": "quiz",
@@ -137,7 +139,8 @@
         "en",
         "es"
       ],
-      "integrity": "sha256-aPciRiSWLPfHSRSJ2xrRqI4SsuHbX7L/jeEBgDo9ObU="
+      "integrity": "sha256-aPciRiSWLPfHSRSJ2xrRqI4SsuHbX7L/jeEBgDo9ObU=",
+      "ref": "v1.0.0"
     },
     {
       "type": "quiz",
@@ -172,7 +175,8 @@
         "en",
         "es"
       ],
-      "integrity": "sha256-N2nmCqkYLj/8SoGUZ+BMYdFPTTY31WigvWwcAVI0s0c="
+      "integrity": "sha256-N2nmCqkYLj/8SoGUZ+BMYdFPTTY31WigvWwcAVI0s0c=",
+      "ref": "v1.0.0"
     },
     {
       "type": "app",
@@ -206,7 +210,8 @@
       "size": {
         "bytes": 3839,
         "files": 2
-      }
+      },
+      "ref": "v1.0.0"
     },
     {
       "type": "app",
@@ -240,7 +245,8 @@
       "size": {
         "bytes": 4229,
         "files": 2
-      }
+      },
+      "ref": "v1.0.0"
     },
     {
       "type": "app",
@@ -274,7 +280,8 @@
       "size": {
         "bytes": 4116,
         "files": 2
-      }
+      },
+      "ref": "v1.0.0"
     },
     {
       "type": "app",
@@ -288,7 +295,7 @@
         "es": "Encaja las piezas y completa líneas. Teclado, sonido y récord guardado.",
         "en": "Fit the pieces and clear lines. Keyboard, sound and a saved best score."
       },
-      "version": "0.12.0",
+      "version": "0.13.0",
       "path": "data/game/arcade/falling-blocks",
       "category": "arcade",
       "tags": [
@@ -303,11 +310,12 @@
       "audience": {
         "minAge": 6
       },
-      "integrity": "sha256-ZL0cxkYAzSyVNsEemVHbmpgiQ6O9i92ZTYKOjAv19os=",
+      "integrity": "sha256-GPJezQLrpL0OgtEG6s8Ht3w9TQouqspjU5Y7H0Yqt6o=",
       "size": {
-        "bytes": 93454,
+        "bytes": 93854,
         "files": 7
-      }
+      },
+      "ref": "v1.0.0"
     },
     {
       "type": "app",
@@ -336,13 +344,14 @@
       "audience": {
         "minAge": 8
       },
-      "integrity": "sha256-N183HwgXEnJVKCMoWyC57Y45aEQ6G/v8lxzWXobzRfA=",
+      "integrity": "sha256-0GTziZXOt93xjC7QozbKArLD489K4+xP6qwa1Dc043U=",
       "size": {
-        "bytes": 24130,
+        "bytes": 24367,
         "files": 7
-      }
+      },
+      "ref": "v1.0.0"
     }
   ],
-  "generatedAt": "2026-08-09T12:51:54.999Z",
+  "generatedAt": "2026-08-09T13:09:38.577Z",
   "generatedBy": "coach-pack-cli/0.1.0"
 }

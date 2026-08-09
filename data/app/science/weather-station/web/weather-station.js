@@ -43,9 +43,10 @@
   function applyLanguage(locale) {
     if (!coach || !coach.i18n) return Promise.resolve();
     return coach.i18n({ locale: locale, fallback: FALLBACK }).then(function (bundle) {
-      KEYS.forEach(function (key) {
-        t[key] = bundle.t(key);
-      });
+      // `strings` when the host is new enough to send it, key by key when it is not: an app has to
+      // work against the platform somebody actually has, not only against the one it was built on.
+      if (bundle.strings) t = bundle.strings;
+      else KEYS.forEach(function (key) { t[key] = bundle.t(key); });
       document.documentElement.lang = String(bundle.locale).slice(0, 2);
       paintLabels();
       return bundle.locale;

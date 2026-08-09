@@ -886,9 +886,16 @@
   function applyLanguage(locale) {
     if (!coach || !coach.i18n) return Promise.resolve();
     return coach.i18n({ locale: locale, fallback: FALLBACK }).then(function (bundle) {
-      // The bundle *is* the table. Copying it key by key meant naming every label twice — once where
-      // it is used and once in a list to copy it across — and the list was already out of date.
-      t = bundle.strings;
+      /*
+        The bundle *is* the table. Copying it key by key meant naming every label twice — once where it
+        is used and once in a list to copy it across — and the list was already out of date.
+
+        `|| {}` is not defensive noise: an older platform's SDK returns a bundle with no `strings`, and
+        without this the next line reads a property of `undefined` and the whole relabelling dies —
+        which showed up as a settings panel whose language and difficulty lists were empty. An app must
+        degrade against an older host, never take it down with it.
+      */
+      t = bundle.strings || {};
       paintLanguage(bundle.locale);
       return bundle.locale;
     });

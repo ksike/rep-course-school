@@ -61,8 +61,10 @@
         "en",
         "es"
       ],
+      "date": "2026-08-09",
       "versions": {
         "0.1.2": {
+          "date": "2026-08-09",
           "integrity": "sha256-alB8zcEb6GAhf1odi33/9jQLBWmlTZ+h8QCDwiyKHeg=",
           "size": {
             "questions": 12,
@@ -99,8 +101,10 @@
         "en",
         "es"
       ],
+      "date": "2026-08-09",
       "versions": {
         "0.1.2": {
+          "date": "2026-08-09",
           "integrity": "sha256-riqs8Sv3PXr+l05Cs2ED9aiyN4/9o8p8DiusAc2O/Es=",
           "size": {
             "questions": 10,
@@ -137,8 +141,10 @@
         "en",
         "es"
       ],
+      "date": "2026-08-09",
       "versions": {
         "0.1.2": {
+          "date": "2026-08-09",
           "integrity": "sha256-FaUEl2JPKBCdjr5cvp+mIrJh7ukpyyNgQNptvWTHJZY=",
           "size": {
             "questions": 10,
@@ -175,8 +181,10 @@
         "en",
         "es"
       ],
+      "date": "2026-08-09",
       "versions": {
         "0.1.2": {
+          "date": "2026-08-09",
           "integrity": "sha256-l/otUelDJ5M/DATknVJp3x55cqVpYP1Hnbisfpj+OWI=",
           "size": {
             "questions": 10,
@@ -213,8 +221,10 @@
       "audience": {
         "minAge": 6
       },
+      "date": "2026-08-09",
       "versions": {
         "0.1.2": {
+          "date": "2026-08-09",
           "integrity": "sha256-2Yelj6FVpUGcU2RRZViku6qa01snT7rb2fWHJbETEbY=",
           "size": {
             "bytes": 3861,
@@ -250,8 +260,10 @@
       "audience": {
         "minAge": 9
       },
+      "date": "2026-08-09",
       "versions": {
         "0.1.2": {
+          "date": "2026-08-09",
           "integrity": "sha256-FhrbKusV6riyxAQp+7irYRwBhecjNYlJUqh/Ood58hs=",
           "size": {
             "bytes": 4251,
@@ -287,8 +299,10 @@
       "audience": {
         "minAge": 8
       },
+      "date": "2026-08-09",
       "versions": {
         "0.1.2": {
+          "date": "2026-08-09",
           "integrity": "sha256-Xmf8dQD/6zLpPksuWVdLme8Iculxt7NB33yiecZ+dk4=",
           "size": {
             "bytes": 4138,
@@ -323,8 +337,10 @@
       "audience": {
         "minAge": 6
       },
+      "date": "2026-08-09",
       "versions": {
         "0.13.5": {
+          "date": "2026-08-09",
           "integrity": "sha256-jtM9zSdvLLAdVXD/wnFpR/+eVzdQLS2qeZ5akTOfc7w=",
           "size": {
             "bytes": 98027,
@@ -367,8 +383,10 @@
       "audience": {
         "minAge": 8
       },
+      "date": "2026-08-09",
       "versions": {
         "0.4.1": {
+          "date": "2026-08-09",
           "integrity": "sha256-2YLegM2P2LcM+VM9H42MISwVVQvqA7zDd7SiJeMslys=",
           "size": {
             "bytes": 24653,
@@ -411,8 +429,10 @@
       "audience": {
         "minAge": 6
       },
+      "date": "2026-08-09",
       "versions": {
         "0.2.3": {
+          "date": "2026-08-09",
           "integrity": "sha256-X7Xm2aNAAB+R6bLRnBGmKFwFseWt+KGyCzLCoENUu/8=",
           "size": {
             "bytes": 67877,
@@ -422,6 +442,6 @@
       }
     }
   ],
-  "generatedAt": "2026-08-09T15:36:15.810Z",
+  "generatedAt": "2026-08-09T17:03:19.297Z",
   "generatedBy": "coach-pack-cli/0.1.0"
 }

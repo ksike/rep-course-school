@@ -1,0 +1,693 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>2048</title>
+
+    <!--
+      The platform's kit: the reader's theme as custom properties, the panel and button surfaces, and
+      the icons as mask images. Asked for under a URL every server version answers, with a query that
+      no cache has an old copy of.
+    -->
+    <link rel="stylesheet" href="/app/kit/v1/kit.css?v=2" />
+
+    <style>
+      /*
+        The app's own copy of the few values it needs.
+
+        `kit.css` supplies these and the host overrides them with the reader's theme, but neither is
+        guaranteed to arrive. Declaring them here means the worst case is "not themed" rather than
+        "unreadable".
+      */
+      :root {
+        --coach-bg: #0b1220;
+        --coach-fg: #e8ecf5;
+        --coach-muted: #8ea3c7;
+        --coach-border: #263149;
+        --coach-accent: #4f8cff;
+        --coach-radius: 0.5rem;
+      }
+
+      html,
+      body {
+        margin: 0;
+        height: 100%;
+        background: var(--coach-bg);
+        color: var(--coach-fg);
+        font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+        overflow: hidden;
+      }
+
+      /* Two thirds for the board, one for everything that is about it. */
+      #app {
+        height: 100%;
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        gap: 1rem;
+        padding: 1rem;
+        box-sizing: border-box;
+      }
+
+      @media (max-width: 720px) {
+        #app {
+          grid-template-columns: 1fr;
+          grid-template-rows: 1fr auto;
+        }
+      }
+
+      .board-wrap {
+        display: grid;
+        place-items: center;
+        min-height: 0;
+      }
+
+      #board {
+        width: min(100%, 78vh);
+        aspect-ratio: 1;
+        display: grid;
+        gap: 2.2%;
+        padding: 2.2%;
+        box-sizing: border-box;
+        border-radius: calc(var(--coach-radius) * 2);
+        background: color-mix(in srgb, var(--coach-fg, #e8ecf5) 7%, transparent);
+        border: 1px solid var(--coach-border, #263149);
+        transition: filter 0.3s ease;
+      }
+
+      #board.flash {
+        filter: brightness(1.35);
+      }
+
+      .cell {
+        border-radius: var(--coach-radius, 0.5rem);
+        background: color-mix(in srgb, var(--coach-fg, #e8ecf5) 5%, transparent);
+        display: grid;
+        place-items: center;
+        font-weight: 800;
+        font-variant-numeric: tabular-nums;
+        color: #0b1220;
+        line-height: 1;
+      }
+
+      /*
+        Vivid, and the same family the falling blocks use.
+
+        The original 2048 palette is beige on beige, which reads as a spreadsheet. These are the seven
+        piece colours plus two for the tiles nobody reaches often, so a board of this game and a board
+        of that one look like they came from the same place — because they did.
+      */
+      .v2 { background: #60a5fa; }
+      .v4 { background: #22d3ee; }
+      .v8 { background: #4ade80; }
+      .v16 { background: #facc15; }
+      .v32 { background: #fb923c; }
+      .v64 { background: #f87171; }
+      .v128 { background: #c084fc; }
+      .v256 { background: #f472b6; }
+      .v512 { background: #34d399; }
+      .v1024 { background: #38bdf8; }
+      .v2048 {
+        background: linear-gradient(135deg, #facc15, #fb923c 55%, #f472b6);
+        box-shadow: 0 0 24px color-mix(in srgb, #facc15 55%, transparent);
+      }
+      .vbig {
+        background: linear-gradient(135deg, #c084fc, #60a5fa);
+        color: #f8fafc;
+      }
+
+      /* A tile that has just appeared, and one that has just been made out of two. */
+      .cell.new { animation: pop-in 0.18s ease-out both; }
+      .cell.merged { animation: merge 0.22s cubic-bezier(0.2, 0.9, 0.3, 1.5) both; }
+
+      @keyframes pop-in { from { transform: scale(0.5); opacity: 0; } }
+      @keyframes merge { 40% { transform: scale(1.18); } to { transform: scale(1); } }
+
+      /* ── the panel ────────────────────────────────────────────────── */
+
+      .panel {
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 0.6rem;
+        padding: 0.9rem;
+        border-radius: calc(var(--coach-radius) * 2);
+        border: 1px solid var(--coach-border, #263149);
+        background: color-mix(in srgb, var(--coach-fg, #e8ecf5) 4%, transparent);
+      }
+
+      .panel-title {
+        margin: 0;
+        font-size: 0.7rem;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--coach-muted, #8ea3c7);
+      }
+
+      .panel-sep {
+        width: 100%;
+        border: 0;
+        border-top: 1px solid var(--coach-border, #263149);
+        margin: 0.2rem 0;
+      }
+
+      .stats {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0.5rem;
+      }
+
+      .stat {
+        padding: 0.45rem 0.6rem;
+        border-radius: var(--coach-radius, 0.5rem);
+        border: 1px solid var(--coach-border, #263149);
+      }
+
+      .label {
+        font-size: 0.68rem;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--coach-muted, #8ea3c7);
+      }
+
+      .value {
+        font-size: 1.4rem;
+        font-weight: 700;
+        font-variant-numeric: tabular-nums;
+      }
+
+      .level-bar {
+        height: 6px;
+        border-radius: 999px;
+        background: color-mix(in srgb, var(--coach-fg, #e8ecf5) 12%, transparent);
+        overflow: hidden;
+      }
+
+      .level-bar span {
+        display: block;
+        height: 100%;
+        width: 0;
+        border-radius: 999px;
+        background: var(--coach-accent, #4f8cff);
+        transition: width 0.3s ease;
+      }
+
+      .row {
+        display: flex;
+        gap: 0.5rem;
+        align-items: center;
+      }
+
+      .row .coach-button {
+        flex: 1 1 0;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.4rem;
+      }
+
+      input[type="range"] {
+        width: 100%;
+        accent-color: var(--coach-accent, #4f8cff);
+      }
+
+      /* ── the keys, drawn as keys ──────────────────────────────────── */
+
+      .keypad {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 0.35rem;
+        justify-items: center;
+      }
+
+      .keycap {
+        display: grid;
+        place-items: center;
+        gap: 0.1rem;
+        width: 100%;
+        padding: 0.35rem 0.2rem;
+        border-radius: 0.45rem;
+        border: 1px solid var(--coach-border, #263149);
+        border-bottom-width: 3px;
+        background: color-mix(in srgb, var(--coach-fg, #e8ecf5) 6%, transparent);
+        font-size: 0.62rem;
+        color: var(--coach-muted, #8ea3c7);
+      }
+
+      .keycap kbd {
+        font: inherit;
+        font-size: 0.85rem;
+        color: var(--coach-fg, #e8ecf5);
+      }
+
+      .keycap.down {
+        transform: translateY(2px);
+        border-bottom-width: 1px;
+        border-color: var(--coach-accent, #4f8cff);
+      }
+
+      .keycap--up { grid-column: 2; }
+      .keycap--left { grid-column: 1; }
+      .keycap--down { grid-column: 2; }
+      .keycap--right { grid-column: 3; }
+      .keycap--wide { grid-column: span 3; }
+
+      /* ── overlays ─────────────────────────────────────────────────── */
+
+      #settings,
+      #over,
+      #paused,
+      #confirm {
+        position: fixed;
+        inset: 0;
+        display: none;
+        place-items: center;
+        padding: 1rem;
+        background: color-mix(in srgb, var(--coach-bg, #0b1220) 78%, transparent);
+        backdrop-filter: blur(2px);
+        z-index: 20;
+      }
+
+      #settings.on,
+      #over.on,
+      #paused.on,
+      #confirm.on {
+        display: grid;
+      }
+
+      #over .coach-panel,
+      #settings .coach-panel,
+      #confirm .coach-panel {
+        max-width: 22rem;
+        text-align: center;
+        display: grid;
+        gap: 0.6rem;
+      }
+
+      .switch {
+        display: flex;
+        gap: 0.6rem;
+        align-items: flex-start;
+        text-align: left;
+      }
+
+      .switch em {
+        display: block;
+        font-style: normal;
+        font-size: 0.75rem;
+        color: var(--coach-muted, #8ea3c7);
+      }
+
+      .coach-select {
+        min-width: 8.5rem;
+        padding: 0.35rem 0.5rem;
+        border-radius: var(--coach-radius, 0.5rem);
+        border: 1px solid var(--coach-border, #263149);
+        background: color-mix(in srgb, var(--coach-fg, #e8ecf5) 8%, transparent);
+        color: var(--coach-fg, #e8ecf5);
+        font: inherit;
+      }
+
+      .ranking {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+        display: grid;
+        gap: 0.2rem;
+        font-size: 0.85rem;
+      }
+
+      .ranking li {
+        display: grid;
+        grid-template-columns: 1.4rem 1fr auto;
+        gap: 0.5rem;
+        padding: 0.2rem 0.4rem;
+        border-radius: 0.35rem;
+      }
+
+      .ranking li.you {
+        background: color-mix(in srgb, var(--coach-accent, #4f8cff) 25%, transparent);
+      }
+
+      /* ── the two endings ──────────────────────────────────────────── */
+
+      .figure {
+        width: 6.5rem;
+        height: 5rem;
+        display: none;
+        margin: 0 auto;
+        color: var(--coach-fg, #e8ecf5);
+      }
+
+      .figure.on { display: block; }
+
+      #fig-win .rise rect {
+        transform-box: fill-box;
+        transform-origin: bottom;
+        animation: grow 0.5s cubic-bezier(0.2, 0.9, 0.3, 1.3) both;
+      }
+
+      #fig-win .rise rect:nth-child(2) { animation-delay: 0.12s; }
+      #fig-win .rise rect:nth-child(3) { animation-delay: 0.24s; }
+      #fig-win .spark { transform-box: fill-box; transform-origin: center; animation: pop 0.5s 0.36s ease-out both; }
+
+      @keyframes grow { from { transform: scaleY(0); } }
+      @keyframes pop { from { transform: scale(0) rotate(-90deg); opacity: 0; } }
+
+      #fig-lose .tiles rect {
+        transform-box: fill-box;
+        transform-origin: bottom;
+        animation: settle 0.6s ease-in both;
+      }
+
+      #fig-lose .tiles rect:nth-child(2) { animation-delay: 0.08s; }
+      #fig-lose .tiles rect:nth-child(3) { animation-delay: 0.16s; }
+      #fig-lose .down { animation: sink 0.7s 0.2s ease-in both; }
+
+      @keyframes settle {
+        45% { transform: translateY(5px) rotate(-10deg); }
+        to { transform: translateY(9px) rotate(-7deg); opacity: 0.65; }
+      }
+
+      @keyframes sink { from { opacity: 0; transform: translateY(-8px); } }
+
+      #over .over-card { animation: sink-in 0.5s ease-out both; }
+      #over.won .over-card { animation: lift-in 0.45s cubic-bezier(0.2, 0.9, 0.3, 1.4) both; }
+
+      @keyframes sink-in { from { opacity: 0; transform: translateY(-14px) scale(0.97); } }
+      @keyframes lift-in { from { opacity: 0; transform: translateY(16px) scale(0.9); } }
+
+      #over .row .coach-button { white-space: nowrap; flex: 0 0 auto; }
+      #over .row { flex-wrap: wrap; justify-content: center; }
+
+      body.over #board { filter: saturate(0.45) brightness(0.85); }
+
+      /* ── the good news in between ─────────────────────────────────── */
+
+      #confetti {
+        position: fixed;
+        inset: 0;
+        /* An <svg> is a replaced element: `inset: 0` positions it and leaves it at its intrinsic
+           300×150, so the celebration would fall in a box in the corner. The size has to be asked for. */
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        display: none;
+        z-index: 30;
+      }
+
+      #confetti.on { display: block; }
+      #confetti rect { animation: fall 1.9s linear forwards; }
+
+      @keyframes fall {
+        from { transform: translateY(-12%) rotate(0deg); opacity: 1; }
+        to { transform: translateY(110vh) rotate(540deg); opacity: 0; }
+      }
+
+      #levelup {
+        position: fixed;
+        inset: 0;
+        display: none;
+        place-items: center;
+        pointer-events: none;
+        z-index: 25;
+      }
+
+      #levelup.on { display: grid; }
+
+      .levelup-card {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        padding: 0.7rem 1.4rem;
+        border-radius: 999px;
+        color: var(--coach-bg, #0b1220);
+        background: linear-gradient(90deg, var(--coach-accent, #4f8cff), color-mix(in srgb, var(--coach-accent, #4f8cff) 45%, #fff));
+        box-shadow: 0 8px 30px color-mix(in srgb, var(--coach-accent, #4f8cff) 45%, transparent);
+        animation: banner 1.4s ease-out forwards;
+      }
+
+      .levelup-mark { width: 2rem; height: 2rem; }
+
+      .levelup-mark .step {
+        fill: currentColor;
+        opacity: 0.9;
+        transform-box: fill-box;
+        transform-origin: bottom;
+        animation: step-up 0.45s cubic-bezier(0.2, 0.9, 0.3, 1.4) both;
+      }
+
+      .levelup-mark .s2 { animation-delay: 0.08s; }
+      .levelup-mark .s3 { animation-delay: 0.16s; }
+
+      @keyframes step-up { from { transform: scaleY(0.15) translateY(6px); opacity: 0; } }
+
+      .levelup-value { font-size: 1.7rem; font-weight: 800; font-variant-numeric: tabular-nums; }
+      .levelup-label { font-size: 0.72rem; letter-spacing: 0.12em; text-transform: uppercase; opacity: 0.85; }
+
+      @keyframes banner {
+        0% { opacity: 0; transform: scale(0.8); }
+        18% { opacity: 1; transform: scale(1.04); }
+        30% { transform: scale(1); }
+        80% { opacity: 1; }
+        100% { opacity: 0; transform: translateY(-14px); }
+      }
+
+      /* Somebody who asked for less movement gets the news without the movement. */
+      @media (prefers-reduced-motion: reduce) {
+        .cell,
+        .figure *,
+        .levelup-card,
+        #confetti rect {
+          animation: none !important;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <div id="app">
+      <div class="board-wrap">
+        <div id="board" role="grid" aria-label="2048"></div>
+      </div>
+
+      <div class="panel">
+        <p class="panel-title" id="l-panel-stats">Partida</p>
+        <div class="stats">
+          <div class="stat">
+            <div class="label" id="l-score">Puntos</div>
+            <div class="value" id="score">0</div>
+          </div>
+          <div class="stat">
+            <div class="label" id="l-best">Récord</div>
+            <div class="value" id="best">0</div>
+          </div>
+          <div class="stat">
+            <div class="label" id="l-moves">Jugadas</div>
+            <div class="value" id="moves">0</div>
+          </div>
+          <div class="stat">
+            <div class="label" id="l-level">Nivel</div>
+            <div class="value" id="level">1</div>
+          </div>
+        </div>
+
+        <div class="stat">
+          <div class="row" style="justify-content: space-between">
+            <span class="label" id="l-toNext">Siguiente ficha</span>
+            <span class="label" id="toNext">4</span>
+          </div>
+          <div class="level-bar"><span id="level-fill"></span></div>
+        </div>
+
+        <hr class="panel-sep" />
+        <p class="panel-title" id="l-panel-controls">Controles</p>
+
+        <div class="row">
+          <span class="coach-icon" data-icon="sound-on" id="sound-icon"></span>
+          <input type="range" id="quick-volume" min="0" max="100" step="5" value="70" aria-label="Volumen" />
+        </div>
+
+        <div class="row">
+          <button class="coach-button" id="pause" type="button">
+            <span class="coach-icon" data-icon="pause"></span>
+            <span id="pause-text">Pausa</span>
+          </button>
+          <button class="coach-button" id="undo" type="button">
+            <span class="coach-icon" data-icon="restart"></span>
+            <span id="undo-text">Deshacer</span>
+          </button>
+        </div>
+
+        <div class="row">
+          <button class="coach-button" id="restart" type="button">
+            <span class="coach-icon" data-icon="restart"></span>
+            <span id="restart-text">Reiniciar</span>
+          </button>
+          <button class="coach-button" id="settings-open" type="button">
+            <span class="coach-icon" data-icon="save"></span>
+            <span id="settings-open-text">Ajustes</span>
+          </button>
+        </div>
+
+        <div class="row">
+          <button class="coach-button" id="end" type="button">
+            <span class="coach-icon" data-icon="check"></span>
+            <span id="end-text">Terminar</span>
+          </button>
+        </div>
+
+        <hr class="panel-sep" />
+        <p class="panel-title" id="l-panel-keys">Teclas</p>
+
+        <div class="keypad">
+          <div class="keycap keycap--up" id="cap-up"><kbd>↑</kbd><span id="k-up">arriba</span></div>
+          <div class="keycap keycap--left" id="cap-left"><kbd>←</kbd><span id="k-left">izq.</span></div>
+          <div class="keycap keycap--down" id="cap-down"><kbd>↓</kbd><span id="k-down">abajo</span></div>
+          <div class="keycap keycap--right" id="cap-right"><kbd>→</kbd><span id="k-right">der.</span></div>
+        </div>
+
+        <div class="keypad" style="grid-template-columns: 1fr 1fr">
+          <span class="keycap"><kbd>Z</kbd><span id="k-undo">deshacer</span></span>
+          <span class="keycap"><kbd>P</kbd><span id="k-pause">pausa</span></span>
+        </div>
+      </div>
+    </div>
+
+    <svg id="confetti" aria-hidden="true"></svg>
+
+    <div id="levelup" aria-live="polite">
+      <div class="levelup-card">
+        <svg class="levelup-mark" viewBox="0 0 48 48" aria-hidden="true">
+          <rect class="step s1" x="6" y="30" width="10" height="10" rx="2" />
+          <rect class="step s2" x="19" y="22" width="10" height="18" rx="2" />
+          <rect class="step s3" x="32" y="12" width="10" height="28" rx="2" />
+        </svg>
+        <span class="levelup-label" id="levelup-label">Ficha</span>
+        <span class="levelup-value" id="levelup-value">4</span>
+      </div>
+    </div>
+
+    <div id="paused">
+      <div class="coach-panel">
+        <h2 id="paused-title">En pausa</h2>
+        <p id="paused-help">Pulsa cualquier tecla para seguir.</p>
+      </div>
+    </div>
+
+    <div id="settings">
+      <div class="coach-panel">
+        <h2 id="settings-title">Antes de empezar</h2>
+
+        <label class="switch">
+          <input type="checkbox" id="opt-sound" checked />
+          <span>
+            <strong id="l-sound">Sonido</strong>
+            <em id="l-sound-help">Efectos de movimiento, unión y fin de partida.</em>
+          </span>
+        </label>
+
+        <label class="switch">
+          <input type="checkbox" id="opt-music" checked />
+          <span>
+            <strong id="l-music">Música</strong>
+            <em id="l-music-help">Una melodía de fondo mientras juegas.</em>
+          </span>
+        </label>
+
+        <label>
+          <span class="row" style="justify-content: space-between">
+            <strong id="l-volume">Volumen</strong>
+            <span id="volume-value">70%</span>
+          </span>
+          <input type="range" id="opt-volume" min="0" max="100" step="5" value="70" />
+        </label>
+
+        <label class="switch">
+          <select id="opt-difficulty" class="coach-select"></select>
+          <span>
+            <strong id="l-difficulty">Dificultad</strong>
+            <em id="l-difficulty-help">Cambia el tamaño del tablero y lo que aparece.</em>
+          </span>
+        </label>
+
+        <label class="switch">
+          <select id="opt-locale" class="coach-select"></select>
+          <span>
+            <strong id="l-language">Idioma</strong>
+            <em id="l-language-help">Por defecto, el mismo que la plataforma.</em>
+          </span>
+        </label>
+
+        <button class="coach-button coach-button--primary" id="settings-done" type="button">
+          <span class="coach-icon" data-icon="play"></span>
+          <span id="settings-done-text">Empezar</span>
+        </button>
+      </div>
+    </div>
+
+    <!--
+      Asked in the page, never with `confirm()`: a frame sandboxed without `allow-modals` ignores it
+      outright, so the question would never be seen and the answer would never come.
+    -->
+    <div id="confirm">
+      <div class="coach-panel">
+        <h2 id="confirm-title">¿Empezar una partida nueva?</h2>
+        <p id="confirm-text">Se pierde la actual.</p>
+        <div class="row" style="justify-content: center">
+          <button class="coach-button coach-button--primary" id="confirm-yes" type="button">
+            <span id="confirm-yes-text">Reiniciar</span>
+          </button>
+          <button class="coach-button" id="confirm-no" type="button">
+            <span id="confirm-no-text">Cancelar</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div id="over">
+      <div class="coach-panel over-card">
+        <svg id="fig-win" class="figure" viewBox="0 0 120 90" aria-hidden="true">
+          <g class="rise">
+            <rect x="30" y="46" width="16" height="16" rx="3" fill="#4ade80" />
+            <rect x="52" y="34" width="16" height="28" rx="3" fill="#22d3ee" />
+            <rect x="74" y="22" width="16" height="40" rx="3" fill="#facc15" />
+          </g>
+          <path class="spark" d="M60 6 L64 16 L74 18 L64 22 L60 32 L56 22 L46 18 L56 16 Z" fill="#facc15" />
+          <line x1="22" y1="70" x2="98" y2="70" stroke="currentColor" stroke-width="2" opacity=".35" />
+        </svg>
+
+        <svg id="fig-lose" class="figure" viewBox="0 0 120 90" aria-hidden="true">
+          <!-- A full board: four tiles with nowhere left to go. -->
+          <g class="tiles">
+            <rect x="28" y="40" width="18" height="18" rx="3" fill="#64748b" />
+            <rect x="51" y="40" width="18" height="18" rx="3" fill="#64748b" />
+            <rect x="74" y="40" width="18" height="18" rx="3" fill="#64748b" />
+          </g>
+          <line x1="22" y1="70" x2="98" y2="70" stroke="#f87171" stroke-width="3" stroke-dasharray="6 5" />
+          <path class="down" d="M60 8 L60 30 M52 23 L60 31 L68 23" stroke="#f87171" stroke-width="3"
+                fill="none" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+
+        <h2 id="over-title">Fin de la partida</h2>
+        <p id="over-text"></p>
+
+        <ol id="ranking" class="ranking"></ol>
+
+        <div class="row" style="justify-content: center">
+          <button class="coach-button coach-button--primary" id="again" type="button">
+            <span class="coach-icon" data-icon="restart"></span>
+            <span id="again-text">Jugar otra vez</span>
+          </button>
+          <button class="coach-button" id="leave" type="button">
+            <span class="coach-icon" data-icon="close"></span>
+            <span id="leave-text">Salir</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script src="/app/sdk/v1.js"></script>
+    <script src="./2048.js"></script>
+  </body>
+</html>

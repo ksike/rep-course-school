@@ -3,7 +3,7 @@
   "id": "ksike.school",
   "name": "Primary and secondary school content pack",
   "description": "Open Coach content for primary and secondary education: maths with open answers, courses and learning games.",
-  "version": "1.1.3",
+  "version": "1.1.0",
   "license": "MIT",
   "licenseFile": "LICENSE",
   "homepage": "https://github.com/ksike/rep-course-school",
@@ -315,7 +315,7 @@
         "bytes": 94962,
         "files": 7
       },
-      "ref": "v1.0.0"
+      "ref": "v1.1.0"
     },
     {
       "type": "app",
@@ -349,9 +349,43 @@
         "bytes": 24631,
         "files": 7
       },
-      "ref": "v1.0.0"
+      "ref": "v1.1.0"
+    },
+    {
+      "type": "app",
+      "profile": "game",
+      "name": "arcade-2048",
+      "title": {
+        "es": "2048",
+        "en": "2048"
+      },
+      "description": {
+        "es": "Junta fichas iguales y llega a la 2048. Flechas para mover, Z para deshacer, P para pausar. La partida y el récord se guardan en tu cuenta.",
+        "en": "Join matching tiles and reach 2048. Arrows to move, Z to undo, P to pause. Your game and your best score are kept in your account."
+      },
+      "version": "0.2.0",
+      "path": "data/game/arcade/2048",
+      "category": "arcade",
+      "tags": [
+        "arcade",
+        "puzzle",
+        "numbers"
+      ],
+      "locales": [
+        "es",
+        "en"
+      ],
+      "audience": {
+        "minAge": 6
+      },
+      "integrity": "sha256-y/XX8wkZY7iKH3HaWu6skx80GLymyS0CmKIyWv4WWXc=",
+      "size": {
+        "bytes": 65170,
+        "files": 7
+      },
+      "ref": "v1.1.0"
     }
   ],
-  "generatedAt": "2026-08-09T13:31:21.887Z",
+  "generatedAt": "2026-08-09T13:42:07.001Z",
   "generatedBy": "coach-pack-cli/0.1.0"
 }

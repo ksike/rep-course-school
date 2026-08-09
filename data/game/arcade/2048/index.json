@@ -1,0 +1,44 @@
+{
+  "specVersion": 1,
+  "type": "app",
+  "profile": "game",
+  "title": {
+    "es": "2048",
+    "en": "2048"
+  },
+  "description": {
+    "es": "Junta fichas iguales y llega a la 2048. Flechas para mover, Z para deshacer, P para pausar. La partida y el récord se guardan en tu cuenta.",
+    "en": "Join matching tiles and reach 2048. Arrows to move, Z to undo, P to pause. Your game and your best score are kept in your account."
+  },
+  "category": "arcade",
+  "tier": "c",
+  "entry": "web/index.html",
+  "apiVersion": 1,
+  "locales": [
+    "es",
+    "en"
+  ],
+  "minAge": 6,
+  "tags": [
+    "arcade",
+    "puzzle",
+    "numbers"
+  ],
+  "orientation": "portrait",
+  "scoring": {
+    "maxScore": 40000,
+    "passScore": 8000,
+    "verifiable": false
+  },
+  "duration": {
+    "estimatedMs": 420000
+  },
+  "save": {
+    "slots": 1
+  },
+  "license": "CC-BY-4.0",
+  "capabilities": [
+    "data:user"
+  ],
+  "image": "cover.svg"
+}

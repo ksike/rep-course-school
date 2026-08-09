@@ -45,6 +45,25 @@
   var PASS_SCORE = 5000;
 
   /**
+   * Three ways to play, and each one changes what the game *is* rather than only its numbers.
+   *
+   * Slower or faster is the obvious half. The other half is the shadow: on hard it is gone, so the
+   * landing spot has to be read off the well instead of being drawn, and that is a different skill.
+   * Lines per level moves too — ten is a long time to wait for the first level on easy, and a player
+   * who never reaches level two never finds out the game has levels at all.
+   */
+  var LEVELS = {
+    easy: { speed: 1.35, ghost: true, linesPerLevel: 6 },
+    normal: { speed: 1, ghost: true, linesPerLevel: 10 },
+    hard: { speed: 0.62, ghost: false, linesPerLevel: 12 },
+  };
+
+  /** The chosen difficulty, or the sane one if a stored setting names something we dropped. */
+  function rules() {
+    return LEVELS[settings.difficulty] || LEVELS.normal;
+  }
+
+  /**
    * The languages this game speaks, and the one it falls back to.
    *
    * The strings themselves live in `lang/es.json` and `lang/en.json` beside `game.json`, loaded by the
@@ -74,7 +93,7 @@
   var totals = { games: 0, lines: 0, tetrises: 0 };
 
   var coach = null;
-  var settings = { sound: true, music: true, volume: 0.7, ghost: true, locale: null };
+  var settings = { sound: true, music: true, volume: 0.7, ghost: true, locale: null, difficulty: "normal" };
   var lastProgress = -1;
   var lastSaveAt = 0;
   var dropTimer = 0;
@@ -339,7 +358,7 @@
 
     // The ghost: where the piece would land. It is what turns guesswork into a decision, and it is
     // also a second pass over the board, so it is what the settings offer to switch off.
-    if (settings.ghost) {
+    if (settings.ghost && rules().ghost) {
     var ghost = piece.y;
     while (fits(piece.name, piece.rotation, piece.x, ghost + 1)) ghost++;
     each(piece.name, piece.rotation, piece.x, ghost, function (x, y) {
@@ -453,7 +472,7 @@
       score += LINE_SCORE[cleared] * level;
       lines += cleared;
       totals.lines += cleared;
-      level = Math.floor(lines / 10) + 1;
+      level = Math.floor(lines / rules().linesPerLevel) + 1;
 
       // The tags are this game's own vocabulary, and the platform never interprets them: they are what
       // turns "played for ten minutes" into "good at clearing four at once".
@@ -507,11 +526,12 @@
     document.getElementById("best").textContent = String(Math.max(best, score));
     document.getElementById("level").textContent = String(level);
 
-    // Ten lines a level, so "how far to the next one" is a number somebody can act on rather than a
-    // level that changes without warning.
-    var into = lines % 10;
-    document.getElementById("toNext").textContent = into + "/10";
-    document.getElementById("level-fill").style.width = into * 10 + "%";
+    // How far to the next level, as a number somebody can act on rather than a level that changes
+    // without warning. The denominator is the difficulty's, so the bar always means what it shows.
+    var per = rules().linesPerLevel;
+    var into = lines % per;
+    document.getElementById("toNext").textContent = into + "/" + per;
+    document.getElementById("level-fill").style.width = (into / per) * 100 + "%";
 
     draw();
   }
@@ -610,6 +630,7 @@
       .replace("{lines}", String(lines))
       .replace("{level}", String(level));
     document.getElementById("over").classList.add("on");
+    document.body.classList.add("over");
     syncOverlays();
     refresh();
     showRanking();
@@ -666,6 +687,7 @@
     bag = [];
     nextPiece = null;
     document.getElementById("over").classList.remove("on");
+    document.body.classList.remove("over");
     document.getElementById("confirm").classList.remove("on");
     syncOverlays();
     if (settings.music) Music.start();
@@ -719,7 +741,8 @@
 
     // Faster with every level, with a floor: below about 60 ms the game stops being playable and
     // starts being a slideshow of losses.
-    var interval = Math.max(60, 800 - (level - 1) * 65);
+    // Easy gives more time per row, hard less, and the level still tightens it either way.
+    var interval = Math.max(50, (800 - (level - 1) * 65) * rules().speed);
     if (dropTimer < interval) return;
     dropTimer = 0;
 
@@ -863,31 +886,31 @@
   function applyLanguage(locale) {
     if (!coach || !coach.i18n) return Promise.resolve();
     return coach.i18n({ locale: locale, fallback: FALLBACK }).then(function (bundle) {
-      t = {};
-      // The bundle answers by key; the rest of this file reads `t.score`, so it is filled once here.
-      Object.keys(SAMPLE_KEYS).forEach(function (key) {
-        t[key] = bundle.t(key);
-      });
+      // The bundle *is* the table. Copying it key by key meant naming every label twice — once where
+      // it is used and once in a list to copy it across — and the list was already out of date.
+      t = bundle.strings;
       paintLanguage(bundle.locale);
       return bundle.locale;
     });
   }
-
-  /** Every key the game asks for, so the bundle can be flattened into `t` in one place. */
-  var SAMPLE_KEYS = {
-    score: 1, best: 1, lines: 1, next: 1, pause: 1, resume: 1, end: 1, again: 1, over: 1, paused: 1,
-    newBest: 1, result: 1, settingsTitle: 1, settingsDone: 1, pausedTitle: 1, pausedHelp: 1,
-    restart: 1, settingsOpen: 1, level: 1, toNext: 1, panelStats: 1, panelControls: 1, panelKeys: 1,
-    leave: 1, kRotate: 1, kLeft: 1, kRight: 1, kDown: 1, kDrop: 1, kPause: 1, passed: 1,
-    confirmTitle: 1, confirmText: 1, confirmYes: 1, confirmNo: 1, sound: 1, soundHelp: 1, music: 1,
-    musicHelp: 1, volume: 1, ghost: 1, ghostHelp: 1, language: 1, languageHelp: 1, languagePlatform: 1,
-  };
 
   function paintLanguage(locale) {
     document.documentElement.lang = String(locale || FALLBACK).slice(0, 2);
 
     // Built here rather than in the markup: the list is whatever the game declares, and the first
     // option has to be worded in the language currently on screen.
+    var levels = document.getElementById("opt-difficulty");
+    if (levels) {
+      levels.innerHTML = "";
+      ["easy", "normal", "hard"].forEach(function (name) {
+        var option = document.createElement("option");
+        option.value = name;
+        option.textContent = t["difficulty_" + name] || name;
+        levels.appendChild(option);
+      });
+      levels.value = settings.difficulty || "normal";
+    }
+
     var select = document.getElementById("opt-locale");
     if (select) {
       select.innerHTML = "";
@@ -911,6 +934,7 @@
       "l-music": t.music, "l-music-help": t.musicHelp, "l-volume": t.volume,
       "l-ghost": t.ghost, "l-ghost-help": t.ghostHelp,
       "l-language": t.language, "l-language-help": t.languageHelp,
+      "l-difficulty": t.difficulty, "l-difficulty-help": t.difficultyHelp,
       "pause-text": paused ? t.resume : t.pause, "end-text": t.end, "again-text": t.again,
       "leave-text": t.leave, "restart-text": t.restart, "settings-open-text": t.settingsOpen,
       "settings-title": t.settingsTitle, "settings-done-text": t.settingsDone,
@@ -946,10 +970,18 @@
     document.getElementById("opt-music").checked = settings.music;
     document.getElementById("opt-ghost").checked = settings.ghost;
     document.getElementById("opt-locale").value = settings.locale || "";
+    document.getElementById("opt-difficulty").value = settings.difficulty || "normal";
+    // The shadow is the difficulty's to allow: on hard the checkbox says why it cannot be turned on.
+    document.getElementById("opt-ghost").disabled = !rules().ghost;
+    document.getElementById("l-ghost-help").textContent = rules().ghost ? t.ghostHelp : t.ghostHard;
     document.getElementById("opt-volume").value = String(Math.round(settings.volume * 100));
     document.getElementById("quick-volume").value = String(Math.round(settings.volume * 100));
     document.getElementById("volume-value").textContent = Math.round(settings.volume * 100) + "%";
     document.getElementById("sound-icon").dataset.icon = settings.sound ? "sound-on" : "sound-off";
+
+    // The difficulty decides how many lines a level takes, so the panel has to be repainted with it:
+    // changing to the gentle one and still reading "0/10" is the game contradicting itself.
+    refresh();
 
     Audio.setVolume(settings.volume);
     Audio.setMusic(settings.music);
@@ -964,6 +996,7 @@
     settings.sound = document.getElementById("opt-sound").checked;
     settings.music = document.getElementById("opt-music").checked;
     settings.ghost = document.getElementById("opt-ghost").checked;
+    settings.difficulty = document.getElementById("opt-difficulty").value;
     settings.volume = Number(document.getElementById("opt-volume").value) / 100;
 
     // An empty choice means "follow the platform", which is why it is stored as null rather than as a
@@ -979,6 +1012,12 @@
   }
 
   function openSettings() {
+    // Reopened mid-game it is a settings panel, not an introduction: "Before you start / Start" read
+    // as though answering it would restart the game, which is the opposite of what it does.
+    var started = totals.games > 0 || score > 0 || lines > 0;
+    document.getElementById("settings-title").textContent = started ? t.settingsOpen : t.settingsTitle;
+    document.getElementById("settings-done-text").textContent = started ? t.back : t.settingsDone;
+
     document.getElementById("settings").classList.add("on");
     if (!over) setPaused(true, false);
     applySettings();
@@ -1001,7 +1040,15 @@
   document.addEventListener("keyup", function (event) {
     litKey(event.key, false);
   });
+  /*
+    Audio waits for a gesture, and a key is one.
+
+    Only `pointerdown` unlocked it, so somebody who started playing the way this game is meant to be
+    played — Space, then the arrows — heard nothing at all, and the first thing that ever made a sound
+    was reaching for the volume slider with a mouse. Which reads as "the music is broken", and is.
+  */
   document.addEventListener("pointerdown", Audio.unlock.bind(Audio), { once: false });
+  document.addEventListener("keydown", Audio.unlock.bind(Audio), { once: false });
   document.getElementById("pause").addEventListener("click", function () { setPaused(!paused); });
   document.getElementById("end").addEventListener("click", finish);
   document.getElementById("again").addEventListener("click", restart);
@@ -1056,7 +1103,7 @@
     if (coach) coach.data.set("settings", settings);
   });
   document.getElementById("settings-done").addEventListener("click", closeSettings);
-  ["opt-sound", "opt-music", "opt-ghost", "opt-locale"].forEach(function (id) {
+  ["opt-sound", "opt-music", "opt-ghost", "opt-locale", "opt-difficulty"].forEach(function (id) {
     document.getElementById(id).addEventListener("change", saveSettings);
   });
   // `input` rather than `change`: a volume slider that only reacts when you let go is a slider you

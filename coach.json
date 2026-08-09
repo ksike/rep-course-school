@@ -3,7 +3,7 @@
   "id": "ksike.school",
   "name": "Primary and secondary school content pack",
   "description": "Open Coach content for primary and secondary education: maths with open answers, courses and learning games.",
-  "version": "0.12.0",
+  "version": "0.13.1",
   "license": "MIT",
   "licenseFile": "LICENSE",
   "homepage": "https://github.com/ksike/rep-course-school",
@@ -288,7 +288,7 @@
         "es": "Encaja las piezas y completa líneas. Teclado, sonido y récord guardado.",
         "en": "Fit the pieces and clear lines. Keyboard, sound and a saved best score."
       },
-      "version": "0.10.0",
+      "version": "0.11.1",
       "path": "data/game/arcade/falling-blocks",
       "category": "arcade",
       "tags": [
@@ -303,9 +303,9 @@
       "audience": {
         "minAge": 6
       },
-      "integrity": "sha256-dbyAP0zMBtaZcddsL2w2y7q7LS8HVCJmZTAST9adkUw=",
+      "integrity": "sha256-MCwAJv+pU0tof/jaNEXx5YPwRdruKoyYCeup6emvcDk=",
       "size": {
-        "bytes": 87418,
+        "bytes": 93416,
         "files": 7
       }
     },
@@ -343,6 +343,6 @@
       }
     }
   ],
-  "generatedAt": "2026-08-08T23:30:47.694Z",
+  "generatedAt": "2026-08-09T12:35:35.305Z",
   "generatedBy": "coach-pack-cli/0.1.0"
 }

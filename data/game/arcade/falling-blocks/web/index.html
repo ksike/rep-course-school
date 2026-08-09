@@ -468,10 +468,33 @@
       }
 
       @keyframes topple {
-        to {
-          transform: translateY(10px) rotate(14deg);
-          opacity: 0.7;
-        }
+        /* It tips, over-rotates, and settles back — a fall that lands rather than a fall that stops. */
+        45% { transform: translateY(6px) rotate(18deg); }
+        70% { transform: translateY(10px) rotate(9deg); }
+        to { transform: translateY(11px) rotate(12deg); opacity: 0.65; }
+      }
+
+      /* The panel arrives differently depending on the news. */
+      #over .over-card {
+        animation: sink-in 0.5s ease-out both;
+      }
+
+      #over.won .over-card {
+        animation: lift-in 0.45s cubic-bezier(0.2, 0.9, 0.3, 1.4) both;
+      }
+
+      @keyframes sink-in {
+        from { opacity: 0; transform: translateY(-14px) scale(0.97); }
+      }
+
+      @keyframes lift-in {
+        from { opacity: 0; transform: translateY(16px) scale(0.9); }
+      }
+
+      /* The well dims when it is over, so the panel is not competing with the board behind it. */
+      body.over #board {
+        filter: saturate(0.45) brightness(0.85);
+        transition: filter 0.4s ease;
       }
 
       @keyframes sink {
@@ -501,6 +524,40 @@
 
       #levelup.on {
         display: grid;
+      }
+
+      .levelup-mark {
+        width: 2rem;
+        height: 2rem;
+        align-self: center;
+      }
+
+      .levelup-mark .step {
+        fill: currentColor;
+        opacity: 0.9;
+        transform-box: fill-box;
+        transform-origin: bottom;
+        animation: step-up 0.45s cubic-bezier(0.2, 0.9, 0.3, 1.4) both;
+      }
+
+      .levelup-mark .s2 { animation-delay: 0.08s; }
+      .levelup-mark .s3 { animation-delay: 0.16s; }
+
+      .levelup-mark .burst line {
+        stroke: currentColor;
+        stroke-width: 3;
+        stroke-linecap: round;
+        animation: burst 0.5s 0.3s ease-out both;
+      }
+
+      @keyframes step-up {
+        from { transform: scaleY(0.15) translateY(6px); opacity: 0; }
+      }
+
+      @keyframes burst {
+        from { opacity: 0; transform: scale(0.4); }
+        60% { opacity: 1; }
+        to { opacity: 0; transform: scale(1.25); }
       }
 
       .levelup-card {
@@ -812,6 +869,17 @@
     -->
     <div id="levelup" aria-live="polite">
       <div class="levelup-card">
+        <svg class="levelup-mark" viewBox="0 0 48 48" aria-hidden="true">
+          <!-- Three blocks climbing a step each, then a burst: the level in one picture. -->
+          <rect class="step s1" x="6" y="30" width="10" height="10" rx="2" />
+          <rect class="step s2" x="19" y="22" width="10" height="18" rx="2" />
+          <rect class="step s3" x="32" y="12" width="10" height="28" rx="2" />
+          <g class="burst">
+            <line x1="37" y1="6" x2="37" y2="0" />
+            <line x1="43" y1="8" x2="47" y2="4" />
+            <line x1="31" y1="8" x2="27" y2="4" />
+          </g>
+        </svg>
         <span class="levelup-label" id="levelup-label">Nivel</span>
         <span class="levelup-value" id="levelup-value">2</span>
       </div>
@@ -858,6 +926,15 @@
           in — and because a host too old to send the language at all should not leave the app stuck in
           one. Empty means "follow the platform", and that is the default.
         -->
+        <!-- Difficulty changes what the game is, not only how fast it is: see LEVELS in the script. -->
+        <label class="switch">
+          <select id="opt-difficulty" class="coach-select"></select>
+          <span>
+            <strong id="l-difficulty">Dificultad</strong>
+            <em id="l-difficulty-help">Cambia la velocidad y la ayuda de la sombra.</em>
+          </span>
+        </label>
+
         <label class="switch">
           <select id="opt-locale" class="coach-select"></select>
           <span>
@@ -905,7 +982,7 @@
     </div>
 
     <div id="over">
-      <div class="coach-panel">
+      <div class="coach-panel over-card">
         <!--
           Two figures rather than two words. Whether it went well is the first thing somebody wants to
           know, and a shape says it before a sentence is read — the blocks stack up into a cup when it

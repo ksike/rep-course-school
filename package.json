@@ -1,0 +1,11 @@
+{
+  "name": "@ksike/rep-course-school",
+  "version": "1.1.1",
+  "private": true,
+  "description": "School content pack for Open Coach: quizzes, games and apps.",
+  "scripts": {
+    "test": "node --test test/*.test.mjs",
+    "test:play": "node test/play.smoke.mjs"
+  },
+  "license": "MIT"
+}

@@ -3,7 +3,7 @@
   "id": "ksike.school",
   "name": "Primary and secondary school content pack",
   "description": "Open Coach content for primary and secondary education: maths with open answers, courses and learning games.",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "license": "MIT",
   "licenseFile": "LICENSE",
   "homepage": "https://github.com/ksike/rep-course-school",
@@ -295,7 +295,7 @@
         "es": "Encaja las piezas y completa líneas. Teclado, sonido y récord guardado.",
         "en": "Fit the pieces and clear lines. Keyboard, sound and a saved best score."
       },
-      "version": "0.13.3",
+      "version": "0.13.4",
       "path": "data/game/arcade/falling-blocks",
       "category": "arcade",
       "tags": [
@@ -310,9 +310,9 @@
       "audience": {
         "minAge": 6
       },
-      "integrity": "sha256-BJy617QqA1OgIemDprH+X5JqNWpUc/KAnuytSluSrCE=",
+      "integrity": "sha256-G3o02G/HEABEzOziI5JBZGd49sXdXP1kNDFhG6TOlQk=",
       "size": {
-        "bytes": 94985,
+        "bytes": 96929,
         "files": 7
       },
       "ref": "v1.1.0"
@@ -363,7 +363,7 @@
         "es": "Junta fichas iguales y llega a la 2048. Flechas para mover, Z para deshacer, P para pausar. La partida y el récord se guardan en tu cuenta.",
         "en": "Join matching tiles and reach 2048. Arrows to move, Z to undo, P to pause. Your game and your best score are kept in your account."
       },
-      "version": "0.2.1",
+      "version": "0.2.2",
       "path": "data/game/arcade/2048",
       "category": "arcade",
       "tags": [
@@ -378,14 +378,14 @@
       "audience": {
         "minAge": 6
       },
-      "integrity": "sha256-6eucTHiWRRPzftyVExNLy9oomwq2e3/NsX13ybJMz2o=",
+      "integrity": "sha256-J3zy3iDLSK4KjVIpIARvl4PmZZYykaFZmZz8zuIpJQc=",
       "size": {
-        "bytes": 65192,
+        "bytes": 67136,
         "files": 7
       },
       "ref": "v1.1.0"
     }
   ],
-  "generatedAt": "2026-08-09T13:44:07.348Z",
+  "generatedAt": "2026-08-09T14:07:53.982Z",
   "generatedBy": "coach-pack-cli/0.1.0"
 }

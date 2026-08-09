@@ -419,6 +419,54 @@
         gap: 0.5rem;
       }
 
+
+      /*
+        A lit edge on the panels that float over the game.
+
+        Two rings rather than a border: a soft coloured halo outside and a thin bright line just
+        inside it, which is what makes a surface read as raised rather than as a rectangle drawn on
+        top. It follows the ending — green when it went well, red when it did not — so the news is
+        carried by the frame as well as by the words.
+      */
+      #settings .coach-panel,
+      #confirm .coach-panel,
+      #paused .coach-panel,
+      #over .coach-panel {
+        position: relative;
+        border: 1px solid color-mix(in srgb, var(--coach-accent, #4f8cff) 35%, var(--coach-border, #263149));
+        box-shadow:
+          0 0 0 1px color-mix(in srgb, var(--coach-fg, #e8ecf5) 8%, transparent) inset,
+          0 18px 50px -12px rgba(0, 0, 0, 0.65),
+          0 0 34px -6px color-mix(in srgb, var(--coach-accent, #4f8cff) 45%, transparent);
+      }
+
+      #over.won .coach-panel {
+        border-color: color-mix(in srgb, #4ade80 45%, var(--coach-border, #263149));
+        box-shadow:
+          0 0 0 1px color-mix(in srgb, #4ade80 22%, transparent) inset,
+          0 18px 50px -12px rgba(0, 0, 0, 0.65),
+          0 0 42px -4px color-mix(in srgb, #4ade80 55%, transparent);
+      }
+
+      #over:not(.won) .coach-panel {
+        border-color: color-mix(in srgb, #f87171 40%, var(--coach-border, #263149));
+        box-shadow:
+          0 0 0 1px color-mix(in srgb, #f87171 20%, transparent) inset,
+          0 18px 50px -12px rgba(0, 0, 0, 0.65),
+          0 0 42px -6px color-mix(in srgb, #f87171 45%, transparent);
+      }
+
+      /* It breathes, slowly, so the panel looks alive without asking for attention. */
+      @media (prefers-reduced-motion: no-preference) {
+        #over .coach-panel {
+          animation: glow 3.2s ease-in-out 0.6s infinite;
+        }
+      }
+
+      @keyframes glow {
+        50% { filter: brightness(1.06); }
+      }
+
       .figure {
         width: 6.5rem;
         height: 5rem;
